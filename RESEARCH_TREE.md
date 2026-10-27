@@ -81,5 +81,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
       PPI-L (Pasteur pocketome) + PPIPS (PPI agent, 3 h box); A1 + B0/B1 descriptors (A1 agent);
       B4 ESM-2 + B5 external (baseline agent, cuda:1); A2 docking panels on TOUGH-M1 (A2 agent, cuda:0,2)
 - [x] P3 evaluate.py + provenance + check_report (41 tests; 1M pairs × 2000 boot in 1.7 s) — reports/evaluate_module.md
+- [x] P3 A1 descriptor (16 configs, default 514-d), B0, B1; similarity + CSLS — reports/a1_descriptors.md
+  - [x] 6.3 ms/L-pocket, 0.73 µs/pair; invariance error ≤ 1.3e-7; 17 tests
+  - [!] label-free check: same site L vs D mode: A1 AUC 0.70 vs B1 0.94 → A1 is sensitive to pocket definition
+  - [~] re-run from committed tree for clean provenance (pid in logs/descriptors_tough_m1.pid)
 - [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md
