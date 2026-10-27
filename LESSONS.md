@@ -1,15 +1,13 @@
-# LESSONS — process rules (one line each, with evidence)
+# LESSONS — process rules (pruned at milestone M2, 2026-10-27 22:40; source: reviews/milestone_M2_retrospective.md)
 
-Inherited from pocket_detect (LESSONS.md there):
-1. Inspect mounts, tools and real resource caps first. (pocket_detect is read-only here → .pth import, 2026-10-27)
-2. Run jobs > ~5 min detached with log + completion marker; kill only stored PIDs, never `pkill -f`.
-3. Reproduce published numbers before building on an evaluation harness.
-4. "Done" for data/leakage work needs an independent re-implementation.
-5. Every mechanism or negative claim needs a control; decompose headline gains by composition (e.g. ions).
-6. Seal test labels technically (move + chmod) BEFORE launching any agent, including reviewers. (A statistics
-   reviewer opened TOUGH-M1 pair labels 2 min before sealing; DEV1, 2026-10-27.)
-7. Always evaluate in the deployment pocket definition (detected pockets) next to the ligand-defined one: a 4 Å
-   ligand shell imprints ligand shape and inflated A1 from 0.56 (D) to 0.81 (L) on the same pairs (D11).
-8. Run the size-only baseline first on any pocket-pair benchmark: B0 alone reached ROC 0.78 on TOUGH-M1-dev;
-   stratified AUC is the only number that separates descriptor signal from size (dev eval, 21:45).
-9. Pre-registered gates save time: A2 docking failed its gate in one run and stopped consuming effort (D10).
+1. Seal label/pair tables technically (move + chmod 000, sha256) at creation, before any agent or reviewer launches. (DEV1: a reviewer read TOUGH-M1 labels 2 min before sealing.)
+2. Record gates and the claim family in a hashed pre-registration before computing scores; amend only before test use, in one consolidated file (PREREG.md). (Gates D7/D10 stopped work cleanly; piecemeal amendments D6/D8/D9/D11 cost review time.)
+3. Run size-only baselines and size-stratified AUC first on any pocket-pair benchmark. (B0 ROC 0.78 on TOUGH-M1-dev vs B0m stratified 0.489; fragment score vs volume ρ −0.74.)
+4. Evaluate in the deployment pocket definition (detected, ligand-free) beside the ligand-defined one; use label-free L-vs-D agreement as a pre-check. (A1 0.808 → 0.560; ligand-free sph8+env agreement 0.996.)
+5. Freeze the metric module first, test it on synthetic data with known answers, stamp its hash in every output. (evaluate.py, 41 tests; it also caught that 5×5 size strata leave a 0.539 shortcut.)
+6. "Done" for data/split/leakage work needs an independent re-implementation that finishes before anything is fitted. (verify_splits 97 checks; review caught the global graph percolating at 49.8 %.)
+7. Cap dev exploration: log every variant in results/trials.tsv, fix a trial budget, discount gains whose CI includes zero given the test MDE. (36 variants; best +0.024 [−0.039, +0.043]; MDE ≈ 0.13.)
+8. Stop a path when its gate fails; do not scale compute behind a failed gate except for a separately pre-registered sub-test. (A2 gate failed at D10.)
+9. Prefer shipped prior-art scores or published numbers over bespoke external baselines with no marginal information. (B5 EPoCS 0.599 ≈ B4 0.601 after ~38 GPU-min + env hacks; TOUGH-M1 ships APoc/G-LoSA/SiteEngine.)
+10. Run jobs > 5 min detached with log + marker + stored PID; never `pkill -f`; append to LD_LIBRARY_PATH, never overwrite; check mounts first. (Overwritten LD_LIBRARY_PATH silently ran ESM on CPU; rsyncPDB not mounted, D1.)
+11. The PI must not `git add` directories that running agents are editing; commit agents' files only after they report. (22:00: an in-progress pockets.py was swept into a commit.)

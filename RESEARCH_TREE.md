@@ -22,6 +22,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D14 (22:45) Milestone M2 retrospective (reviews/milestone_M2_retrospective.md) adopted: LESSONS pruned to 11 rules;
+  all amendments consolidated in PREREG.md (sha256 d3598a048cb397729a533948656591ea449ed64eb49b9c00fc0a10b27309d840). Selection objective = BLiPS-val D-mode cluster-balanced
+  AUC with one-SE rule (deployment definition), guards on L-mode and TOUGH-M1-dev D-mode; Holm {C1a, C1b, C1-D, C2}.
+  No further open-ended exploration on TOUGH-M1-dev; no more bespoke baselines; A2 stops after the PPI sub-test.
 - D13 (22:25) Tier-1 candidates for A4b: hybrid A1(sub-pocket)+A1(sph8)+env(sph8) (1,141-d) trained with L↔D
   augmentation; selection on BLiPS-val mean(L,D) per DESIGN. The ligand-free non-learned A1(sph8)+env(sph8) is kept
   as the robust non-learned fallback (best D-mode, L↔D agreement 0.996). Rationale: mean(L,D) still rewards the
