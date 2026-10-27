@@ -22,7 +22,7 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
-- D13 (23:10) Tier-1 candidates for A4b: hybrid A1(sub-pocket)+A1(sph8)+env(sph8) (1,141-d) trained with L↔D
+- D13 (22:25) Tier-1 candidates for A4b: hybrid A1(sub-pocket)+A1(sph8)+env(sph8) (1,141-d) trained with L↔D
   augmentation; selection on BLiPS-val mean(L,D) per DESIGN. The ligand-free non-learned A1(sph8)+env(sph8) is kept
   as the robust non-learned fallback (best D-mode, L↔D agreement 0.996). Rationale: mean(L,D) still rewards the
   L-mode imprint; the learned metric with L↔D augmentation is the principled way to trade it off.
