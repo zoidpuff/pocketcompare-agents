@@ -1,7 +1,7 @@
-# DESIGN — fast, fold-independent pocket similarity on BURROW (v1, 2026-10-27 19:35)
+# DESIGN — fast, fold-independent pocket similarity on BURROW (v2, 2026-10-27 20:10)
 
 History: v0 (19:15) → review round 1 (reviews/round1_{pi,statistics,data,algorithms,domain,agent_failure_modes}.md)
-→ v1 (this). The change log against v0 is in §10. Inputs: PROMPT.md, LITERATURE.md, reports/*.md.
+→ v1 (19:35) → review round 2 (reviews/round2_panel.md) → v2 (this). Change logs in §10 and §11. Inputs: PROMPT.md, LITERATURE.md, reports/*.md.
 
 ## 0. Goal, deliverables, claims
 
@@ -18,11 +18,15 @@ Deliverables: (1) the `pocketcompare` package and CLI (pocket → descriptor; pa
   Smallest effect of interest 0.03: reported with its lower CI bound; the minimum detectable effect is
   computed on dev and recorded before unsealing.
 - **C2** ProSPECCTs D5.2 + D6.2 + D7 (self-pairs removed), macro ROC-AUC(final) − macro ROC-AUC(B1) > 0.
-- **C3** PPI ligand-grounded test (§2.5 PPI-L): ROC-AUC(final) − ROC-AUC(B1) > 0.
+- **C3** PPI ligand-grounded test (§2.5 PPI-L): ROC-AUC(final) − ROC-AUC(B1) > 0 — only if the PPI-L gate
+  (§2.5) passes; otherwise C3 is exploratory and the Holm family is {C1a, C1b, C2}.
 Reported, not in the Holm family: runtime (C4: tier-1 descriptor ≤ 1 s/pocket incl. BURROW and ≤ 10 µs/pair
 CPU); AF robustness (C5: BLiPS-test ROC-AUC with AF-model pockets vs holo pockets, Δ with CI); all other
 benchmarks and arms. Published numbers are context only (different pocket definitions); we additionally run
-one external method ourselves (B5) so that at least one comparison to prior art is paired.
+one external method ourselves (B5) and use the per-pair APoc / G-LoSA / SiteEngine scores shipped with
+TOUGH-M1 (B5-T) so that comparisons to prior art are paired. B0' (global TM-score) is reported next to C1.
+The claim-bearing final method takes **no B4 input**; a fusion including B4 is descriptive only. B1 and B4
+receive the same CSLS treatment as the final method.
 
 ## 1. Architecture
 
@@ -38,8 +42,12 @@ one external method ourselves (B5) so that at least one comparison to prior art 
 Nodes = every protein chain in TOUGH-M1, ProSPECCTs, Vertex, BLiPS sources (BURROW train/dev, BURROW af_set),
 PPI sets, and BURROW's training chains. Edges: MMseqs2 ≥ 30 % identity, E ≤ 1e-3, coverage ≥ 0.5 (BURROW's rule)
 **or** Foldseek TM ≥ 0.5 in **both** directions (single-direction merge produced a 69 % giant component).
-Connected components = homology groups; every split below assigns whole groups. ProSPECCTs/Vertex sequences are
-read for leakage control only. Largest component size and realised split counts are committed.
+Edges use `pocketdetect.datasets.leakage.apply_rule` verbatim (BURROW's sequence rule) OR Foldseek TM ≥ 0.5 in
+both directions. **Splits within a dataset assign connected components of that dataset's own graph; exclusion
+across datasets uses direct edges** (a train/dev item is removed if it has an edge to any test item) — a single
+global component graph over ~60k chains would percolate. Gate: largest within-dataset component ≤ 10 %, else
+DataSAIL. ProSPECCTs/Vertex sequences are read for leakage control only. An independent agent re-derives the
+splits and checks overlaps before the first model fit; realised counts are committed (test: counts only).
 
 ### 2.2 Pocket definitions (one adapter, `src/pocketcompare/pockets.py`, used by every method we run)
 - **L-mode:** BURROW grid points (ligands/waters/hetero stripped) within 4 Å of the benchmark ligand heavy atoms
@@ -55,8 +63,10 @@ read for leakage control only. Largest component size and realised split counts 
 ### 2.3 TOUGH-M1 (primary public benchmark)
 - **Dev = homology groups that contain any BURROW-train/dev homologue (~32 % of proteins); test = all other
   groups (BURROW-clean).** Within-partition pairs only. Test pair labels (and B0 scores, see DEV1) stay sealed.
-- Leakage rules apply to anything fit on TOUGH-M1-dev too: dev groups never contain ProSPECCTs/Vertex/BLiPS-test
-  homologues (TOUGH-M1 shares 355 PDB IDs with ProSPECCTs; those groups go to test, never dev).
+- Groups with direct edges to BURROW train/dev **and** to any sealed test set (ProSPECCTs, Vertex, BLiPS-test,
+  PPI-L-test) are excluded from both TOUGH-M1 partitions; their number is reported. (TOUGH-M1 shares 355 PDB IDs
+  with ProSPECCTs.)
+- The shipped APoc / G-LoSA / SiteEngine pair scores are attached to dev and (sealed) test pairs (B5-T).
 - Report: realised counts, ligand-cluster composition per partition.
 
 ### 2.4 ProSPECCTs (D1–D7) and Vertex — sealed external tests
@@ -66,15 +76,15 @@ frozen after the PDB mirror sync completes.
 ### 2.5 PPI sets
 - **PPI-L (ligand-grounded, test for C3):** the Pasteur PPI pocketome (Moine-Franel et al., Sci Data 2024;
   Zenodo 10.5281/zenodo.10805580; CC-BY-4.0; 23k VolSite cavities at PDB PPI interfaces with orthosteric /
-  allosteric / ligand-free labels and iPPI-DB ligands) + BURROW's 400-assembly dimer set if useful. Positives =
-  interface pockets binding the same or similar (ECFP4 Tc ≥ 0.5, ≥ 12 heavy atoms) PPI modulators in proteins of
-  different homology groups; negatives = interface pockets binding dissimilar modulators (Tc < 0.3) or
-  ligand-free interface pockets of other groups, matched on volume and f_min. Split by homology group
-  (train 60 / val 20 / test 20) after inspecting feasibility; if positives across groups are < 100 in test,
-  C3 is downgraded to exploratory and the downgrade is recorded before any test number is computed.
+  allosteric / ligand-free labels and iPPI-DB ligands). **Only cavities with a PDB HET modulator are used**
+  (L-mode on that ligand). Positives = pockets binding the same or similar (ECFP4 Tc ≥ 0.5, ≥ 12 heavy atoms)
+  modulators in different homology groups; negatives = ligand-bound pairs with Tc < 0.3 in different groups.
+  Split by homology component 60/20/20. **Gate** (recorded before any score is computed): test positives ≥ 50
+  pairs spanning ≥ 10 homology groups and ≥ 5 ligand clusters; else C3 is exploratory.
   Their 109-descriptor PSI (precomputed pair distances) is baseline B6 on PPI-L.
 - **PPIPS (AFDB dimers; transfer task, not a headline of fold independence):**
-  - P-sym (sanity): the two symmetry copies of a pocket in a homodimer must score high (≥ 0.9 percentile).
+  - P-sym (sanity): rank percentile of a pocket's symmetry copy among its scores against all other pockets of
+    its split (expected ≥ 0.9).
   - P-ortho retrieval: for each cross-species interolog complex pair (< 30 % identity per chain), the query
     interface pocket must retrieve its residue-mapped counterpart (mapping through both chain alignments,
     pocket overlap ≥ 0.5) **among all pockets of the partner complex** (so the decoys share the fold). Metrics:
@@ -92,10 +102,13 @@ frozen after the PDB mirror sync completes.
   atoms; sites with < 10 BURROW points. One label ligand per site (largest qualifying).
 - Positives: sites in different homology groups sharing a ligand with ECFP4 Tc ≥ 0.7; stratified by number of
   shared ligands (1 vs ≥ 2). Negatives: different-group sites with max Tc < 0.3. Pairs capped per ligand
-  cluster (Butina 0.6) and per protein. **No subsampling to size-match:** size is handled by size-stratified
-  AUC (§4) and the acceptance check that size-only (B0) stratified AUC is 0.5 ± 0.03.
+  cluster (Butina 0.6; ≤ 300 positives per cluster) and per protein (≤ 3 sites); results also reported
+  without the top-20 promiscuous CCDs. **No subsampling to size-match:** size is handled by size-stratified
+  AUC (§4); diagnostic B0m (§4).
 - AUC also reported for seen vs unseen ligand chemotypes (ligand cluster present in train or not).
-- BLiPS is primarily a training/selection resource; BLiPS-test is reported (secondary), C5 uses it.
+- BLiPS is primarily a training/selection resource; BLiPS-test is reported (secondary), C5 uses it. The
+  AF-vs-holo pipeline is developed on val first (pocket_detect `af_train` dev sites) and stratified by holo
+  release date (≥ 2018-05-01) and site pLDDT band.
 
 ### 2.7 Blind deployment test (secondary)
 BLiPS-test proteins, AF models, BURROW region-rule pockets without any ligand guidance: for each true site, rank
@@ -108,8 +121,7 @@ FAISS demo (§6).
   data (TOUGH-M1-test, BLiPS-test = af_set). 
 - ADock: **stock Vina** weights only (no fitted weights, no template mode, no reranker); Vina's weights were fit
   on PDBbind-era data (disclosed limitation).
-- ESM-2 (B4) and any pretrained network were trained on UniProt/PDB without our labels; B4 is stratified by
-  homology to … nothing to filter (unsupervised) — disclosed.
+- ESM-2 (B4) was pretrained on UniRef (which includes test sequences) without labels; disclosed.
 
 ## 3. Methods
 
@@ -128,13 +140,14 @@ APoc); B6 PSI on PPI-L; published numbers (LITERATURE.md §3) as context.
 - Blocks: (i) type × buriedness histograms; (ii) pairwise-distance distributions per type pair, 12–16
   Gaussian-smoothed bins on 2–20 Å; (iii) typed USRCAT-like shape moments; (iv) global scalars (log volume
   kept separate and down-weighted). Square-root (Hellinger) transform, z-score (train statistics), cosine.
-- ≤ 20 configurations pre-registered in `configs/a1_grid.yaml`, selected on TOUGH-M1-dev + BLiPS-val with the
-  one-SE rule (§4).
+- ≤ 20 configurations pre-registered in `configs/a1_grid.yaml`. Selection score = mean cluster-balanced AUC over
+  TOUGH-M1-dev and BLiPS-val; one-SE rule on that mean.
 
 **A4b — learned metric on A1 (+B1) (main tier-1 bet #2).** MLP projection to 64–128 d, trained on BLiPS-train
-(+PPIPS-train, + augmentation pairs: same site L-mode vs D-mode, holo vs AF from af_set-val, homodimer
-symmetric copies) with a graded ligand-similarity contrastive loss (ErePOC-style KL to ligand Tc). Selection on
-BLiPS-val/TOUGH-M1-dev. Seeds SEEDS[:3]; the reported model is the seed-mean ensemble, never a picked seed.
+(+PPIPS-train, + augmentation pairs: same site L-mode vs D-mode, holo vs AF / apo from pocket_detect
+`af_train`/`apo_train` sites in BLiPS-train groups, homodimer symmetric copies) with a graded ligand-similarity
+contrastive loss (ErePOC-style KL to ligand Tc). **A4b and A5 are selected on BLiPS-val (+PPIPS-val) only;
+TOUGH-M1-dev selects non-learned arms only** (TOUGH-M1-dev is BURROW-family-related to BLiPS-train). Seeds SEEDS[:3]; the reported model is the seed-mean ensemble, never a picked seed.
 
 **A2 — docking-profile descriptor (human prior; gated).**
 - ADock `frag_lite_np`, stock Vina, rigid receptor, **fixed 12 Å cubic box** at the pocket centre (box volume
@@ -148,8 +161,8 @@ BLiPS-val/TOUGH-M1-dev. Seeds SEEDS[:3]; the reported model is the seed-mean ens
   (b) ligand-efficiency-normalised scores, residualised on log volume and buriedness, per-fragment z-scored on
   the background pool; (c) **pose interaction profile** (novel): per fragment, contact-type counts of the best
   pose (H-bond donor/acceptor matched, apolar, aromatic, charged), buried fraction.
-- **Gate (TOUGH-M1-dev, size-stratified AUC):** A2 must exceed the published Vina-profile 0.55 and B0, and add
-  ≥ 0.01 to A1 in a cross-fitted fusion (lower CI bound > 0). Fails → reported negative, not developed further.
+- **Gate (TOUGH-M1-dev, size-stratified AUC):** A2 must add ≥ 0.01 to A1 in a cross-fitted fusion (lower CI
+  bound > 0); the gain over A1 + B4 is reported descriptively. Fails → reported negative, not developed further.
 - PPI sub-hypothesis (pre-registered): fragments beat lead-like on shallow interface pockets (PPIPS P-ortho
   and PPI-L-val).
 
@@ -166,16 +179,22 @@ Tanimoto and Tversky. Only if A1/A4b are done by 03:00.
 - Metrics: ROC-AUC (field standard), PR-AUC with prevalence and AP lift, partial AUC (FPR ≤ 0.1);
   **cluster-balanced AUC** (each ligand cluster / homology group weighted equally) next to pair AUC; per-cluster
   AUC for the 10 largest clusters; retrieval: top-1/top-10/MRR.
-- Size control: size-stratified AUC (pairs binned by |log vol ratio| deciles; AUC averaged over strata).
+- Size control: **2-D size-stratified AUC** — strata = quintiles of the pair's mean L-mode log-volume ×
+  quintiles of |Δ log-volume| (edges from the evaluated partition); per-stratum AUC weighted by n positives;
+  strata lacking a class dropped and counted. Diagnostic B0m (logistic on log v_a + log v_b and |Δ|, fit on dev)
+  must give stratified AUC 0.5 ± 0.03.
   Pocket-marginal shortcut baseline (score = f(pocket a) + f(pocket b), e.g. per-pocket mean similarity).
-- Uncertainty: **vertex (two-way) bootstrap** — resample clusters, pair weight = c_i · c_j (count of draws of
-  each pair's clusters); unit = ligand cluster on TOUGH-M1 (47 % of positives are in one cluster), homology group
-  on BLiPS/PPI; B = 2,000; paired for differences.
+- Uncertainty: **vertex (two-way) bootstrap** — resample units; pair weight = c_u if both pockets are in unit u,
+  else c_u · c_v. TOUGH-M1 unit = connected component of (ligand cluster ∪ homology group), ligand cluster =
+  component of the positive-pair graph. BLiPS/PPI: run with homology-group units and with Butina ligand-cluster
+  units; report the wider CI. C2: independent bootstrap per subset (unit = homology group), macro Δ per replicate
+  index. B = 2,000; paired for differences. MDE from dev scaled to test by √(n_units_dev / n_units_test).
 - Failures/misses: primary comparison on the common pair set where all compared arms have scores; plus
   worst-case bound (misses scored adversarially) and miss rates by label. Never silently dropped.
 - Selection: every arm/config evaluated on dev is appended to `results/trials.tsv` (append-only). Final config =
   the simplest within one SE of the best dev score (pre-declared). One frozen config goes to test.
 - Seeds: SEEDS = [0..4]; learned arms use SEEDS[:3] and report the ensemble.
+- Cut order if behind at 03:00: A3/A4 → proteome demo → §2.7 blind test → P-ortho. Inputs to C1–C3 are never cut.
 
 ## 5. Verification and controls
 - `src/pocketcompare/evaluate.py` written and unit-tested **first** (toy pairs with known AUC/AP; bootstrap
@@ -212,9 +231,10 @@ Tanimoto and Tversky. Only if A1/A4b are done by 03:00.
 - 03:00–09:00: fusion, hub correction, robustness, stretch arms, proteome demo.
 - 09:00–11:00: freeze + verification; 11:00–13:00 final eval + independent re-check; 13:00–17:00 REPORT.
 
-## 9. Open questions for round 2
-- Is the PPI-L construction feasible from the Pasteur data within the 3 h box (labels, ligand identities)?
-- Is the TOUGH-M1 dev partition (BURROW-homologous groups) representative enough for selection?
+## 9. Open questions (after round 2)
+- PPI-L feasibility is decided by its gate (§2.5), recorded before any score.
+- TOUGH-M1-dev (BURROW-homologous groups) may differ in composition from test; its ligand-cluster composition is
+  reported next to test counts.
 
 ## 10. Changes vs v0 (from round 1)
 Scope cut (A3, A4 → stretch; A4b promoted) [PI M1, algorithms 4]. Added B4 ESM-2 and B5 external baseline
@@ -232,3 +252,10 @@ algorithms 5]. A3: proper rotations only, pseudocentres [algorithms 2]. CSLS hub
 Safeguards: sealing, FREEZE.json, provenance sidecars, evaluate.py first, worktree final eval [agent-failure].
 Not adopted: Govindaraj–Brylinski 1,515-drug replication (cost; replaced by the dev gate against their published
 Vina number); 40/60 TOUGH-M1 split (superseded by the BURROW-homology split).
+
+## 11. Changes vs v1 (from round 2, reviews/round2_panel.md)
+Adopted MUST 1 (TOUGH-M1 doubly-homologous groups excluded from both partitions), 2 (within-dataset components +
+direct-edge cross-dataset exclusion, ≤ 10 % gate), 3 (A4b augmentations from af_train/apo_train; A4b/A5 selected
+on BLiPS-val only), 4 (2-D size strata + B0m diagnostic), 5 (bootstrap weights, units, C2 bootstrap), 6 (PPI-L
+ligand-bound only + gate), 7 (raw label lists chmod 000, done 20:05). SHOULD 8–12 and COULD 13–16 adopted.
+Added B5-T (TOUGH-M1 shipped APoc/G-LoSA/SiteEngine pair scores) as paired prior-art comparators.

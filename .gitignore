@@ -9,3 +9,6 @@ logs/*.log
 tools/mmseqs/
 tools/foldseek/
 tools/*.tar.gz
+data/sealed/
+envs/
+logs/
