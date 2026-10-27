@@ -2,7 +2,7 @@
 """Independent re-check of the homology graph and all splits (different code paths from the builders).
 
   * edges: re-derived from the RAW MMseqs2 all-vs-all output (rule re-implemented here, not imported) and from the
-    Foldseek hit table (min(qTM, tTM) >= 0.5), compared with data/splits/homology_edges.parquet;
+    exhaustive Foldseek hit table (exact min(qTM, tTM) >= 0.5), compared with data/splits/homology_edges.parquet;
     sid <-> sequence consistency checked against data/processed/homology/sequences.fasta.
   * graph algorithms: networkx (builders use scipy.sparse).
   * TOUGH-M1: dev/test/excluded groups are whole TOUGH-M1 components; no direct edge dev<->test; no test node
@@ -68,7 +68,7 @@ def main():
           & (raw["query"] != raw["target"]))
     seq_e = {tuple(sorted(p)) for p in zip(raw["query"][ok], raw["target"][ok])}
     fs = pd.read_parquet(PROC / "foldseek_allvsall_tm04.parquet")
-    fok = (fs.qtmscore >= 0.5) & (fs.ttmscore >= 0.5)
+    fok = (fs.qtm_exact >= 0.5) & (fs.ttm_exact >= 0.5)  # exact TM-scores (exhaustive search, D15)
     fs_e = {tuple(sorted(p)) for p in zip(fs["query"][fok], fs["target"][fok])}
     built = {(a, b): (s, f) for a, b, s, f in zip(edges.sid_a, edges.sid_b, edges.seq_edge, edges.fs_edge)}
     check({k for k, v in built.items() if v[0]} == seq_e, f"seq edges reproduced from raw MMseqs2 m8 ({len(seq_e)})")

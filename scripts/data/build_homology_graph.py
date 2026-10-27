@@ -11,7 +11,8 @@ Nodes (one per protein chain):
   burrow_partner      BURROW assembly-partner chains of those entries (train/work/asm_partners_{train,dev}.fasta);
                       symmetry copies "X-n" are mapped to deposited chain X
   af_set              BURROW Track C AF set (AFDB v6 model per UniProt; data/processed/af/af_manifest.csv, all rows
-                      with a model incl. status=excluded)
+                      incl. status=excluded; the 45 proteins without a single model are sequence-only nodes with
+                      their UniProt sequence)
   ppi_l               PPI-L pocket chains (data/splits/ppi_l_pockets.parquet; `ppi_split` = train/val/test of the PPI agent)
   dimers              AFDB predicted dimers, both chains (data/processed/dimers/manifest.tsv)
 BURROW's test union is NOT added (no split rule here refers to it; its af_set/dimer parts are already nodes).
@@ -20,11 +21,15 @@ Sequences = observed residues of the structure as read by Foldseek (`createdb`, 
 are not in the deposited mmCIF fall back to the BURROW fasta sequence (sequence-only node).
 
 Edges (between unique sequences, "sid"; nodes with identical sequences share a sid and are trivially linked):
-  seq: MMseqs2 all-vs-all, -s 7.5 --max-seqs 5000 -e 1e-3, kept by `pocketdetect.datasets.leakage.apply_rule`
-       verbatim (E < 1e-3, fident >= 0.30, qcov >= 0.5 or tcov >= 0.5 or alnlen >= 80)
-  fs : Foldseek all-vs-all on one structure per sid (length >= MIN_FS_LEN), --exhaustive-search 0, -s 7.5, -a (backtrace, needed for TM columns),
-       --max-seqs 2000; edge iff qtmscore >= 0.5 AND ttmscore >= 0.5 (TM >= 0.5 normalised by both chains) in any
-       of the two search directions.
+  seq: MMseqs2 all-vs-all, -s 7.5 --max-seqs 5000 -e 1e-3 -a (backtraces -> EXACT fident/alnlen; without -a
+       convertalis reports score-based estimates that are too low near 30 %, audit D15), kept by
+       `pocketdetect.datasets.leakage.apply_rule` verbatim (E < 1e-3, fident >= 0.30, qcov|tcov >= 0.5 or alnlen >= 80)
+  fs : Foldseek EXHAUSTIVE all-vs-all (--exhaustive-search 1, no prefilter, -e 10, -a) on one structure per sid
+       (length >= MIN_FS_LEN) of every non-dimer chain plus the PPIPS dimer chains (UniProt in
+       data/processed/ppi/ppips/proteins.fasta); the other AFDB-dimer chains (used by no split) get sequence edges only.
+       TM-scores: approximate for every hit; EXACT (`--exact-tmscore 1`, pairs re-aligned with structurealign) for
+       every hit with approximate min(qTM, tTM) >= FS_CAND (exact is ~0.01 below approximate; calibration on 12k
+       pairs: max upward difference +0.023). Edge iff exact qTM >= 0.5 AND exact tTM >= 0.5 in either direction.
 
 Groups (design round 2): connected components are computed WITHIN each split dataset only
   (tough_m1, prospeccts, vertex, blips = burrow_train + burrow_dev + af_set, dimers); exclusion across datasets uses
@@ -65,6 +70,7 @@ OUT = ROOT / "data/splits"
 PROC = ROOT / "data/processed/homology"
 MIN_FS_LEN = 20
 TM_MIN = 0.5
+FS_CAND = 0.45
 FS_COLS = ["query", "target", "fident", "alnlen", "qlen", "tlen", "evalue", "bits", "prob", "alntmscore",
            "qtmscore", "ttmscore"]
 GROUP_DATASETS = {"tough_m1": ["tough_m1"], "prospeccts": ["prospeccts"], "vertex": ["vertex"],
@@ -164,6 +170,17 @@ def collect_nodes() -> tuple[pd.DataFrame, dict]:
         rows.append(dict(node_id=f"af_set:{r.acc}", dataset="af_set", uniprot=r.acc, pdb_id=None, chain="A",
                          file=str(f), chain_rule="exact", pocket_ids=None, af_status=r.status))
     info["af_set_without_model"] = int(len(a) - sum(1 for r in rows if r["dataset"] == "af_set"))
+    # af_set proteins without a single AFDB model (fragmented / absent): sequence-only nodes, UniProt sequence
+    # (pocket_detect af/external/uniprot_human_reviewed.tsv.gz) -- audit D15 found one such homologue (APC)
+    have = {r["uniprot"] for r in rows if r["dataset"] == "af_set"}
+    up = pd.read_csv(PD / "data/processed/af/external/uniprot_human_reviewed.tsv.gz", sep="\t",
+                     usecols=["Entry", "Sequence"]).set_index("Entry").Sequence
+    for r in a[~a.acc.isin(have)].itertuples():
+        if r.acc in up.index:
+            rows.append(dict(node_id=f"af_set:{r.acc}", dataset="af_set", uniprot=r.acc, pdb_id=None, chain="A",
+                             file=None, chain_rule="exact", pocket_ids=None, af_status=r.status,
+                             fallback_seq=up[r.acc]))
+    info["af_set_sequence_only"] = int(sum(1 for r in rows if r["dataset"] == "af_set" and r["file"] is None))
     # PPI-L (Pasteur PPI pocketome; split assigned by the PPI agent): one node per (pdb, chain) with its split
     pl_path = ROOT / "data/splits/ppi_l_pockets.parquet"
     if pl_path.exists():
@@ -322,7 +339,7 @@ def main():
     m = nodes.dataset.isin(["burrow_train", "burrow_dev"]) & nodes.fs_key.isna()
     nodes.loc[m, "fallback_seq"] = [obs_all.get(n.split(":", 1)[1]) for n in nodes.loc[m, "node_id"]]
     # partners not present in the deposited file -> sequence-only from BURROW's fasta
-    m = nodes.dataset.isin(["burrow_partner", "burrow_train", "burrow_dev"]) & nodes.fs_key.isna() & nodes.fallback_seq.notna()
+    m = nodes.dataset.isin(["burrow_partner", "burrow_train", "burrow_dev", "af_set"]) & nodes.fs_key.isna() & nodes.fallback_seq.notna()
     nodes.loc[m, "seq"] = nodes.loc[m, "fallback_seq"]
     nodes.loc[m, "seq_source"] = "fasta"
     unresolved = nodes[nodes.seq.isna()]
@@ -350,7 +367,8 @@ def main():
 
     # ---------------- MMseqs2 all-vs-all
     import hashlib
-    seq_hash = hashlib.sha256((PROC / "sequences.fasta").read_bytes()).hexdigest()
+    seq_hash = hashlib.sha256((PROC / "sequences.fasta").read_bytes() + b"|mmseqs-a|foldseek-exhaustive-exact|"
+                              + str(FS_CAND).encode()).hexdigest()
     stamp = PROC / "sequences.sha256"
     if not stamp.exists() or stamp.read_text().strip() != seq_hash:  # sequence set changed -> redo both searches
         for f in ("mmseqs_allvsall.m8", "foldseek_allvsall_tm04.parquet"):
@@ -365,7 +383,7 @@ def main():
         env = {**os.environ, "OMP_NUM_THREADS": str(args.threads)}
         run([MMSEQS, "createdb", PROC / "sequences.fasta", mw / "db", "--dbtype", "1", "-v", "1"], env=env)
         run([MMSEQS, "search", mw / "db", mw / "db", mw / "res", mw / "tmp", "-s", "7.5", "--max-seqs", "5000",
-             "-e", "1e-3", "--threads", args.threads, "-v", "1"], env=env)
+             "-e", "1e-3", "-a", "--threads", args.threads, "-v", "1"], env=env)
         run([MMSEQS, "convertalis", mw / "db", mw / "db", mw / "res", str(m8) + ".part", "--format-output",
              ",".join(M8_COLUMNS), "--threads", args.threads, "-v", "1"], env=env)
         os.replace(str(m8) + ".part", m8)
@@ -376,11 +394,15 @@ def main():
 
     # ---------------- Foldseek all-vs-all on one structure per sid
     fs_out = PROC / "foldseek_allvsall_tm04.parquet"
+    ppips_acc = {ln[1:].split()[0] for ln in open(ROOT / "data/processed/ppi/ppips/proteins.fasta") if ln.startswith(">")}
+    fs_set = nodes.fs_key.notna() & (nodes.seq_len >= MIN_FS_LEN) & (
+        (nodes.dataset != "dimers") | nodes.uniprot.isin(ppips_acc))
+    info["foldseek_reps"] = int(nodes.loc[fs_set, "sid"].nunique())
+    info["dimer_sids_without_foldseek"] = int(len(set(nodes[nodes.dataset == "dimers"].sid) - set(nodes.loc[fs_set, "sid"])))
     if not fs_out.exists():
         import shutil
         shutil.rmtree(work / "fsrep", ignore_errors=True)
-        rep = (nodes[nodes.fs_key.notna() & (nodes.seq_len >= MIN_FS_LEN)]
-               .sort_values(["sid", "node_id"]).drop_duplicates("sid"))
+        rep = nodes[fs_set].sort_values(["sid", "node_id"]).drop_duplicates("sid")
         fw = work / "fsrep"
         fw.mkdir(exist_ok=True)
         (fw / "ids.txt").write_text("\n".join(str(int(k)) for k in rep.fs_key) + "\n")
@@ -389,17 +411,42 @@ def main():
             run([FOLDSEEK, "createsubdb", fw / "ids.txt", str(src) + suf, str(fw / "rep") + suf, "-v", "1"])
         write_headers(fw / "rep", dict(zip(rep.fs_key.astype(int), rep.sid)), Path(str(src) + "_h.dbtype"))
         run([FOLDSEEK, "search", fw / "rep", fw / "rep", fw / "aln", fw / "tmp", "--threads", args.threads,
-             "-s", "7.5", "--exhaustive-search", "0", "--max-seqs", "2000", "-e", "10", "-a", "-v", "1"])
+             "--exhaustive-search", "1", "-e", "10", "-a", "-v", "1"])
         run([FOLDSEEK, "convertalis", fw / "rep", fw / "rep", fw / "aln", fw / "aln.m8", "--format-output",
              ",".join(FS_COLS), "--threads", args.threads, "-v", "1"])
         chunks = []
+        n_hits = 0
         for ch in pd.read_csv(fw / "aln.m8", sep="\t", header=None, names=FS_COLS, chunksize=5_000_000):
+            n_hits += len(ch)
             ch = ch[(ch["query"] != ch["target"]) & (np.minimum(ch.qtmscore, ch.ttmscore) >= 0.4)]
             chunks.append(ch)
         fs = pd.concat(chunks, ignore_index=True)
+        # exact TM-scores for the candidates: tsv2db (prefilter format) -> structurealign -> convertalis exact
+        s2k = dict(zip(rep.sid, rep.fs_key.astype(int)))
+        cand = fs[np.minimum(fs.qtmscore, fs.ttmscore) >= FS_CAND][["query", "target"]].drop_duplicates()
+        cand = cand.assign(qk=cand["query"].map(s2k), tk=cand["target"].map(s2k)).sort_values(["qk", "tk"])
+        with open(fw / "cand.tsv", "w") as fh:
+            for q, t in zip(cand.qk, cand.tk):
+                fh.write(f"{q}\t{t}\t0\t0\n")
+        run([FOLDSEEK, "tsv2db", fw / "cand.tsv", fw / "cand_pref", "--output-dbtype", "7", "-v", "1"])
+        run([FOLDSEEK, "structurealign", fw / "rep", fw / "rep", fw / "cand_pref", fw / "cand_aln", "-a", "-e", "10",
+             "--threads", args.threads, "-v", "1"])
+        run([FOLDSEEK, "convertalis", fw / "rep", fw / "rep", fw / "cand_aln", fw / "cand_exact.m8", "--format-output",
+             "query,target,qtmscore,ttmscore,alntmscore", "--exact-tmscore", "1", "--threads", args.threads, "-v", "1"])
+        ex = pd.read_csv(fw / "cand_exact.m8", sep="\t", header=None,
+                         names=["query", "target", "qtm_exact", "ttm_exact", "alntm_exact"])
+        ex = ex.drop_duplicates(["query", "target"])
+        fs = fs.merge(ex, on=["query", "target"], how="left")
         fs.to_parquet(fs_out, index=False)
-        info["foldseek_reps"] = int(len(rep))
+        (PROC / "foldseek_run.json").write_text(json.dumps(dict(n_reps=int(len(rep)), n_hits=int(n_hits),
+                                                                n_candidates=int(len(cand)),
+                                                                n_exact=int(len(ex)))))
     fs = pd.read_parquet(fs_out)
+    if (PROC / "foldseek_run.json").exists():
+        info["foldseek_run"] = json.loads((PROC / "foldseek_run.json").read_text())
+    # edge decision on EXACT TM; keep approximate columns for reference
+    fs = fs.rename(columns={"qtmscore": "qtm_approx", "ttmscore": "ttm_approx", "alntmscore": "alntm_approx"})
+    fs = fs.rename(columns={"qtm_exact": "qtmscore", "ttm_exact": "ttmscore", "alntm_exact": "alntmscore"})
     fs = fs[np.minimum(fs.qtmscore, fs.ttmscore) >= TM_MIN]
     log("foldseek TM>=0.5 (both) hits", len(fs))
 

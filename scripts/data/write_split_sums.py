@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from pocketcompare.splitutil import sha256  # noqa: E402
 
 spl = ROOT / "data/splits"
-OWN = ("homology_", "tough_m1_", "blips_", "split_sensitivity", "SPLITS.md")
+OWN = ("homology_", "tough_m1_", "blips_", "split_sensitivity", "split_changes", "ppips_", "SPLITS.md")
 lines = ["# sha256 of split files (data agent) and of sealed test files (hash recorded at write time)"]
 for p in sorted(spl.iterdir()):
     if p.is_file() and p.name.startswith(OWN):

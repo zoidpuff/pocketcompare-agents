@@ -12,7 +12,16 @@ Writes (git-ignored):
 and logs/build_point_cache_<dataset>.done on completion.
 
 Existing cache files are re-used (index rebuilt from them) unless --overwrite or their adapter version / preset
-differ.  Sealed test sets (prospeccts, vertex) are refused unless FINAL_EVAL=1 (DESIGN §2).
+differ.  Sealed test sets (prospeccts, vertex) are refused unless FINAL_EVAL=1 (DESIGN §2) or the explicit
+``--label-free-structures`` flag is given.
+
+--label-free-structures (ProSPECCTs / Vertex only; DESIGN D2 allows label-free featurisation of every set):
+    This mode reads NO labels.  Its only inputs are data/processed/benchmarks/{prospeccts,vertex}_pockets.parquet
+    (pocket id, structure path, ligand residue / HET site; written by the label-free pocket builders) and the
+    structure files they point to (ProSPECCTs: data/raw/prospeccts/extracted/*/<structdir>/*.pdb, incl. the decoy
+    structures of P3/P4; Vertex: the local PDB mirror, site instance from scripts/data/vertex_site_map.py).  It
+    never opens data/sealed/, a *_pairs.parquet, the ProSPECCTs *.csv pair lists or the Vertex protein_pairs.tsv
+    (all chmod 000).  Outputs are point clouds / pocket indices only.
 Output is deterministic: tasks and index rows are sorted, npz writes are byte-identical across runs.
 """
 from __future__ import annotations
@@ -46,7 +55,9 @@ POCKET_COLS = ["pocket_id", "structure_path", "chain", "pocket_def_type", "pocke
                "ligand_resname", "het_instances",
                # BLiPS tables (scripts/data/prep_blips_pockets.py): explicit structure key + featurised chains,
                # ligand heavy atoms given as flattened coordinates
-               "structure_key", "chains", "ligand_xyz", "alt_ligand_xyz"]
+               "structure_key", "chains", "ligand_xyz", "alt_ligand_xyz",
+               # Vertex: resolved ligand instance of the site (scripts/data/vertex_site_map.py)
+               "site_het_instance", "site_rule"]
 
 
 def structure_keys(paths: list[str]) -> dict:
@@ -193,9 +204,13 @@ def main(argv=None) -> int:
     ap.add_argument("--overwrite", action="store_true")
     ap.add_argument("--limit", type=int, default=None, help="first N structures (smoke test)")
     ap.add_argument("--cache-root", default=str(CACHE))
+    ap.add_argument("--label-free-structures", action="store_true",
+                    help="permit featurising the sealed external sets (prospeccts, vertex) from their pocket tables "
+                         "and structure files only; reads no labels (see module docstring)")
     a = ap.parse_args(argv)
-    if a.dataset in SEALED and os.environ.get("FINAL_EVAL") != "1":
-        print(f"[cache] {a.dataset} is a sealed test set; refusing (set FINAL_EVAL=1 at final evaluation)")
+    if a.dataset in SEALED and os.environ.get("FINAL_EVAL") != "1" and not a.label_free_structures:
+        print(f"[cache] {a.dataset} is a sealed test set; refusing (pass --label-free-structures for label-free "
+              "featurisation, or FINAL_EVAL=1 at final evaluation)")
         return 2
     t_start = time.perf_counter()
     tab = pd.read_parquet(BENCH / f"{a.dataset}_pockets.parquet")

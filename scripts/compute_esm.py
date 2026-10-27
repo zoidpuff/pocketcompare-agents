@@ -6,6 +6,7 @@ Dataset adapters (the tough_m1 branch is the original code, unchanged):
         path); L = index lining residues, D = residues of the matched merged pocket (d_members -> pk_residues).
         Only the chains that carry pocket residues are embedded (holo mmCIFs can hold many chains); AF models:
         the AF sequence (chain A of the model file).
+  prospeccts, vertex  as blips (generic path); require --label-free-structures (no labels are read).
   ppips merged region-rule pockets (data/processed/ppi/ppips/pockets.parquet), D only = the pocket's BURROW
         output residues on the AF dimer (both chains embedded separately, as for every multi-chain file).
 """
@@ -24,7 +25,12 @@ def main():
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--label-free-structures", action="store_true",
+                    help="permit prospeccts / vertex (sealed external sets): reads only the point-cache index and "
+                         "the pocket table's structure paths, never a label or pair file")
     a = ap.parse_args()
+    if a.dataset in ("prospeccts", "vertex") and not a.label_free_structures:
+        raise SystemExit(f"{a.dataset} is sealed: pass --label-free-structures (label-free featurisation only)")
     if a.dataset != "tough_m1":
         return main_generic(a)
     t0 = time.time()

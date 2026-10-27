@@ -189,6 +189,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] extrapolation 200 M structures: ≈0.95 B pockets, ≈7,150 CPU-core-h + 223 GPU-h; 0.11 TB PQ index
   - [x] sanity: rotation self-retrieval 100 %; 1 Å atom noise → re-described site self-rank-1 83 %; CSLS cuts hubness
         skew 1.82 → 0.62 (proteome radii)
-- [ ] P4 AF robustness (C5) development on val; blind test
+- [~] P4 AF robustness (C5) pipeline on val (af_train AF models) — script reusable on BLiPS-test
+- [~] P4 L4 point-cloud network candidate (cuda:2,3; training gated on re-audit)
+- [~] P3 Split rebuild with mmseqs -a + exhaustive Foldseek (split agent) → re-audit
+- [ ] P4 blind deployment test (cut-order item)
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md

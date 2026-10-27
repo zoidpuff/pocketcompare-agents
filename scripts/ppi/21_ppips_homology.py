@@ -5,8 +5,11 @@ Proteins = UniProt accessions of the complexes featurised by 20_ppips_featurize.
  * data/splits/inputs/ppips_chains.fasta (header = "afdimer:<accession>"; input for the global graph agent)
  * MMseqs2 (tools/mmseqs, -s 7.5, E <= 1e-3, --max-seqs 2000, with alignment strings) all-vs-all ->
    data/processed/ppi/ppips/mmseqs_aln.tsv  (used for (i) the homology rule and (ii) residue mapping)
- * Foldseek (tools/foldseek, exhaustive, TM-scores) all-vs-all on one chain per accession, cut from its first
-   dimer file -> data/processed/ppi/ppips/foldseek.tsv
+ * Foldseek (tools/foldseek, exhaustive, EXACT TM-scores `--exact-tmscore 1`) all-vs-all on EVERY chain model of
+   every featurised complex (data/processed/ppi/ppips/chains_all/<complex>_<chain>.pdb; the same UniProt is modelled
+   differently in different AF dimers -- audit D15 found a train/val structural edge between two such models that
+   the one-model-per-accession search missed) -> data/processed/ppi/ppips/foldseek.tsv; an edge between any two
+   models links their accessions
  * protein edges = pocketdetect.datasets.leakage.apply_rule (E < 1e-3, id >= 0.30, cov >= 0.5 either or
    alnlen >= 80)  OR  Foldseek min(qTM, tTM) >= 0.5 (both normalisations)
  * data/processed/ppi/ppips/protein_groups.parquet (accession -> protein component)
@@ -115,19 +118,32 @@ def main() -> None:
             "--max-seqs", "2000", "--threads", a.threads, "-v", "1")
         run("convertalis", tmp / "q", tmp / "q", tmp / "r", m8, "--format-output", ",".join(COLS), "-v", "1")
         shutil.rmtree(tmp, ignore_errors=True)
+    # every chain model of every complex (chain id -> accession)
+    adir = OUT / "chains_all"
+    adir.mkdir(exist_ok=True)
+    model_acc = {}
+    for r in cx.itertuples():
+        for acc, ch in ((r.uniprotAccession_1, "A"), (r.uniprotAccession_2, "B")):
+            name = f"{r.modelEntityId}_{ch}"
+            model_acc[name] = acc
+            f = adir / f"{name}.pdb"
+            if not f.exists():
+                f.write_text(chain_text(r.path, ch)[0])
     fsk = OUT / "foldseek.tsv"
     if not fsk.exists():
         tmp = OUT / "tmp_foldseek"
         shutil.rmtree(tmp, ignore_errors=True)
-        subprocess.run([str(FOLDSEEK), "easy-search", str(cdir), str(cdir), str(fsk), str(tmp), "--exhaustive-search",
-                        "1", "-e", "10", "--threads", str(a.threads), "-v", "1", "--format-output",
-                        "query,target,evalue,alntmscore,qtmscore,ttmscore,fident"], check=True, env=env)
+        subprocess.run([str(FOLDSEEK), "easy-search", str(adir), str(adir), str(fsk), str(tmp), "--exhaustive-search",
+                        "1", "-e", "10", "--exact-tmscore", "1", "--threads", str(a.threads), "-v", "1",
+                        "--format-output", "query,target,evalue,alntmscore,qtmscore,ttmscore,fident"],
+                       check=True, env=env)
         shutil.rmtree(tmp, ignore_errors=True)
     h = pd.read_csv(m8, sep="\t", names=COLS)
     h = h[h["query"] != h["target"]]
     f = pd.read_csv(fsk, sep="\t", names=["query", "target", "evalue", "alntm", "qtm", "ttm", "fident"])
-    f["query"] = f["query"].str.replace(r"\.pdb$", "", regex=True)
-    f["target"] = f["target"].str.replace(r"\.pdb$", "", regex=True)
+    for c in ("query", "target"):  # model file stem (<complex>_<chain>) -> accession
+        f[c] = f[c].str.replace(r"\.pdb$", "", regex=True).map(model_acc)
+    assert f["query"].notna().all() and f["target"].notna().all(), "unmapped Foldseek model names"
     f = f[f["query"] != f["target"]]
     seq_e = h[apply_rule(h)][["query", "target"]]
     str_e = f[(f[["qtm", "ttm"]].min(axis=1) >= 0.5)][["query", "target"]]

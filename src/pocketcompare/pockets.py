@@ -560,13 +560,24 @@ def resolve_pocket(fs: Featurized, row: dict, root: Path | None = None, cutoff: 
         # ``het_instances`` order (chain, seqid sorted).  UNVERIFIED semantics -- check before the final eval.
         het = str(row["pocket_def"]).split(";")[0].split(":")[1]
         k = int(str(row["pocket_def"]).split("site_index:")[1])
-        inst = [x for x in str(row.get("het_instances") or "").split(";") if x]
-        if not (1 <= k <= len(inst)):
-            raise ValueError(f"site_index {k} not among {len(inst)} {het} instances")
-        ch, _, seqid = inst[k - 1].partition(":")
+        site = row.get("site_het_instance")
+        if isinstance(site, str) and site:
+            # resolved by scripts/data/vertex_site_map.py (site k = k-th ligand site of the entry, DeeplyTough
+            # enumeration; fallback first HET copy) -- see ``site_rule``
+            ch, _, seqid = site.partition(":")
+            rec["definition"] = f"ligand_het_site:{row.get('site_rule') or 'site_map'}"
+        else:
+            if "site_rule" in row and row.get("site_rule") is not None:
+                raise ValueError(f"site unresolved ({row.get('site_rule')})")
+            inst = [x for x in str(row.get("het_instances") or "").split(";") if x]
+            if not (1 <= k <= len(inst)):
+                raise ValueError(f"site_index {k} not among {len(inst)} {het} instances")
+            ch, _, seqid = inst[k - 1].partition(":")
+            rec["definition"] = "ligand_het_site(unverified)"
         m = (fs.het_resname == het) & (fs.het_res == f"{ch}:{seqid.strip()}")
+        if not m.any():
+            raise ValueError(f"{het} {ch}:{seqid} not among the stripped hetero atoms")
         lp = lmode_from_ligand(fs, fs.het_xyz[m], cutoff)
-        rec["definition"] = "ligand_het_site(unverified)"
     elif res_pocket is not None:
         lp, res_pocket = res_pocket, None
         rec["definition"] = "residue_list" + ("(chain_remapped)" if lp.info["chain_remapped"] else "")
