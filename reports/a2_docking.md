@@ -73,3 +73,26 @@ variance and ρ 0.40/0.67 with log volume); the pose-interaction block is the le
 three, and fragments are consistently less size-confounded than lead-like molecules, which is the direction the
 pre-registered PPI sub-hypothesis predicts. The gate itself (size-stratified AUC vs B0/A1 and the published
 Vina 0.55) is for the evaluation agent — no labels were touched here.
+
+## PPIPS run (PI follow-up, label-free; 2026-10-27)
+Same protocol, both panels, `frag_lite_np`, fixed 12 Å box at the volume-weighted centroid, SEEDS[0],
+pose-in-pocket 2 Å — on **all 20,497 PPIPS pockets** (the merged region-rule pockets P-sym/P-ortho use:
+train 15,593 / val 2,472 / test 2,432; 5,003 interface at f_min ≥ 0.25, 15,494 non-interface).
+Geometry: `scripts/a2/prep_pockets_ppips.py` → `data/processed/docking/ppips/pocket_geom.{npz,parquet}`
+(10 s, 8 workers; volumes reproduce `data/processed/ppi/ppips/pockets.parquet` exactly).
+Docking: `A2_DATASET=ppips A2_GPUS="0 2 3 0 2 3 0 2" scripts/a2/run_dock.sh raw_L L 0` — 8 processes on
+**cuda:0 / cuda:2 / cuda:3** (cuda:1 left to ESM). Wall **39.9 min** (slowest shard 2,393 s), 0.93 s/pocket/proc
+(0.68 on the less-loaded GPU), **0 failures**, 0/256 ligand-prep failures, receptor-annotation match 100 %.
+Raw tables `data/processed/docking/ppips/{fragments,leadlike}.parquet` (120 MB, 2.62 M rows each) with
+`.prov.json` sidecars; each row carries **f_min, is_interface, split, complex, volume_L and mean buriedness
+(bur16_L)** next to score / LE / in-pocket flag / contact counts / buried fraction.
+
+PPIPS pockets are far smaller and shallower than TOUGH-M1 sites (median 83 Å³ vs 542 Å³), and this shows:
+pose-in-pocket drops to **81.8 % (fragments) / 83.2 % (lead-like)** vs ~99.5 % on TOUGH-M1, and 3.9 % / 11.9 %
+of poses score positively. Per-pocket means (`results/a2/ppips_interface_summary.json`): LE on interface vs
+non-interface pockets is −0.346 / −0.344 (fragments) and −0.124 / −0.149 (lead-like), i.e. **lead-like molecules
+are penalised on interface pockets while fragments are indifferent** — the direction the pre-registered
+shallow-pocket sub-hypothesis predicts. Fragment LE also tracks buriedness (ρ −0.36) where lead-like LE does
+not (ρ +0.13). On the 12,108 pockets ≤ 100 Å³ the in-pocket rate falls to ~75 % for both panels, so the
+non-binder bins carry real signal here rather than being nearly empty as on TOUGH-M1. No labels, no pair file
+and nothing under `data/sealed/` was opened; the sub-hypothesis test itself is for the evaluation agent.

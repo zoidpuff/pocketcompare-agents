@@ -133,7 +133,7 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] CSLS: small effect (positive only for A2-IFP)
 - [~] P3 BLiPS re-split (D9) + BLiPS/PPIPS point caches + descriptors (prep agent, cuda:1)
 - [~] P3 Independent split audit (auditor; different code path) — required before first model fit (A4b)
-- [~] P3 A2 docking on PPIPS pockets (A2 agent, cuda:0,2,3) for fragment-vs-lead-like PPI sub-hypothesis
+- [x] P3 A2 docking on all 20,497 PPIPS pockets (both panels, 40 min, 0 failures); interface pose-in-pocket 82 %
 - [ ] P4 A4b learned metric (after audit + BLiPS descriptors)
 - [ ] P4 Fusion, hub correction, AF robustness (C5), blind test, proteome FAISS demo
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
