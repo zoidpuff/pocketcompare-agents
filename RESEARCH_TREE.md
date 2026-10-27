@@ -13,6 +13,13 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- DEV1 (19:40, protocol deviation, disclosed by the agent) The statistics reviewer read
+  data/processed/benchmarks/tough_m1_pairs.parquet at 19:08–19:10, i.e. before sealing (D2, 19:12), and computed
+  label-graph structure (top ligand cluster = 47 % of positives; negatives from 1,266 pockets) and a size-only B0
+  ROC-AUC = 0.577 on ALL TOUGH-M1 pairs (incl. the future test partition). No method was fitted or tuned.
+  Impact: the B0 test number is known in advance; this is a baseline, not a method under selection, so the
+  selection risk is negligible. The label-structure facts are used for split design (stratification) only.
+  Rule added to LESSONS.md: seal labels BEFORE launching any agent that might open them.
 - D2 (19:12) Technical sealing: all benchmark pair/label tables moved to `data/sealed/` (chmod 000, sha256 in
   `data/sealed_SHA256SUMS.txt`). Raw label lists under data/raw/ are sealed by protocol (agents told not to read
   them). Before sealing, the data agent only counted pairs (no analysis). TOUGH-M1 dev pairs will be extracted by
@@ -41,6 +48,7 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [-] Probe-atom energy maps on BURROW points and rigid GPU scan: poor signal / no faster (prototype only)
 - [~] P1 PPI / dimer pocket characterization (BURROW on AFDB dimers)
 - [~] P2 DESIGN.md draft v0 (19:15) + review round 1 (PI, stats, data, algorithms, agent-failure, domain)
+  - [x] R1 PI, algorithms, domain, statistics reviews in reviews/round1_*.md
   - [x] R1 agent-failure-modes review → reviews/round1_agent_failure_modes.md (sealing, eval-first, provenance)
 - [~] P3 Pocket adapter (L/D-mode) + point-feature cache on TOUGH-M1 (label-free)
 - [ ] P3 Implement + evaluate candidate representations
