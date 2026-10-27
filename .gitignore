@@ -6,3 +6,6 @@ results/cache/
 __pycache__/
 logs/*.log
 /tmp/
+tools/mmseqs/
+tools/foldseek/
+tools/*.tar.gz

@@ -14,3 +14,9 @@ Raw data lives in `data/raw/` (git-ignored); fetch scripts in `scripts/data/`. R
 | KLIFS metadata | https://klifs.net/api (kinase_information, structures_list) | live API snapshot 2026-10-27 | kinase_information.json e9718d7342f8a50b…, structures_list.json 92f4aa708ed6642e… | unstated (none found on klifs.net; cite Kanev et al. 2021) | scripts/data/fetch_klifs.py | 14,917 structures / 7,382 PDB / 371 kinases; 85-residue pocket strings only, no residue numbers |
 | LIGYSIS (Utgés & Barton) | Zenodo 10.5281/zenodo.14645504 | not fetched | — | CC-BY-4.0 | — | site-prediction reference set, no similarity pairs; distributed only as Python pickles (unsafe to unpickle untrusted data) |
 | PoSSuM (Ito et al.) | https://possum.cbrc.pj.aist.go.jp/PoSSuM/ | not fetched (site release Jul-2022) | — | unstated | — | no bulk download found; per-query result downloads only |
+
+## Tools (binaries)
+| tool | source | version (commit) | sha256 (archive) | license |
+|---|---|---|---|---|
+| MMseqs2 | github.com/soedinglab/MMseqs2 releases/latest mmseqs-linux-avx2.tar.gz (2026-10-27) | 8cc5ce367b5638c4306c2d7cfc652dd099a4643f | bd9b0234da5949ad528d5b5f9ea4cda9c1e23dce14b46c0791d4d919a76e61ce | MIT |
+| Foldseek | mmseqs.com/foldseek/foldseek-linux-avx2.tar.gz (2026-10-27) | 463739e0014a1549a527de589102cde98f802f37 | f886374e29ebbf03849cd9c4c8929be00904856dd271627d8c3043607e2af95a | GPL-3.0 |
