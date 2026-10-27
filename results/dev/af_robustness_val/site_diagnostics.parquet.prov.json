@@ -1,0 +1,47 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/af_robustness_val/site_diagnostics.parquet",
+  "result_sha256": "121cac0376896555f6ed54c4dcb711865ab96dbd9f2e7b8f51889023ca9777e1",
+  "n_rows": 239,
+  "git_commit": "18e8b6f90ec544a439d9d99ff7791115f5585483",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 29,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_af_robustness.py",
+  "script_sha256": "20a4b9e70894e042ca6f64d30c5f2b9c351ed2b995f6266476c9a9db03fca2fe",
+  "args": [
+    "--set",
+    "val"
+  ],
+  "config": {
+    "method": "configs/final_method.yaml",
+    "arms": [
+      "final",
+      "B1",
+      "A1pair",
+      "B0"
+    ],
+    "set": "val",
+    "B": 2000,
+    "retrieval_roles": "val",
+    "cutoff_date": "2018-05-01",
+    "n_sites": 239
+  },
+  "config_sha256": "64ad0d374fee7d44c92f524016ce15a116159c23cfc63461a1aa54dc72c39853",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/configs/final_method.yaml",
+      "size": 1373,
+      "sha256": "457fcffba78ecf6c806a59b112b40daa0e235ee4b5215061d6fb1605719ec4d7",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T22:42:25+00:00",
+  "end_time": "2026-10-27T22:42:40+00:00",
+  "wall_seconds": 15.065,
+  "extra": null
+}

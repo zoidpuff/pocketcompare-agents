@@ -189,7 +189,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] extrapolation 200 M structures: ≈0.95 B pockets, ≈7,150 CPU-core-h + 223 GPU-h; 0.11 TB PQ index
   - [x] sanity: rotation self-retrieval 100 %; 1 Å atom noise → re-described site self-rank-1 83 %; CSLS cuts hubness
         skew 1.82 → 0.62 (proteome radii)
-- [~] P4 AF robustness (C5) pipeline on val (af_train AF models) — script reusable on BLiPS-test
+- [x] P4 AF robustness (C5) on val — reports/af_robustness_dev.md (239 val sites with holo + AF)
+  - [!] holo/holo vs holo/AF ligand-sharing ΔAUC (N1): val L −0.005 [−0.054, +0.041], train L −0.008 [−0.019, +0.003]
+  - [x] same-site holo→AF retrieval: L top-1 0.78 (B1 0.88), D top-1 0.55 (B1 0.41); pLDDT 70–90 −0.17 top-1
 - [~] P4 L4 point-cloud network candidate (cuda:2,3; training gated on re-audit)
 - [~] P3 Split rebuild with mmseqs -a + exhaustive Foldseek (split agent) → re-audit
 - [ ] P4 blind deployment test (cut-order item)
