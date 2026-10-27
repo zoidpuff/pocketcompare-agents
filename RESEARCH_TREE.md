@@ -5,6 +5,18 @@ Started 2026-10-27 ~18:00 CET; 24 h budget (revisit ~2026-10-28 18:00).
 
 ## Status summary (latest first)
 
+### 2026-10-27 23:05 — M2 dev results, PREREG consolidated
+Dev evaluation on TOUGH-M1-dev, BLiPS-val and PPIPS-val is complete for all arms. The typed volumetric fingerprint
+A1 wins in ligand-defined (L) mode (TOUGH-M1-dev ROC 0.795, BLiPS-val 0.775 vs B1 0.64/0.69) but collapses in the
+deployment (detected, D) mode (0.56) because the 4 Å ligand shell imprints ligand shape — a key finding that also
+inflates many literature numbers. A ligand-free site shaper (sph8) + protein-environment block fixes the
+definition sensitivity (L↔D agreement 0.996; TOUGH-M1-dev D 0.672 vs A1 0.541). Fragment docking (A2) failed its
+gate; the PPI fragment sub-hypothesis was not supported; PPI-L failed its feasibility gate (C3 exploratory).
+
+All amendments are consolidated in PREREG.md (selection on BLiPS-val D-mode, Holm {C1a, C1b, C1-D, C2}). Running:
+split audit (gates any model fit), A4b learned metric + final selection, final-eval infrastructure, proteome
+FAISS demo. Next: audit → A4b fit → freeze (target ≤ 10:00) → final eval → independent verification → REPORT.
+
 ### 2026-10-27 19:55 — M1 design v1 + build launched
 Literature, benchmarks, feasibility and PPI characterisation done; DESIGN v1 after six round-1 reviews. Key
 findings so far: TOUGH-M1 is the only large fold-independent benchmark (TM-score AUC 0.51); 32 % of TOUGH-M1 is
@@ -157,6 +169,8 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] PPIPS-val P-ortho MRR: B4 0.942 · B1 0.764 · A1 0.633 · B0 0.426 (interolog transfer; 13 units); P-sym ≥ 0.92 all
   - [-] PPI sub-hypothesis fragments > lead-like: not supported (IFP +0.074 MRR, Holm p ≥ 0.25; underpowered)
 - [~] P4 A4b learned metric (descriptors first; fit only after the audit passes) (after audit + BLiPS descriptors)
-- [ ] P4 Fusion, hub correction, AF robustness (C5), blind test, proteome FAISS demo
+- [~] P4 Final-eval infrastructure: final_eval.py + dev dry run; label-free caches for ProSPECCTs/Vertex; B0' TM tables
+- [~] P4 Human-proteome FAISS demo (cuda:2,3)
+- [ ] P4 AF robustness (C5) development on val; blind test
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md
