@@ -13,3 +13,4 @@ data/sealed/
 envs/
 logs/
 data/splits/homology_edges.parquet
+results/audit/*/
