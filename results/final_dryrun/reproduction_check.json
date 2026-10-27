@@ -1,0 +1,636 @@
+{
+  "compared": [
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "tough_m1_dev",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "L",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_seen",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "chemotype_unseen",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_1",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "n_shared_ge2",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 0.0,
+      "mode": "D",
+      "n_metrics": 13,
+      "set": "blips_val",
+      "subset": "no_promiscuous",
+      "variant": "csls"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 1.1102230246251565e-16,
+      "mode": "D",
+      "n_metrics": 10,
+      "set": "ppips_val",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "B1",
+      "max_abs_dev": 5.551115123125783e-16,
+      "mode": "D",
+      "n_metrics": 10,
+      "set": "ppips_val",
+      "subset": "all",
+      "variant": "csls"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 2.220446049250313e-16,
+      "mode": "D",
+      "n_metrics": 10,
+      "set": "ppips_val",
+      "subset": "all",
+      "variant": "raw"
+    },
+    {
+      "arm": "A1",
+      "max_abs_dev": 1.1102230246251565e-16,
+      "mode": "D",
+      "n_metrics": 10,
+      "set": "ppips_val",
+      "subset": "all",
+      "variant": "csls"
+    }
+  ],
+  "final_vs_a4b_selection": [
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "L",
+      "n_pairs": 9829,
+      "n_pairs_a4b": 9829,
+      "set": "tough_m1_dev",
+      "variant": "raw"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "D",
+      "n_pairs": 7866,
+      "n_pairs_a4b": 7866,
+      "set": "tough_m1_dev",
+      "variant": "raw"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "L",
+      "n_pairs": 9829,
+      "n_pairs_a4b": 9829,
+      "set": "tough_m1_dev",
+      "variant": "csls"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "D",
+      "n_pairs": 7866,
+      "n_pairs_a4b": 7866,
+      "set": "tough_m1_dev",
+      "variant": "csls"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "L",
+      "n_pairs": 3378,
+      "n_pairs_a4b": 3378,
+      "set": "blips_val",
+      "variant": "raw"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "D",
+      "n_pairs": 1858,
+      "n_pairs_a4b": 1858,
+      "set": "blips_val",
+      "variant": "raw"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "L",
+      "n_pairs": 3378,
+      "n_pairs_a4b": 3378,
+      "set": "blips_val",
+      "variant": "csls"
+    },
+    {
+      "ap": 0.0,
+      "auc": 0.0,
+      "auc_cb": 0.0,
+      "auc_strat": 0.0,
+      "mode": "D",
+      "n_pairs": 1858,
+      "n_pairs_a4b": 1858,
+      "set": "blips_val",
+      "variant": "csls"
+    }
+  ],
+  "max_abs_deviation": 5.551115123125783e-16,
+  "n_rows_compared": 60
+}

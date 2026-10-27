@@ -1,0 +1,59 @@
+{
+ "n_pockets": 6218,
+ "n_with_structure": 6200,
+ "n_structures_missing_after_sync": 18,
+ "missing_pdb_ids": [
+  "1pmq",
+  "1qy5",
+  "1u0y",
+  "2w9i",
+  "3kwn",
+  "3mpe",
+  "3mpf",
+  "3q97",
+  "3tse",
+  "3tsf",
+  "4bxa",
+  "4bxb",
+  "4jni",
+  "4jnl",
+  "4kp9",
+  "4leg",
+  "4med",
+  "4otw"
+ ],
+ "previously_missing_now_present": 183,
+ "rule_counts": {
+  "dt_match": 5616,
+  "het_first_fallback": 510,
+  "unresolved_het_absent": 43,
+  "dt_type_match": 31,
+  "NaN": 18
+ },
+ "variant_match_rate": {
+  "all": {
+   "n": 6200,
+   "het_k": 0.8941935483870967,
+   "dt": 0.9058064516129032,
+   "all3": 0.7017741935483871,
+   "dt_type": 0.905
+  },
+  "k1": {
+   "n": 5234,
+   "het_k": 0.9935040122277417,
+   "dt": 0.9157432174245319,
+   "all3": 0.7094000764233855,
+   "dt_type": 0.9157432174245319
+  },
+  "k_gt1": {
+   "n": 966,
+   "het_k": 0.35610766045548653,
+   "dt": 0.8519668737060041,
+   "all3": 0.660455486542443,
+   "dt_type": 0.8467908902691511
+  }
+ },
+ "het_k_vs_dt_same_instance_when_both_match": 0.9449343523417597,
+ "old_rule_changed_instance": 971,
+ "wall_s": 35.3
+}

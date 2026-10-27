@@ -34,6 +34,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D17 (23:50) Vertex site k = k-th qualifying HETATM residue (DeeplyTough public rule; matches listed ligand 85 % for
+  k > 1 vs 36 % for the old guess); 510 fall back to first copy (flagged), 43 unresolved → missing policy. B0' =
+  global Foldseek TM (Spearman 0.31 with TOUGH-M1's shipped TM list) — descriptive only. PPI-L (exploratory) needs
+  N1 descriptors before final eval (cut-order item).
 - D16 (23:20) PREREG addendum A1 (sha256 now a0d6ec8bbee31b76d1040f5e2afbe1e4d5f44f4ae4d76c25fd0242ea25c5cf45): one last candidate L4 (point-cloud network on sph8 points), ≤ 6
   configs, 3 h box; no further candidates. Reason: GPUs idle, learned geometric models are the main literature
   alternative (DeeplyTough/ProFSA) and must be tested for a "best method" claim.
@@ -181,7 +185,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] N1/N2 inputs for BLiPS (train/val/test holo+AF), PPIPS, TOUGH-M1; 3.8–6.2 ms/pocket
   - [!] non-learned BLiPS-val D cb-AUC: N1 0.686 (SE 0.041), N2+CSLS 0.701, B1 0.641, B4 0.655; N1 passes guards
   - [x] a4b grid pre-declared (configs/a4b_grid.yaml, 12 configs); train script refuses without audit flag (after audit + BLiPS descriptors)
-- [~] P4 Final-eval infrastructure: final_eval.py + dev dry run; label-free caches for ProSPECCTs/Vertex; B0' TM tables
+- [x] P4 Final-eval infrastructure — reports/final_eval_infra.md; dry run reproduces dev numbers (max dev 5.6e-16)
+  - [x] ProSPECCTs 6,093/6,093 and Vertex 6,149/6,218 point caches + descriptors (label-free)
+  - [x] Vertex site mapping fixed to DeeplyTough's public rule (D17); B0' global Foldseek TM tables
 - [x] P4 Human-proteome FAISS demo — reports/proteome_demo.md
   - [!] 23,586 AF models → 116,246 pockets, 0 failures; fast GPU backend 133 structures/s (716 pockets/s) on
         2×4090 + 22 workers (CPU-bound); descriptor 6.4 ms/pocket; backends byte-identical

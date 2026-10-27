@@ -1,0 +1,28 @@
+{
+  "fragments": {
+    "n": 20497,
+    "le_iface": -0.3462,
+    "le_non": -0.3435,
+    "ip_iface": 0.8346,
+    "ip_non": 0.8126,
+    "rho_le_fmin": -0.0813,
+    "rho_le_logvol": -0.2963,
+    "rho_le_bur": -0.3556,
+    "shallow_n": 12108,
+    "shallow_ip": 0.7526,
+    "shallow_le": -0.3157
+  },
+  "leadlike": {
+    "n": 20497,
+    "le_iface": -0.1241,
+    "le_non": -0.1486,
+    "ip_iface": 0.8672,
+    "ip_non": 0.8205,
+    "rho_le_fmin": -0.0074,
+    "rho_le_logvol": -0.3215,
+    "rho_le_bur": 0.1311,
+    "shallow_n": 12108,
+    "shallow_ip": 0.7558,
+    "shallow_le": -0.0953
+  }
+}

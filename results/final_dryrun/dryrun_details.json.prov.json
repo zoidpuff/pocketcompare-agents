@@ -1,0 +1,364 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_dryrun/dryrun_details.json",
+  "result_sha256": "e250fa78c4d329bbe2d84528c1fdcdfab0c204f58e63d464c8b095c1ed9fa669",
+  "n_rows": null,
+  "git_commit": "6b58878a8ae4378ceb2c12b01771dc828094deed",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 32,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/final_eval.py",
+  "script_sha256": "83fe9d30fe79ae4e44f79a5e044d3e31b85d16ecd6aa6824a279b27d976987bf",
+  "args": [
+    "--dryrun-dev",
+    "--B",
+    "2000",
+    "--threads",
+    "8"
+  ],
+  "config": {
+    "mode": "DRYRUN-DEV",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "sesoi": 0.03,
+    "method": "pocketcompare-final:N1|raw",
+    "method_config_sha256": "457fcffba78ecf6c806a59b112b40daa0e235ee4b5215061d6fb1605719ec4d7",
+    "prereg": "PREREG.md \u00a72\u2013\u00a74"
+  },
+  "config_sha256": "e300be45a0797f4c8ac0e19f9b7ce7df305a569a9f526eddcc229601d712876d",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/PREREG.md",
+      "size": 3921,
+      "sha256": "a0d6ec8bbee31b76d1040f5e2afbe1e4d5f44f4ae4d76c25fd0242ea25c5cf45",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/a1_pair_only_D.ids.parquet",
+      "size": 190709,
+      "sha256": "4bd973990dd8f4cd95d1576242035e796734a2e026366523b970fc3652402ae8",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/a1_pair_only_D.npy",
+      "size": 4487744,
+      "sha256": "a031b8e4fd46d1f3811cac6b25a29096409c49b438d5ec2e89def1305d7fe8d6",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/a1_pair_only_L.ids.parquet",
+      "size": 157839,
+      "sha256": "2d7347ecd64016c59eb03a214721ad7a8f7a72954e614a6d018b51f6df249c73",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/a1_pair_only_L.npy",
+      "size": 4487744,
+      "sha256": "d9689185c9b309657ae741df2a594b6e9b49693a59b6e950855c16cd96c1e725",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b1_default_D.ids.parquet",
+      "size": 185056,
+      "sha256": "2f6165119be151e58d34eaea42d13580de9204633b44e09cf8fe58acf85abe6c",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b1_default_D.npy",
+      "size": 515288,
+      "sha256": "798362b5b9010d26df8bdec8be488a5f4b6b996dc19b67ca2571cdcfe9d8f65c",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b1_default_L.ids.parquet",
+      "size": 152078,
+      "sha256": "cb6291b9dfc7ae1d036d951e305d92edd45578cf62fdcc86120e465695617a38",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b1_default_L.npy",
+      "size": 515288,
+      "sha256": "45d7bb56e9ed4e1ceca1b94179fd3a43f108f1b0df46a4687ba2101e19b07a5f",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b4_esm2_D.npy",
+      "size": 14653568,
+      "sha256": "a0f7263bc35e86cce05300090307549c42436f812d43d1cdcf0b43bb1f955095",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b4_esm2_L.npy",
+      "size": 14653568,
+      "sha256": "6e94e80edd6e8c5b219e9629e410ed3c665d7509e3dbbdda624255c8e397ab3f",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/blips/b4_esm2_ids.parquet",
+      "size": 100597,
+      "sha256": "7273f9f2dad9d86e3834d9f93503804794e6bb866b0b712d467ac5d82ea26ec0",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_pair_only_D.ids.parquet",
+      "size": 773860,
+      "sha256": "d41fcd075e4658f632dcd1f121011fc9cb2c5beb259cf9f286c9c9fb979644bb",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_pair_only_D.npy",
+      "size": 32139424,
+      "sha256": "774e2db4276d1729374b198529c1090f0c43672faec6eef86d320bc3a215a0cd",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b1_default_D.ids.parquet",
+      "size": 752035,
+      "sha256": "476d751153e4a11abf5661079442563a89f0e724b30ebdac2209a267326abe91",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b1_default_D.npy",
+      "size": 3689588,
+      "sha256": "66284006ec70b8e9ac2102381e6f09453b04c4a196e0016f745bafbcc3399a11",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b4_esm2_D.npy",
+      "size": 104944768,
+      "sha256": "c941ed4306484cbe745da615e2035e1f0b174c3e33455338ca4b69e0fa5085ca",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b4_esm2_ids.parquet",
+      "size": 235026,
+      "sha256": "a3aa45b303b78639ee3cda7321751f9baaa5d5f7958e6cf766a67351b24c0835",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/a1_pair_only_D.ids.parquet",
+      "size": 376938,
+      "sha256": "44884bd4ede199f3aa306361c3e4c7974a50be839e39bd12567d1aa0db162c4d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/a1_pair_only_D.npy",
+      "size": 9553952,
+      "sha256": "d44689f85bca4cf8b2288877c6c47c63d94fef4b90008cb04556cc23d1b0aa14",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/a1_pair_only_L.ids.parquet",
+      "size": 297358,
+      "sha256": "707d175e6f0bfbfbbe801165668e9e6960dbf95486aa255663a2b5a51cbf2ef6",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/a1_pair_only_L.npy",
+      "size": 9553952,
+      "sha256": "d3010e732146d7410f93d200cc4500f205bddd8aed594e51364ee14830d595dd",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b1_default_D.ids.parquet",
+      "size": 362751,
+      "sha256": "fce8ff788cce75145c36ae637147136c079c6b20755d921e6b692c2fe2f574f3",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b1_default_D.npy",
+      "size": 1096868,
+      "sha256": "6dd3d87312688a1de7b90404fa210592aaaa9c66b8110740e1b36802fbe1d228",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b1_default_L.ids.parquet",
+      "size": 286187,
+      "sha256": "b3862a12c18b4a0a17525605a04ea9e6a87d00f0481efe719e847c0624c726a4",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b1_default_L.npy",
+      "size": 1096868,
+      "sha256": "66851348e6e99b470e4a69826f61b88c1cf8861b553a1b6a9c58a891e838a187",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b4_esm2_D.npy",
+      "size": 31196288,
+      "sha256": "82d0febc070250968981b92200744610d89a0b8b46ae633965f0245f1b580a82",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b4_esm2_L.npy",
+      "size": 31196288,
+      "sha256": "f3fb5acb897a91e9206a9a971d31b91f50f97a95144308ba4fac9c56ea73a0b1",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/b4_esm2_ids.parquet",
+      "size": 183794,
+      "sha256": "552ff44ae147fc5282275763d81b3c99f6b7dd01f46f38a8f1e57ec99acf2b97",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/n_inputs_D.npz",
+      "size": 28201202,
+      "sha256": "6e6c4bc4ebb3d5bbfc201c087185d3e8a1f6290f1eff351e422871859d5c1b37",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/n_inputs_L.npz",
+      "size": 28201202,
+      "sha256": "8280193fbc081ea8ab805c257c10047077e01129f3ec7d92475a7ffc6e7bb922",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/prospeccts/n_inputs_ids.parquet",
+      "size": 127157,
+      "sha256": "b99dbc263d8009d8b636a8e2d8d2eefda574162cb8c40882d3fed592cbce58dc",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_pair_only_D.ids.parquet",
+      "size": 434734,
+      "sha256": "39d307b0d374ee823d468041e54519cd247f45dde995089b5d7537387be48ea1",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_pair_only_D.npy",
+      "size": 11797760,
+      "sha256": "832d6b3b2525396ff7d25eb06ef4ae77dd6250d57b521c48bc50f3dfa6f8ec82",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_pair_only_L.ids.parquet",
+      "size": 326313,
+      "sha256": "0272a435a53383b8a77198e939264e8c28fedfb89b4d1297942dfc89019b46dd",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_pair_only_L.npy",
+      "size": 11797760,
+      "sha256": "cafb2b9edf33fb1d5ceafc90243717d7df22f90ffe48d760ea6e0d6b201bf614",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b1_default_D.ids.parquet",
+      "size": 418762,
+      "sha256": "62d6742284aba59ab08ac74703927efea97b1ee8b02b3cb5068545fe98355aee",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b1_default_D.npy",
+      "size": 1354448,
+      "sha256": "2da0fd373cc4d278562db800c1e63a18450656792bfbe6eb38712cede307acd6",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b1_default_L.ids.parquet",
+      "size": 312222,
+      "sha256": "89720233d0305ddc6bbbb9b494b1e24d2f36eb082b065d9110b9e74b9565e0dc",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b1_default_L.npy",
+      "size": 1354448,
+      "sha256": "d0ae722784c5ded43790d2982f0aeda7710bbd19bb1942aa0253db7c6122997f",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b4_esm2_D.npy",
+      "size": 38523008,
+      "sha256": "f5c7e1a39353e47537db1017dadf032511feb6f5e3f4838adc6589d5de643940",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b4_esm2_L.npy",
+      "size": 38523008,
+      "sha256": "042f67940945bb4f54f62ddc60745999f0914965b6db73e161bfc6996e8d8c3d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b4_esm2_ids.parquet",
+      "size": 194019,
+      "sha256": "060adb1e3d00268f98157245819f5b68cdf2ffcc6a1658f2838c65dd06342a9e",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b5_epocs.npy",
+      "size": 77045888,
+      "sha256": "e3451ee7600e3e3d065473fcb866ea07f6c725299ca5adc0e16f6f183951b8b2",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/b5_epocs_ids.parquet",
+      "size": 111328,
+      "sha256": "e94682c05abc322f955ab1b8f064f3e292609af65e88effc76336144aee022aa",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/a1_pair_only_L.ids.parquet",
+      "size": 261161,
+      "sha256": "d51584024d962cc9f7eabcd1dbdf7858eecaa44fab9aacf4b445a503114b926b",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/a1_pair_only_L.npy",
+      "size": 9641760,
+      "sha256": "f18ddb0c3fc33e64d077372d485a7edc3d6ba58658ba621a5e8f26e71a6b11d5",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/b1_default_L.ids.parquet",
+      "size": 252104,
+      "sha256": "74d4ba1a0a107fcc1ed7518eb479d34f45a9b34ca9a99ee31d86871d0a833064",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/b1_default_L.npy",
+      "size": 1106948,
+      "sha256": "ff2d98540aa5d9d178971eeb31f31e458ff674f05a8d4ec2be1d0e8a54bd3188",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/b4_esm2_L.npy",
+      "size": 31483008,
+      "sha256": "0c5fa0fc5ea5da3822a36f86ebe69f523916d4668112f36d77b4dda728b2db7b",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/b4_esm2_ids.parquet",
+      "size": 156930,
+      "sha256": "4a98ad90722198e0089c69ce92c051d37c0ede3ab9365235080be72bfd110f8c",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/n_inputs_L.npz",
+      "size": 28460370,
+      "sha256": "d6d4d75c972c336c725b87203f4743175119940cf755a84e996d1739e7c5e94d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/vertex/n_inputs_ids.parquet",
+      "size": 141351,
+      "sha256": "fb5e744f914cd6bd8d8e414cb73c7a0b37590bb72ef56790c4720425f7d26eda",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+      "size": 117545,
+      "sha256": "55365ff885a75902152d5c7431662e2d08b7f5ecc5f11ab07295ace6db4d8faa",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T22:32:37+00:00",
+  "end_time": "2026-10-27T22:46:24+00:00",
+  "wall_seconds": 826.564,
+  "extra": null
+}
