@@ -151,7 +151,12 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] hybrid A1(best sub-pocket) + A1(sph8) + env(sph8): mean(L,D) 0.693 (+0.024 [−0.039, +0.043] vs ref)
   - [x] D-mode ligand-free vs B1: +0.052 [−0.004, +0.134]
   - [-] residue mode (slow, 0.619), sph10, core8, merged-pocket centres, env up-weighting, +B1
-- [ ] P4 A4b learned metric (after audit + BLiPS descriptors)
+- [x] P3 Dev eval BLiPS-val v2 + PPIPS-val — reports/dev_eval_blips_ppips.md
+  - [!] BLiPS-val L: A1 pair_only 0.775 / strat 0.741 vs B1 0.687, B4 0.679; D: A1 0.555, B1 0.676, B4 0.698
+  - [!] ligand imprint replicates (A1 L→D on same pairs −0.268 [−0.359, −0.175])
+  - [x] PPIPS-val P-ortho MRR: B4 0.942 · B1 0.764 · A1 0.633 · B0 0.426 (interolog transfer; 13 units); P-sym ≥ 0.92 all
+  - [-] PPI sub-hypothesis fragments > lead-like: not supported (IFP +0.074 MRR, Holm p ≥ 0.25; underpowered)
+- [~] P4 A4b learned metric (descriptors first; fit only after the audit passes) (after audit + BLiPS descriptors)
 - [ ] P4 Fusion, hub correction, AF robustness (C5), blind test, proteome FAISS demo
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md

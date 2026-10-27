@@ -1,0 +1,36 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/ppips_val_summary.md",
+  "result_sha256": "84ac470c76ffcc737b80f937cf00cf00e9d72d3e96103da90813010414c45ae7",
+  "git_commit": "24e48479f0bf3caa7e8467cd7a05a8a06fcf1c1d",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/trials.tsv",
+    "scripts/eval_dev.py"
+  ],
+  "git_untracked": 34594,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+  "script_sha256": "fde181632dbd1b3718ed530d286ac1f3484a257cd6586560535e87014c66d12b",
+  "args": [
+    "--dataset",
+    "ppips",
+    "--threads",
+    "16"
+  ],
+  "config": {
+    "dataset": "ppips",
+    "split": "val",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "reference": "PPIPS-train pockets (z-score, A2 fit)",
+    "units": "complex homology group of the query",
+    "a1_chosen": "pair_only"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/ppips_val_summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/ppips_val_details.json"
+  ],
+  "seed": 0,
+  "wall_seconds": 22.3
+}

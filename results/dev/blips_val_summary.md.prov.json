@@ -1,0 +1,37 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_summary.md",
+  "result_sha256": "067a9a94345196fa153105280b2f44b9d86ad1831841424ee9dc9fd99cf30589",
+  "git_commit": "24e48479f0bf3caa7e8467cd7a05a8a06fcf1c1d",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "scripts/eval_dev.py"
+  ],
+  "git_untracked": 34587,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+  "script_sha256": "fde181632dbd1b3718ed530d286ac1f3484a257cd6586560535e87014c66d12b",
+  "args": [
+    "--dataset",
+    "blips",
+    "--threads",
+    "16"
+  ],
+  "config": {
+    "dataset": "blips",
+    "split": "val_v2",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "n_folds": 5,
+    "strata": "(5,20) if n_pos >= 500 else (5,5)",
+    "a1_grid": "configs/a1_grid.yaml",
+    "units": "wider CI of {homology group, Butina ligand cluster}",
+    "pos_cluster": "pair_cluster"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_details.json"
+  ],
+  "seed": 0,
+  "wall_seconds": 391.8
+}

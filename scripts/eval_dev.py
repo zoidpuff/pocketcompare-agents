@@ -45,6 +45,42 @@ Analysis choices fixed in this file BEFORE the first run (not tuned afterwards)
   PS-score (higher = similar, dataset.info), APoc c2 = P-value (lower = similar; Spearman -0.67 with PS-score,
   label-free) -> scored as -c2; G-LoSA c1 = GA-score (higher = similar, dataset.info).  SiteEngine c1..c3 are
   undocumented -> all three reported as shipped (higher value = more similar, unverified); none is selected.
+
+BLiPS-val v2 (``--dataset blips``) — choices fixed BEFORE the first BLiPS/PPIPS run (2026-10-27, eval agent 2)
+----------------------------------------------------------------------------------------------------------
+* Pairs data/splits/blips_val_pairs_v2.parquet (563 pos / 2,815 neg), pockets = the 511 val sites of
+  blips_sites_v2 (point cache ``blips``).  Arms B0, B0m, B1 (default, learned), B4 (z / raw), A1 (16 configs +
+  default_bw), random control; raw and CSLS (background = all val pockets of the mode); L and D mode (D-set = both
+  sites D-matched, coverage >= 0.3 OR precision >= 0.5; worst-case + miss rates on all pairs of the subset).
+* Positive cluster (cb-AUC) = ``pair_cluster`` (Butina 0.6 cluster of the shared ligand, the cap unit).
+* Units: (hom) homology group ``group_id`` and (lig) Butina cluster of the site's label ligand ``label_cluster``;
+  every CI is computed under both and the WIDER one is reported (``evaluate.wider_ci``); both are kept as columns.
+  B0m cross-fitting folds use the homology-group units.
+* Subsets (all with all negatives unless stated): all; no_promiscuous (drop every pair with ``promiscuous``,
+  pos and neg); n_shared_1 / n_shared_ge2 (positives of that stratum + all negatives); chemotype_unseen /
+  chemotype_seen (positives with that ``chemotype_seen`` flag + all negatives).  Strata (5,20) iff >= 500 pos.
+* A1 selection (amendment D11): objective = mean of the four cluster-balanced AUCs {TOUGH-M1-dev L, TOUGH-M1-dev D,
+  BLiPS-val L, BLiPS-val D}, raw cosine, candidates = 16 grid configs + default_bw.  SE: one generic vertex
+  bootstrap per dataset whose statistic is the pair (cb_L, cb_D) evaluated with the SAME replicate weights (D on the
+  D-set subset of the pairs), so the L/D correlation is kept; TOUGH-M1 (units: ligand cluster ∪ homology group,
+  seed SEEDS[0]) and BLiPS (seed [SEEDS[0], 1]) are bootstrapped independently and combined replicate-by-replicate
+  (replicate b of the mean = mean of the four replicate-b values; as ``evaluate.macro_paired_bootstrap``).  The
+  BLiPS unit definition giving the larger SE of the best candidate's mean is used.  One-SE rule as before.
+
+PPIPS-val (``--dataset ppips``) — fixed BEFORE the first run
+------------------------------------------------------------
+* Pockets = merged region-rule pockets (D mode only).  Every z-score (B1, B4-z, A1) and the A2 reference fit use
+  PPIPS-TRAIN pockets only; CSLS background = all val pockets (k = 10).  Arms: B0 (−|Δ log V|), B1 default /
+  learned, B4 z / raw, A1 chosen (D11) + default, A2 {fragments, leadlike} × {rank, le_resid, ifp}.
+* P-ortho: query -> rank of its Jaccard >= 0.5 counterpart among ALL pockets of the partner complex
+  (``evaluate.retrieval_metrics``, pessimistic ties); top-1, top-3, MRR.  P-sym: each pair in both directions;
+  candidates = all other val pockets; rank percentile = 1 − (rank − 1) / (N_val − 2); reported for all pairs and
+  interface pairs.  Bootstrap units = complex homology group (``ppips_complex_splits.group``) of the query.
+* PPI sub-hypothesis (DESIGN §3 A2, pre-registered direction fragments > lead-like): paired Δ (fragments −
+  lead-like) of P-ortho MRR and top-1 per A2 block, raw and CSLS.  Verdict rule: SUPPORTED iff, for the raw
+  variant, at least one block has Holm-adjusted (3 blocks) one-sided bootstrap p < 0.05 for Δ MRR and no block has
+  Δ MRR with 95 % CI entirely < 0; otherwise NOT SUPPORTED.  Buriedness tertiles (``bur16_L`` of the query pocket,
+  edges from the val queries) reported descriptively (lowest tertile = shallow).
 """
 from __future__ import annotations
 
@@ -88,6 +124,9 @@ class DevDataset:
     """
     name = "abstract"
     split = "dev"
+    arms = frozenset({"B0", "B0p", "B5T", "B1", "A1", "B4", "B5", "A2", "CTRL"})   # arms build_vectors computes
+    native: dict = {}
+    global_scores: dict = {}
 
     def load(self):
         raise NotImplementedError
@@ -192,18 +231,102 @@ class ToughM1Dev(DevDataset):
 
 
 class BlipsVal(DevDataset):
-    """Placeholder.  BLiPS-val needs (after the D9 re-split): pairs from data/splits/blips_val_pairs.parquet;
-    pockets = BLiPS sites (point cache + descriptors under data/processed/descriptors/blips/); TWO unit
-    definitions (homology group; Butina ligand cluster) bootstrapped separately and combined with
-    ``evaluate.wider_ci``; covariate = L-mode log volume; n_bins (5, 5) when < 500 positives; no native scores."""
+    """BLiPS-val v2 (D9 re-split).  Extra attributes: ``unit_defs`` {hom, lig: unit per pocket} (two bootstrap unit
+    definitions, wider CI reported) and ``subsets`` {name: pair mask}.  ``pockets.unit`` = homology-group units
+    (used for the B0m cross-fitting folds).  No native or global scores; arms without BLiPS inputs are skipped."""
     name = "blips"
+    split = "val"
+    arms = frozenset({"B0", "B1", "A1", "B4", "CTRL"})
+
+    def load(self):
+        self.inputs = []
+        f_pairs = ROOT / "data/splits/blips_val_pairs_v2.parquet"
+        f_sites = ROOT / "data/splits/blips_sites_v2.parquet"
+        f_index = ROOT / "data/processed/cache/points/blips/index.parquet"
+        f_ids = ROOT / "data/processed/descriptors/blips/a1_default_L.ids.parquet"
+        self.inputs += [f_pairs, f_sites, f_index, f_ids]
+        pairs = pd.read_parquet(f_pairs)
+        sites = pd.read_parquet(f_sites)
+        index = pd.read_parquet(f_index)
+        ids = pd.read_parquet(f_ids)
+        val = sites[sites.partition == "val"].sort_values("site_id").reset_index(drop=True)
+        ix = index.set_index("pocket_id").loc[val.site_id]
+        if not (ix.status == "ok").all():
+            raise RuntimeError("val site without a point-cache entry")
+        P = pd.DataFrame({"pocket_id": val.site_id.to_numpy(), "group_id": val.group_id.to_numpy(),
+                          "label_cluster": val.label_cluster.to_numpy()})
+        P["logv_L"] = np.log(ix.volume_A3.to_numpy(float))
+        P["logv_D"] = np.log(np.clip(ix.d_volume_A3.to_numpy(float), 1.0, None))
+        P["d_coverage"] = ix.d_coverage.to_numpy(float)
+        P["d_precision"] = ix.d_precision.to_numpy(float)
+        P["d_match"] = (P.d_coverage >= 0.3) | (P.d_precision >= 0.5)              # DESIGN §2.2 / D3
+        P["desc_row"] = pd.Series(np.arange(len(ids)), index=ids.pocket_id).loc[P.pocket_id].to_numpy()
+        hom = pd.factorize(P.group_id)[0]
+        lig = pd.factorize(P.label_cluster)[0]
+        P["unit"] = hom
+        self.unit_defs = {"hom": hom, "lig": lig}
+        self.pockets = P
+        pos = {p: i for i, p in enumerate(P.pocket_id)}
+        if not (pairs.site_a.isin(pos) & pairs.site_b.isin(pos)).all():
+            raise RuntimeError("val pair with a non-val site")
+        self.pairs = pairs.assign(y=pairs.label.astype(int))
+        self.ia = pairs.site_a.map(pos).to_numpy()
+        self.ib = pairs.site_b.map(pos).to_numpy()
+        y = self.pairs.y.to_numpy() == 1
+        self.pos_cluster = pairs.pair_cluster.to_numpy()
+        neg = ~y
+        cs = pairs.chemotype_seen.to_numpy()
+        self.subsets = {
+            "all": np.ones(len(y), bool),
+            "no_promiscuous": ~pairs.promiscuous.to_numpy(bool),
+            "n_shared_1": neg | (y & (pairs.n_shared.to_numpy() == 1)),
+            "n_shared_ge2": neg | (y & (pairs.n_shared.to_numpy() >= 2)),
+            "chemotype_seen": neg | (y & (cs == True)),  # noqa: E712 (object column)
+            "chemotype_unseen": neg | (y & (cs == False)),  # noqa: E712
+        }
+        return self
+
+    def test_units(self) -> dict:
+        return {}
+
+
+class PpipsVal(DevDataset):
+    """PPIPS-val (retrieval tasks, D mode only).  ``pockets`` = ALL PPIPS pockets (train rows are the z-score / A2
+    reference, never evaluated); ``val`` / ``train`` masks; ``ortho`` and ``sym`` = the val task tables."""
+    name = "ppips"
     split = "val"
 
     def load(self):
-        raise NotImplementedError("BLiPS-val adapter: descriptors and the D9 re-split are not available yet")
+        self.inputs = []
+        f_pk = ROOT / "data/processed/ppi/ppips/pockets.parquet"
+        f_cs = ROOT / "data/splits/ppips_complex_splits.parquet"
+        f_geom = ROOT / "data/processed/docking/ppips/pocket_geom.parquet"
+        f_ids = ROOT / "data/processed/descriptors/ppips/a1_default_D.ids.parquet"
+        f_q = ROOT / "data/splits/ppips_ortho_queries_val.parquet"
+        f_s = ROOT / "data/splits/ppips_sym_pairs_val.parquet"
+        self.inputs += [f_pk, f_cs, f_geom, f_ids, f_q, f_s]
+        pk = pd.read_parquet(f_pk)
+        geom = pd.read_parquet(f_geom)
+        ids = pd.read_parquet(f_ids)
+        cs = pd.read_parquet(f_cs)
+        if not ((geom.pocket_id.to_numpy() == pk.pocket_id.to_numpy()).all()
+                and (ids.pocket_id.to_numpy() == pk.pocket_id.to_numpy()).all()):
+            raise RuntimeError("PPIPS pocket tables are not row-aligned")
+        P = pk[["pocket_id", "complex", "is_interface", "split", "volume_A3", "f_min"]].copy()
+        P["group"] = P.complex.map(dict(zip(cs.complex, cs.group)))
+        P["logv"] = np.log(np.clip(P.volume_A3.to_numpy(float), 1.0, None))
+        P["bur16"] = geom.bur16_L.to_numpy(float)
+        P["desc_row"] = np.arange(len(P))
+        self.pockets = P
+        self.geom = geom
+        self.val = (P.split == "val").to_numpy()
+        self.train = (P.split == "train").to_numpy()
+        self.ortho = pd.read_parquet(f_q)
+        self.sym = pd.read_parquet(f_s)
+        return self
 
 
-DATASETS = {"tough_m1": ToughM1Dev, "blips": BlipsVal}
+DATASETS = {"tough_m1": ToughM1Dev, "blips": BlipsVal, "ppips": PpipsVal}
 
 
 # ============================================================================================== score vectors
@@ -301,6 +424,12 @@ def build_vectors(ds: DevDataset, log) -> tuple[list[Vec], dict]:
         vecs += [Vec("B4", "esm2_noz", "raw", mode, raw, M.shape[1], "cosine, raw embedding"),
                  Vec("B4", "esm2_noz", "csls", mode, cs, M.shape[1], "cosine, raw embedding")]
     log("  B4 done")
+    if "B5" not in ds.arms:     # BLiPS: no B5 / A2 inputs
+        rng = np.random.default_rng(SEEDS[0])
+        M = rng.normal(size=(len(P), 128))
+        raw, _ = cosine_vectors(M, allp, ia, ib, csls=False)
+        vecs.append(Vec("CTRL", "random128", "control", "L", raw, 128, "Gaussian random 128-d vectors, cosine"))
+        return vecs, meta
     # ---- B5 EPoCS (L only), −Euclidean
     f = ROOT / "data/processed/descriptors" / ds.name / "b5_epocs.npy"
     ds.inputs.append(f)
@@ -436,11 +565,19 @@ def _pool_init():
         pass
 
 
-def run_generic(tasks, threads, log):
+def _safe_generic_task(args):
+    """As _generic_task, but a statistic whose replicates are all degenerate (tiny subsets) gives None."""
+    try:
+        return _generic_task(args)
+    except ValueError:
+        return args[0], None
+
+
+def run_generic(tasks, threads, log, fn=_generic_task):
     out = {}
     t0 = time.time()
     with mp.get_context("spawn").Pool(threads, initializer=_pool_init) as pool:
-        for i, (k, r) in enumerate(pool.imap_unordered(_generic_task, tasks, chunksize=1)):
+        for i, (k, r) in enumerate(pool.imap_unordered(fn, tasks, chunksize=1)):
             out[k] = r
             if (i + 1) % 20 == 0:
                 log(f"    generic bootstrap {i + 1}/{len(tasks)} ({time.time() - t0:.0f} s)")
@@ -456,8 +593,14 @@ def main():
     ap.add_argument("--threads", type=int, default=16)
     ap.add_argument("--out", default=str(ROOT / "results/dev"))
     ap.add_argument("--no-trials", action="store_true", help="do not append to results/trials.tsv (smoke tests)")
+    ap.add_argument("--a1-chosen", default=None,
+                    help="ppips only: A1 config chosen under D11 (default: read results/dev/blips_val_details.json)")
     args = ap.parse_args()
     os.environ["POCKETCOMPARE_THREADS"] = str(args.threads)
+    if args.dataset == "blips":
+        return main_blips(args)
+    if args.dataset == "ppips":
+        return main_ppips(args)
     t_start = time.time()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -737,6 +880,671 @@ def main():
                                     "pairset": r["pairset"], "B": args.B, "seed": args.seed},
                          f"{args.dataset}_{ds.split}", metrics, f_sum)
     log(f"done: {f_sum}")
+
+
+# ============================================================================================ BLiPS-val (v2)
+UNIT_NAMES = {"hom": "homology group", "lig": "Butina ligand cluster (label ligand)"}
+
+
+def _wider(per: dict):
+    """{unit: BootstrapResult | None} -> (BootstrapResult with the wider CI, its unit) or (None, None)."""
+    ok = {u: r for u, r in per.items() if r is not None}
+    if not ok:
+        return None, None
+    w = ev.wider_ci(*ok.values())
+    return w, next(u for u, r in ok.items() if r is w)
+
+
+def _ci_cols(row, prefix, per):
+    """Write <prefix>_lo/_hi/_se (wider CI), <prefix>_ci_unit and per-unit lo/hi columns into ``row``."""
+    w, wu = _wider(per)
+    row[f"{prefix}_lo"] = w.ci_low if w else np.nan
+    row[f"{prefix}_hi"] = w.ci_high if w else np.nan
+    row[f"{prefix}_se"] = w.se if w else np.nan
+    row[f"{prefix}_ci_unit"] = wu
+    for u, r in per.items():
+        row[f"{prefix}_lo_{u}"] = r.ci_low if r is not None else np.nan
+        row[f"{prefix}_hi_{u}"] = r.ci_high if r is not None else np.nan
+    return w
+
+
+def _select_task(a):
+    """Joint (cb_L, cb_D) generic bootstrap with identical replicate weights (D on the D-set pairs)."""
+    key, y, sL, sD, dmask, pc, ci, cj, B, seed = a
+
+    def fn(w):
+        return [ev.cluster_balanced_auc(y, sL, pc, w)["auc_cb"],
+                ev.cluster_balanced_auc(y[dmask], sD[dmask], pc[dmask], w[dmask])["auc_cb"]]
+
+    res = ev.vertex_bootstrap_generic(fn, ci, cj, B=B, seed=seed, names=["cb_L", "cb_D"])
+    return key, {r.name: r for r in res}
+
+
+def _a1_raw(ds):
+    """{(config, mode): raw cosine per pair} for the 16 grid configs + default_bw (as build_vectors)."""
+    P, ia, ib = ds.pockets, ds.ia, ds.ib
+    allp, dm = np.ones(len(P), bool), P.d_match.to_numpy()
+    out, dims = {}, {}
+    for cfg in _a1_grid():
+        for mode in ("L", "D"):
+            M, lay = ds.descriptor("a1", cfg, mode)
+            av = allp if mode == "L" else dm
+            out[(cfg, mode)], _ = cosine_vectors(M, av, ia, ib, csls=False)
+            dims[cfg] = M.shape[1]
+            if cfg == "default":
+                out[("default_bw", mode)], _ = cosine_vectors(M, av, ia, ib, layout=lay, block_weights=A1_BW,
+                                                              csls=False)
+                dims["default_bw"] = M.shape[1]
+    return out, dims
+
+
+def select_a1_d11(args, bl, bl_V, log):
+    """Amended A1 selection (D11): mean cb-AUC over {TOUGH-M1-dev L, D, BLiPS-val L, D}; one-SE rule."""
+    grid = _a1_grid()
+    order = {c: i for i, c in enumerate(grid + ["default_bw"])}
+    cands = grid + ["default_bw"]
+    tm = ToughM1Dev().load()
+    tm_s, dims = _a1_raw(tm)
+    tasks = []
+    # TOUGH-M1-dev: harness units (ligand cluster ∪ homology group), seed SEEDS[0]
+    y_t = tm.pairs.y.to_numpy().astype(bool)
+    dm_t = tm.pockets.d_match.to_numpy()
+    dset_t = dm_t[tm.ia] & dm_t[tm.ib]
+    u_t = tm.pockets.unit.to_numpy()
+    for c in cands:
+        tasks.append((("tm", c, "u"), y_t, tm_s[(c, "L")], np.nan_to_num(tm_s[(c, "D")]), dset_t, tm.pos_cluster,
+                      u_t[tm.ia], u_t[tm.ib], args.B, args.seed))
+    y_b = bl.pairs.y.to_numpy().astype(bool)
+    dm_b = bl.pockets.d_match.to_numpy()
+    dset_b = dm_b[bl.ia] & dm_b[bl.ib]
+    for c in cands:
+        sL, sD = bl_V[f"A1|{c}|raw|L"].s, np.nan_to_num(bl_V[f"A1|{c}|raw|D"].s)
+        for un, arr in bl.unit_defs.items():
+            tasks.append((("bl", c, un), y_b, sL, sD, dset_b, bl.pos_cluster, arr[bl.ia], arr[bl.ib], args.B,
+                          [args.seed, 1]))
+    log(f"A1 selection (D11): {len(tasks)} joint (cb_L, cb_D) bootstraps")
+    res = run_generic(tasks, args.threads, log, fn=_select_task)
+    tm1 = {c: res[("tm", c, "u")] for c in cands}
+    table, se_by_unit = {}, {}
+    for un in bl.unit_defs:
+        for c in cands:
+            b = res[("bl", c, un)]
+            comps = [tm1[c]["cb_L"], tm1[c]["cb_D"], b["cb_L"], b["cb_D"]]
+            reps = np.mean(np.vstack([r.replicates for r in comps]), axis=0)     # NaN in any -> NaN
+            est = float(np.mean([r.estimate for r in comps]))
+            s = ev._summarise("mean_cb_4", est, reps, alpha=0.05, seed=args.seed, K=None)
+            se_by_unit[(c, un)] = s
+            table.setdefault(c, {"dims": dims[c], "mean_cb": est,
+                                 "tm_L": comps[0].estimate, "tm_D": comps[1].estimate,
+                                 "bl_L": comps[2].estimate, "bl_D": comps[3].estimate})
+            table[c][f"se_{un}"] = s.se
+            table[c][f"ci_{un}"] = [s.ci_low, s.ci_high]
+            table[c][f"n_degenerate_{un}"] = s.n_degenerate
+    best = max(cands, key=lambda c: table[c]["mean_cb"])
+    un_used = max(bl.unit_defs, key=lambda u: se_by_unit[(best, u)].se)
+    se_best = se_by_unit[(best, un_used)].se
+    thr = table[best]["mean_cb"] - se_best
+    within = [c for c in cands if table[c]["mean_cb"] >= thr]
+    chosen = min(within, key=lambda c: (dims[c], order[c]))
+    # old (TOUGH-M1-dev L only) rule for reference
+    old_best = max(cands, key=lambda c: table[c]["tm_L"])
+    sel = {"rule": "D11: mean cluster-balanced AUC over {TOUGH-M1-dev L, TOUGH-M1-dev D, BLiPS-val L, BLiPS-val D}, "
+                   "raw cosine; one-SE rule (SE = sd of the replicate-wise mean of the four bootstrap replicates; "
+                   "TOUGH-M1 and BLiPS bootstrapped independently; within a dataset L and D share replicate "
+                   "weights); simplest = fewest dims, ties -> earlier grid entry",
+           "best": best, "best_mean_cb": table[best]["mean_cb"], "se_best": se_best,
+           "se_blips_unit_used": un_used, "threshold": thr,
+           "within_one_se": sorted(within, key=lambda c: order[c]), "chosen": chosen,
+           "previous_rule_best_tm_L": old_best, "candidates": table,
+           "tm_units": int(len(np.unique(u_t))), "B": args.B,
+           "seeds": {"tough_m1": args.seed, "blips": [args.seed, 1]}}
+    log(f"A1 selection D11: best {best} mean_cb={table[best]['mean_cb']:.4f} SE={se_best:.4f} ({un_used}) -> "
+        f"chosen {chosen}")
+    return sel, tm.inputs
+
+
+def main_blips(args):
+    t_start = time.time()
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    tag = "blips_val"
+
+    def log(msg):
+        print(f"[{time.time() - t_start:7.1f}s] {msg}", flush=True)
+
+    ds = BlipsVal().load()
+    P, ia, ib = ds.pockets, ds.ia, ds.ib
+    y_all = ds.pairs.y.to_numpy().astype(bool)
+    lv = P.logv_L.to_numpy()
+    cov_all = ev.size_covariates(lv[ia], lv[ib])
+    pc_all = ds.pos_cluster
+    dm = P.d_match.to_numpy()
+    dset = dm[ia] & dm[ib]
+    UD = {u: (a[ia], a[ib]) for u, a in ds.unit_defs.items()}
+    subsets = ds.subsets
+    log(f"{len(P)} sites, {len(y_all)} pairs ({y_all.sum()} pos); units hom {len(np.unique(ds.unit_defs['hom']))}, "
+        f"lig {len(np.unique(ds.unit_defs['lig']))}; D-matched sites {dm.sum()}; D-set {dset.sum()} pairs "
+        f"({(dset & y_all).sum()} pos)")
+    vecs, meta = build_vectors(ds, log)
+    ufold = unit_folds(P.unit.to_numpy(), N_FOLDS, args.seed)
+    fa, fb = ufold[ia], ufold[ib]
+    Xb0 = np.column_stack([lv[ia] + lv[ib], np.abs(lv[ia] - lv[ib])])
+    oof, b0m_info = cross_fit(Xb0, y_all.astype(int), fa, fb)
+    vecs.append(Vec("B0m", "logit_sum_absdiff", "crossfit", "L", oof, 2,
+                    "diagnostic; must be 0.5 ± 0.03 stratified (folds: homology-group units)"))
+    meta["b0m"] = b0m_info
+    for v in vecs:
+        if v.mode != "D" and np.isnan(v.s).any():
+            raise RuntimeError(f"{v.key}: NaN scores in a complete mode")
+    V = {v.key: v for v in vecs}
+    log(f"{len(vecs)} score vectors built")
+
+    def eval_set(v):
+        return (dset & ~np.isnan(v.s)) if v.mode == "D" else np.ones(len(y_all), bool)
+
+    def ok_mask(m):
+        n = int(y_all[m].sum())
+        return 0 < n < int(m.sum())
+
+    tasks = []
+    for v in vecs:
+        for sn, sm in subsets.items():
+            m = eval_set(v) & sm
+            if not ok_mask(m):
+                continue
+            for un, (ci, cj) in UD.items():
+                tasks.append((f"{v.key}#{sn}#{un}", y_all[m], v.s[m], pc_all[m], cov_all[m], ci[m], cj[m], args.B,
+                              args.seed))
+    log(f"generic bootstrap (cb + strat) for {len(tasks)} vector × subset × unit tasks, B={args.B}")
+    gen = run_generic(tasks, args.threads, log, fn=_safe_generic_task)
+
+    # ---------------------------------------------------------------- table rows
+    log("fast-path bootstrap and table")
+    rows = []
+    for v in vecs:
+        for sn, sm in subsets.items():
+            m = eval_set(v) & sm
+            if not ok_mask(m):
+                continue
+            y, s = y_all[m], v.s[m]
+            pm = point_metrics(y, s, pc_all[m], cov_all[m])
+            fast = {un: ev.vertex_bootstrap(y, s, ci[m], cj[m], B=args.B, seed=args.seed, n_threads=args.threads)
+                    for un, (ci, cj) in UD.items()}
+            row = {"key": v.key, "subset": sn, "arm": v.arm, "config": v.config, "variant": v.variant,
+                   "mode": v.mode, "pairset": "D-set (both D-matched)" if v.mode == "D" else "all val pairs",
+                   "dims": v.dims, "note": v.note, "n_pairs": int(m.sum()), "n_pos": pm["n_pos"],
+                   "n_neg": pm["n_neg"], "auc": pm["auc"], "ap": pm["ap"], "prevalence": pm["prevalence"],
+                   "ap_lift": pm["ap_lift"], "pauc_mcclish": pm["pauc_mcclish"], "pauc_raw": pm["pauc_raw"],
+                   "auc_cb": pm["auc_cb"], "auc_strat": pm["auc_strat"], "strat_n_bins": pm["strat_n_bins"],
+                   "strat_n_strata_dropped": pm["strat_n_strata_dropped"],
+                   "strat_frac_pos_dropped": pm["strat_frac_pos_dropped"],
+                   "n_units_hom": fast["hom"]["auc"].n_clusters, "n_units_lig": fast["lig"]["auc"].n_clusters,
+                   "B": args.B, "seed": args.seed}
+            for metric in ("auc", "ap"):
+                _ci_cols(row, metric, {un: fast[un][metric] for un in UD})
+            for metric in ("auc_cb", "auc_strat"):
+                _ci_cols(row, metric, {un: (None if gen.get(f"{v.key}#{sn}#{un}") is None
+                                            else gen[f"{v.key}#{sn}#{un}"][metric]) for un in UD})
+            if v.mode == "D":   # worst-case bound + miss rates over ALL pairs of the subset
+                ys, ss = y_all[sm], v.s[sm]
+                wc, _ = ev.worst_case(ys, ss)
+                wm = ev.binary_metrics(ys, wc)
+                mall = ev.missing_summary(ys, {"s": ss})["s"]
+                row.update(auc_worst_all=wm["auc"], ap_worst_all=wm["ap"], miss_rate_pos_all=mall["miss_rate_pos"],
+                           miss_rate_neg_all=mall["miss_rate_neg"])
+            rows.append(row)
+    summary = pd.DataFrame(rows)
+
+    # ---------------------------------------------------------------- A1 selection (D11)
+    sel, tm_inputs = select_a1_d11(args, ds, V, log)
+    chosen = sel["chosen"]
+
+    def gdelta(ka, kb, metric, un, sn="all"):
+        ga, gb = gen.get(f"{ka}#{sn}#{un}"), gen.get(f"{kb}#{sn}#{un}")
+        if ga is None or gb is None:
+            return None
+        ra, rb = ga[metric], gb[metric]
+        return ev._summarise(metric, ra.estimate - rb.estimate, ra.replicates - rb.replicates, alpha=0.05,
+                             seed=args.seed, K=ra.n_clusters, diff=True)
+
+    def paired(ka, kb, label):
+        va, vb = V[ka], V[kb]
+        m = eval_set(va)
+        assert (m == eval_set(vb)).all()
+        r = {"comparison": label, "a": ka, "b": kb, "n_pairs": int(m.sum())}
+        per = {un: ev.paired_bootstrap(y_all[m], va.s[m], vb.s[m], ci[m], cj[m], B=args.B, seed=args.seed,
+                                       n_threads=args.threads)["delta_auc"] for un, (ci, cj) in UD.items()}
+        w = _ci_cols(r, "delta_auc", per)
+        r["delta_auc"] = w.estimate
+        r["p_auc"] = w.p_value
+        for metric in ("auc_cb", "auc_strat"):
+            per = {un: gdelta(ka, kb, metric, un) for un in UD}
+            w = _ci_cols(r, f"delta_{metric}", per)
+            r[f"delta_{metric}"] = w.estimate if w else np.nan
+        return r
+
+    lvd = []
+    for v in vecs:
+        if v.mode != "D" or v.key[:-1] + "L" not in V:
+            continue
+        kL = v.key[:-1] + "L"
+        m = dset & ~np.isnan(v.s)
+        per = {un: ev.paired_bootstrap(y_all[m], v.s[m], V[kL].s[m], ci[m], cj[m], B=args.B, seed=args.seed,
+                                       n_threads=args.threads)["delta_auc"] for un, (ci, cj) in UD.items()}
+        pmL = point_metrics(y_all[m], V[kL].s[m], pc_all[m], cov_all[m])
+        pmD = point_metrics(y_all[m], v.s[m], pc_all[m], cov_all[m])
+        r = {"arm": v.arm, "config": v.config, "variant": v.variant, "n_pairs": int(m.sum()), "auc_L": pmL["auc"],
+             "auc_D": pmD["auc"], "auc_strat_L": pmL["auc_strat"], "auc_strat_D": pmD["auc_strat"],
+             "auc_cb_L": pmL["auc_cb"], "auc_cb_D": pmD["auc_cb"]}
+        w = _ci_cols(r, "delta", per)
+        r["delta_auc_D_minus_L"] = w.estimate
+        lvd.append(r)
+    lvd = pd.DataFrame(lvd)
+    csls_df = pd.DataFrame([paired(v.key, v.key.replace("|csls|", "|raw|"), "csls - raw")
+                            for v in vecs if v.variant == "csls"])
+    comps = []
+    a1s = [chosen] + (["default"] if chosen != "default" else [])
+    for mode in ("L", "D"):
+        for var in ("raw", "csls"):
+            for c in a1s:
+                comps.append(paired(f"A1|{c}|{var}|{mode}", f"B1|default|{var}|{mode}", f"A1 {c} - B1"))
+                comps.append(paired(f"A1|{c}|{var}|{mode}", f"B4|esm2|{var}|{mode}", f"A1 {c} - B4"))
+            comps.append(paired(f"B1|default|{var}|{mode}", f"B4|esm2|{var}|{mode}", "B1 - B4"))
+    comps = pd.DataFrame(comps)
+
+    # ---------------------------------------------------------------- outputs
+    details = {"dataset": "blips", "split": "val", "version": "v2", "B": args.B, "seed": args.seed,
+               "n_pockets": int(len(P)), "n_pairs": int(len(y_all)), "n_pos": int(y_all.sum()),
+               "units": {un: {"name": UNIT_NAMES[un], "n": int(len(np.unique(a))),
+                              "largest": int(np.bincount(a).max())} for un, a in ds.unit_defs.items()},
+               "pos_clusters": {"n": int(len(np.unique(pc_all[y_all]))),
+                                "top_share": float(pd.Series(pc_all[y_all]).value_counts(normalize=True).iloc[0])},
+               "subsets": {sn: {"n_pairs": int(sm.sum()), "n_pos": int((sm & y_all).sum())}
+                           for sn, sm in subsets.items()},
+               "d_mode": {"n_sites_matched": int(dm.sum()), "n_pairs_dset": int(dset.sum()),
+                          "n_pos_dset": int((dset & y_all).sum())},
+               "selection": sel, "build": meta, "lvd": lvd.to_dict(orient="records"),
+               "csls": csls_df.to_dict(orient="records"), "comparisons": comps.to_dict(orient="records")}
+    cfg = {"dataset": "blips", "split": "val_v2", "B": args.B, "seed": args.seed, "csls_k": CSLS_K, "n_folds": N_FOLDS,
+           "strata": "(5,20) if n_pos >= 500 else (5,5)", "a1_grid": "configs/a1_grid.yaml",
+           "units": "wider CI of {homology group, Butina ligand cluster}", "pos_cluster": "pair_cluster"}
+    inputs = sorted(set(map(str, ds.inputs + tm_inputs)) | {str(ROOT / "src/pocketcompare/similarity.py"),
+                                                           str(ROOT / "configs/a1_grid.yaml")})
+    common = dict(script=__file__, args=sys.argv[1:], config=cfg, inputs=inputs, seed=args.seed, device="cpu",
+                  start_time=t_start)
+    f_sum = out / f"{tag}_summary.parquet"
+    write_result(f_sum, summary, **common)
+    write_result(out / f"{tag}_details.json", details, **common)
+    reps = {}
+    for k, g in gen.items():
+        if g is not None and "#all#" in k:
+            for m_, r in g.items():
+                reps[f"{k}::{m_}"] = r.replicates
+    write_result(out / f"{tag}_replicates.parquet", pd.DataFrame(reps), **common)
+    f_md = out / f"{tag}_summary.md"
+    f_md.write_text(render_md_blips(summary, lvd, csls_df, comps, sel, details))
+    prov = {"result": str(f_md), "result_sha256": sha256_file(f_md), **git_state(), "script": str(Path(__file__)),
+            "script_sha256": sha256_file(__file__), "args": sys.argv[1:], "config": cfg,
+            "evaluate_sha256": ev.module_sha256(), "derived_from": [str(f_sum), str(out / f"{tag}_details.json")],
+            "seed": args.seed, "wall_seconds": round(time.time() - t_start, 1)}
+    (out / f"{tag}_summary.md.prov.json").write_text(json.dumps(prov, indent=2, default=str) + "\n")
+    if not args.no_trials:
+        for r in rows:
+            if r["subset"] != "all":
+                continue
+            metrics = {k: r[k] for k in ("n_pairs", "n_pos", "auc", "auc_lo", "auc_hi", "ap", "ap_lift",
+                                         "pauc_mcclish", "auc_cb", "auc_cb_lo", "auc_cb_hi", "auc_strat",
+                                         "auc_strat_lo", "auc_strat_hi", "auc_ci_unit")}
+            append_trial(r["arm"], {"config": r["config"], "variant": r["variant"], "mode": r["mode"],
+                                    "pairset": r["pairset"], "B": args.B, "seed": args.seed,
+                                    "units": "wider of hom/lig", "data": "blips_val_v2"},
+                         "blips_val", metrics, f_sum)
+    log(f"done: {f_sum}")
+
+
+def render_md_blips(summary, lvd, csls_df, comps, sel, details) -> str:
+    L = ["# blips-val (v2) — all arms (auto-generated by scripts/eval_dev.py --dataset blips)", "",
+         f"Pairs {details['n_pairs']} ({details['n_pos']} pos), {details['n_pockets']} sites; units hom "
+         f"{details['units']['hom']['n']} / lig {details['units']['lig']['n']}; positive clusters "
+         f"{details['pos_clusters']['n']} (top share {details['pos_clusters']['top_share']:.3f}); D-set "
+         f"{details['d_mode']['n_pairs_dset']} pairs ({details['d_mode']['n_pos_dset']} pos). B = {details['B']}. "
+         "CIs: 95 % vertex bootstrap, the wider of homology-group (h) and ligand-cluster (l) units (column 'u').", ""]
+    for sn in summary.subset.unique():
+        sub = summary[summary.subset == sn]
+        d = details["subsets"][sn]
+        L += [f"## Subset `{sn}` ({d['n_pairs']} pairs, {d['n_pos']} pos)", "",
+              "| arm | config | variant | mode | n pairs (pos) | ROC-AUC [CI] u | AP (lift) | cb-AUC [CI] u | "
+              "strat. AUC [CI] u | worst-case AUC |", "|---|---|---|---|---|---|---|---|---|---|"]
+        for r in sub.itertuples():
+            L.append(f"| {r.arm} | {r.config} | {r.variant} | {r.mode} | {r.n_pairs} ({r.n_pos}) | {_f(r.auc)} "
+                     f"[{_f(r.auc_lo)}, {_f(r.auc_hi)}] {str(r.auc_ci_unit)[:1]} | {_f(r.ap)} ({_f(r.ap_lift, 2)}) | "
+                     f"{_f(r.auc_cb)} [{_f(r.auc_cb_lo)}, {_f(r.auc_cb_hi)}] {str(r.auc_cb_ci_unit)[:1]} | "
+                     f"{_f(r.auc_strat)} [{_f(r.auc_strat_lo)}, {_f(r.auc_strat_hi)}] "
+                     f"{str(r.auc_strat_ci_unit)[:1]} | {_f(getattr(r, 'auc_worst_all', np.nan))} |")
+        L.append("")
+    L += ["## A1 selection (D11)", "", sel["rule"], "",
+          f"best **{sel['best']}** (mean cb {sel['best_mean_cb']:.4f}, SE {sel['se_best']:.4f}, BLiPS units "
+          f"{sel['se_blips_unit_used']}); within one SE: {', '.join(sel['within_one_se'])}; **chosen "
+          f"{sel['chosen']}** (previous TOUGH-M1-L-only best: {sel['previous_rule_best_tm_L']}).", "",
+          "| config | dims | TM-dev L | TM-dev D | BLiPS L | BLiPS D | mean | SE (hom) | SE (lig) |",
+          "|---|---|---|---|---|---|---|---|---|"]
+    for c, t in sorted(sel["candidates"].items(), key=lambda kv: -kv[1]["mean_cb"]):
+        L.append(f"| {c} | {t['dims']} | {t['tm_L']:.3f} | {t['tm_D']:.3f} | {t['bl_L']:.3f} | {t['bl_D']:.3f} | "
+                 f"{t['mean_cb']:.4f} | {t['se_hom']:.4f} | {t['se_lig']:.4f} |")
+    L += ["", "## Paired comparisons (all pairs / D-set)", "",
+          "| comparison | a | n | Δ AUC [CI] u | Δ cb [CI] | Δ strat [CI] |", "|---|---|---|---|---|---|"]
+    for r in comps.itertuples():
+        L.append(f"| {r.comparison} | {r.a} | {r.n_pairs} | {r.delta_auc:+.3f} [{r.delta_auc_lo:+.3f}, "
+                 f"{r.delta_auc_hi:+.3f}] {str(r.delta_auc_ci_unit)[:1]} | {r.delta_auc_cb:+.3f} "
+                 f"[{r.delta_auc_cb_lo:+.3f}, {r.delta_auc_cb_hi:+.3f}] | {r.delta_auc_strat:+.3f} "
+                 f"[{r.delta_auc_strat_lo:+.3f}, {r.delta_auc_strat_hi:+.3f}] |")
+    L += ["", "## CSLS − raw (paired)", "", "| key | Δ AUC [CI] | Δ cb [CI] | Δ strat [CI] |", "|---|---|---|---|"]
+    for r in csls_df.itertuples():
+        L.append(f"| {r.a} | {r.delta_auc:+.3f} [{r.delta_auc_lo:+.3f}, {r.delta_auc_hi:+.3f}] | "
+                 f"{r.delta_auc_cb:+.3f} [{r.delta_auc_cb_lo:+.3f}, {r.delta_auc_cb_hi:+.3f}] | "
+                 f"{r.delta_auc_strat:+.3f} [{r.delta_auc_strat_lo:+.3f}, {r.delta_auc_strat_hi:+.3f}] |")
+    L += ["", "## D − L on the D-set (paired)", "", "| arm | config | variant | n | AUC L | AUC D | Δ [CI] | strat L | "
+          "strat D |", "|---|---|---|---|---|---|---|---|---|"]
+    for r in lvd.itertuples():
+        L.append(f"| {r.arm} | {r.config} | {r.variant} | {r.n_pairs} | {r.auc_L:.3f} | {r.auc_D:.3f} | "
+                 f"{r.delta_auc_D_minus_L:+.3f} [{r.delta_lo:+.3f}, {r.delta_hi:+.3f}] | {r.auc_strat_L:.3f} | "
+                 f"{r.auc_strat_D:.3f} |")
+    return "\n".join(L) + "\n"
+
+
+# ================================================================================================ PPIPS-val
+def _wmean(x, w):
+    sw = float(np.sum(w))
+    return float(np.dot(w, x) / sw) if sw > 0 else np.nan
+
+
+def _boot_means(cols: dict, units, B, seed, diff=False):
+    """Vertex bootstrap (units = query homology group; within-unit weight n_u) of weighted means of per-query
+    columns.  Returns {name: BootstrapResult | None}."""
+    names = list(cols)
+    X = np.column_stack([np.asarray(cols[n], float) for n in names])
+    if len(np.unique(units)) < 2:
+        return {n: None for n in names}
+
+    def fn(w):
+        return [_wmean(X[:, k], w) for k in range(X.shape[1])]
+
+    try:
+        res = ev.vertex_bootstrap_generic(fn, units, units, B=B, seed=seed, names=names, diff=diff)
+    except ValueError:
+        return {n: None for n in names}
+    return {r.name: r for r in res}
+
+
+def main_ppips(args):
+    from pocketcompare.descriptors.a2 import A2Config, A2Descriptor
+
+    t_start = time.time()
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    tag = "ppips_val"
+
+    def log(msg):
+        print(f"[{time.time() - t_start:7.1f}s] {msg}", flush=True)
+
+    ds = PpipsVal().load()
+    P = ds.pockets
+    chosen = args.a1_chosen
+    if chosen is None:
+        f_sel = Path(args.out) / "blips_val_details.json"
+        chosen = json.loads(f_sel.read_text())["selection"]["chosen"]
+        ds.inputs.append(f_sel)
+    pid = {p: i for i, p in enumerate(P.pocket_id)}
+    val_idx = np.where(ds.val)[0]
+    ref = ds.train | ds.val                                  # rows that are embedded at all (test rows untouched)
+    members = P.groupby("complex").indices
+    n_val = len(val_idx)
+    log(f"PPIPS: {len(P)} pockets (train {ds.train.sum()}, val {n_val}); ortho queries {len(ds.ortho)}, "
+        f"sym pairs {len(ds.sym)}; A1 chosen = {chosen}")
+
+    # ---- P-ortho long table (query -> all pockets of the partner complex)
+    Q = ds.ortho.reset_index(drop=True)
+    oq, oc, ol = [], [], []
+    for k, r in enumerate(Q.itertuples()):
+        cand = members[r.partner_complex]
+        posset = set(r.positives)
+        oq += [k] * len(cand)
+        oc += list(cand)
+        ol += [P.pocket_id.iat[c] in posset for c in cand]
+    oq, oc, ol = np.asarray(oq), np.asarray(oc), np.asarray(ol)
+    q_pk = Q["query"].map(pid).to_numpy()
+    o_i = q_pk[oq]
+    q_unit = Q.query_complex.map(dict(zip(P.complex, P.group))).to_numpy()
+    q_bur = P.bur16.to_numpy()[q_pk]
+    tert_edges = np.quantile(q_bur, [1 / 3, 2 / 3])
+    q_tert = np.searchsorted(tert_edges, q_bur, side="right")        # 0 = shallowest
+    n_cand = Q.n_candidates.to_numpy()
+    if not (np.bincount(oq) == n_cand).all():
+        raise RuntimeError("candidate count mismatch")
+    # ---- P-sym long table (both directions; candidates = all other val pockets)
+    S_ = ds.sym.reset_index(drop=True)
+    a_i, b_i = S_.pocket_a.map(pid).to_numpy(), S_.pocket_b.map(pid).to_numpy()
+    sq, sh = np.concatenate([a_i, b_i]), np.concatenate([b_i, a_i])
+    s_if = np.concatenate([S_.interface.to_numpy(bool)] * 2)
+    s_unit = np.concatenate([S_.complex.map(dict(zip(P.complex, P.group))).to_numpy()] * 2)
+    rep_q = np.repeat(np.arange(len(sq)), n_val)
+    rep_c = np.tile(val_idx, len(sq))
+    keep = rep_c != sq[rep_q]
+    rep_q, rep_c = rep_q[keep], rep_c[keep]
+    rep_l = rep_c == sh[rep_q]
+    s_i = sq[rep_q]
+    rep_col = np.searchsorted(val_idx, rep_c)
+    log(f"ortho long table {len(oq)} rows; sym long table {len(rep_q)} rows")
+
+    # ---- score sources: name -> (E over all rows or None, note); B0 handled separately
+    def emb(M, zscore=True, layout=None, bw=None):
+        M = np.asarray(M, np.float64)
+        zs = ZScorer.fit(M[ds.train]) if zscore else None
+        Er = embed(M[ref], zs, layout, bw)
+        E = np.zeros((len(M), Er.shape[1]), np.float32)
+        E[ref] = Er
+        return E
+
+    sources = []
+    for cfg in ("default", "learned"):
+        M, _ = ds.descriptor("b1", cfg, "D")
+        sources.append(("B1", cfg, emb(M), M.shape[1], "cosine, PPIPS-train z-score"))
+    f = ROOT / "data/processed/descriptors/ppips/b4_esm2_D.npy"
+    ds.inputs.append(f)
+    M = np.load(f)
+    sources.append(("B4", "esm2", emb(M), M.shape[1], "cosine, PPIPS-train z-score"))
+    sources.append(("B4", "esm2_noz", emb(M, zscore=False), M.shape[1], "cosine, raw embedding"))
+    for cfg in dict.fromkeys(["default", chosen]):
+        base = "default" if cfg == "default_bw" else cfg
+        M, lay = ds.descriptor("a1", base, "D")
+        E = emb(M, layout=lay, bw=A1_BW) if cfg == "default_bw" else emb(M)
+        sources.append(("A1", cfg + (" (chosen)" if cfg == chosen else ""), E, M.shape[1],
+                        "cosine, PPIPS-train z-score"))
+    log("B1/B4/A1 embeddings done")
+    geom = ds.docking_meta()
+    a2_meta = {}
+    train_ids = P.pocket_id[ds.train].tolist()
+    for panel in A2_PANELS:
+        f = ROOT / "data/processed/docking/ppips" / f"{panel}.parquet"
+        ds.inputs.append(f)
+        raw_tab = pd.read_parquet(f)
+        raw_tab = raw_tab[raw_tab.split.isin(["train", "val"])]
+        desc = A2Descriptor(A2Config(panel=panel)).fit(raw_tab, geom, reference_pocket_ids=train_ids)
+        Vv = desc.transform(raw_tab, geom)
+        rows_ = pd.Series(np.arange(len(Vv.pocket_id)), index=Vv.pocket_id)
+        av = P.pocket_id.isin(rows_.index).to_numpy()
+        if not (av == ref).all():
+            raise RuntimeError(f"A2 {panel}: docking coverage differs from train+val")
+        a2_meta[panel] = {"n_reference_pockets": len(train_ids), "nonbinder_threshold":
+                          desc.nonbinder_threshold_.tolist()}
+        for blk in A2_BLOCKS:
+            Bk = getattr(Vv, blk)
+            M = np.zeros((len(P), Bk.shape[1]))
+            M[av] = Bk[rows_.loc[P.pocket_id[av]].to_numpy()]
+            sources.append(("A2", f"{panel}_{blk}", emb(M), Bk.shape[1], "A2 fit on PPIPS-train; cosine"))
+        log(f"  A2 {panel} done")
+        del raw_tab
+
+    # ---- evaluate
+    lv = P.logv.to_numpy()
+    results, perq = [], {}
+
+    def run_one(arm, cfg, variant, so, ss, dims, note):
+        ro = ev.retrieval_metrics(pd.DataFrame({"query": oq, "score": so, "label": ol}), ks=(1, 3))
+        pq = ro["per_query"].set_index("query").reindex(np.arange(len(Q)))
+        if pq["rank"].isna().any():
+            raise RuntimeError("ortho query without a hit")
+        rk = pq["rank"].to_numpy(float)
+        o_top1, o_top3, o_rr = (rk <= 1).astype(float), (rk <= 3).astype(float), 1.0 / rk
+        rs = ev.retrieval_metrics(pd.DataFrame({"query": rep_q, "score": ss, "label": rep_l}), ks=(1, 10))
+        ps = rs["per_query"].set_index("query").reindex(np.arange(len(sq)))
+        rks = ps["rank"].to_numpy(float)
+        s_pct = 1.0 - (rks - 1) / (n_val - 2)
+        s_top1 = (rks <= 1).astype(float)
+        key = f"{arm}|{cfg}|{variant}"
+        perq[key] = {"o_top1": o_top1, "o_top3": o_top3, "o_rr": o_rr, "s_pct": s_pct, "s_top1": s_top1}
+        bo = _boot_means({"top1": o_top1, "top3": o_top3, "mrr": o_rr}, q_unit, args.B, args.seed)
+        bs = _boot_means({"pct": s_pct, "top1": s_top1}, s_unit, args.B, args.seed)
+        bsi = _boot_means({"pct": s_pct[s_if], "top1": s_top1[s_if]}, s_unit[s_if], args.B, args.seed)
+        row = {"key": key, "arm": arm, "config": cfg, "variant": variant, "dims": dims, "note": note,
+               "ortho_n_queries": int(len(Q)), "ortho_n_units": int(len(np.unique(q_unit))),
+               "ortho_n_missing_scores": ro["n_missing_scores"]}
+        for m_, x in (("top1", o_top1), ("top3", o_top3), ("mrr", o_rr)):
+            r = bo[m_]
+            row.update({f"ortho_{m_}": float(x.mean()), f"ortho_{m_}_lo": r.ci_low if r else np.nan,
+                        f"ortho_{m_}_hi": r.ci_high if r else np.nan})
+        for t in range(3):
+            mk = q_tert == t
+            row[f"ortho_mrr_bur_t{t + 1}"] = float(o_rr[mk].mean())
+            row[f"ortho_top1_bur_t{t + 1}"] = float(o_top1[mk].mean())
+        for typ in ("hetero", "homo"):
+            mk = (Q.type == typ).to_numpy()
+            row[f"ortho_mrr_{typ}"] = float(o_rr[mk].mean())
+        for lab, b_, mk in (("all", bs, np.ones(len(sq), bool)), ("if", bsi, s_if)):
+            row[f"sym_{lab}_n_queries"] = int(mk.sum())
+            for m_, x in (("pct", s_pct), ("top1", s_top1)):
+                r = b_[m_]
+                row.update({f"sym_{lab}_{m_}": float(x[mk].mean()), f"sym_{lab}_{m_}_lo": r.ci_low if r else np.nan,
+                            f"sym_{lab}_{m_}_hi": r.ci_high if r else np.nan})
+            row[f"sym_{lab}_median_pct"] = float(np.median(s_pct[mk]))
+        row["sym_n_units"] = int(len(np.unique(s_unit)))
+        results.append(row)
+
+    # B0 (size only, no CSLS)
+    run_one("B0", "default", "raw", -np.abs(lv[o_i] - lv[oc]), -np.abs(lv[s_i] - lv[rep_c]), 1,
+            "−|Δ log V| (region-pocket volume)")
+    for arm, cfg, E, dims, note in sources:
+        r = np.full(len(P), np.nan)
+        r[val_idx] = csls_r(E[val_idx], E[val_idx], CSLS_K, query_ids=val_idx, bg_ids=val_idx)
+        so = pair_scores(E, o_i, oc).astype(np.float64)
+        ss = (E[sq] @ E[val_idx].T).astype(np.float64)[rep_q, rep_col]     # = pair_scores(E, s_i, rep_c)
+        run_one(arm, cfg, "raw", so, ss, dims, note)
+        run_one(arm, cfg, "csls", so - 0.5 * (r[o_i] + r[oc]), ss - 0.5 * (r[s_i] + r[rep_c]), dims,
+                note + "; CSLS bg = val pockets")
+        log(f"  {arm} {cfg} evaluated")
+    # chance level (random scorer, expectation): one positive among n candidates
+    chance = {"ortho_top1": float(np.mean(1.0 / n_cand)), "ortho_top3": float(np.mean(np.minimum(3, n_cand) / n_cand)),
+              "ortho_mrr": float(np.mean([np.sum(1.0 / np.arange(1, n + 1)) / n for n in n_cand])),
+              "sym_pct": 0.5, "sym_top1": 1.0 / (n_val - 1)}
+    summary = pd.DataFrame(results)
+
+    # ---- PPI sub-hypothesis: fragments − lead-like on P-ortho (paired, same replicates)
+    hyp = []
+    for var in ("raw", "csls"):
+        for blk in A2_BLOCKS:
+            fq, lq = perq[f"A2|fragments_{blk}|{var}"], perq[f"A2|leadlike_{blk}|{var}"]
+            d_rr, d_t1 = fq["o_rr"] - lq["o_rr"], fq["o_top1"] - lq["o_top1"]
+            for strat, mk in [("all", np.ones(len(Q), bool))] + [(f"bur_t{t + 1}", q_tert == t) for t in range(3)]:
+                b_ = _boot_means({"d_mrr": d_rr[mk], "d_top1": d_t1[mk]}, q_unit[mk], args.B, args.seed, diff=True)
+                h = {"block": blk, "variant": var, "stratum": strat, "n_queries": int(mk.sum()),
+                     "n_units": int(len(np.unique(q_unit[mk]))), "mrr_frag": float(fq["o_rr"][mk].mean()),
+                     "mrr_lead": float(lq["o_rr"][mk].mean())}
+                for m_, x in (("d_mrr", d_rr), ("d_top1", d_t1)):
+                    r = b_[m_]
+                    h.update({m_: float(x[mk].mean()), f"{m_}_lo": r.ci_low if r else np.nan,
+                              f"{m_}_hi": r.ci_high if r else np.nan, f"{m_}_p": r.p_value if r else np.nan})
+                hyp.append(h)
+    hyp = pd.DataFrame(hyp)
+    prim = hyp[(hyp.variant == "raw") & (hyp.stratum == "all")].set_index("block").loc[list(A2_BLOCKS)]
+    holm = ev.holm(prim.d_mrr_p.to_numpy())
+    supported = bool(holm["reject"].any() and not (prim.d_mrr_hi < 0).any())
+    verdict = {"rule": "SUPPORTED iff (raw variant, all queries) at least one block has Holm-adjusted (3 blocks) "
+                       "one-sided p < 0.05 for Δ MRR (fragments − lead-like) and no block has its 95 % CI < 0",
+               "blocks": list(A2_BLOCKS), "p_one_sided": prim.d_mrr_p.tolist(),
+               "p_holm": holm["p_adjusted"].tolist(), "d_mrr": prim.d_mrr.tolist(),
+               "verdict": "SUPPORTED" if supported else "NOT SUPPORTED"}
+    log(f"PPI sub-hypothesis: {verdict['verdict']} (Δ MRR {np.round(prim.d_mrr.to_numpy(), 3).tolist()}, "
+        f"Holm p {np.round(holm['p_adjusted'], 3).tolist()})")
+
+    details = {"dataset": "ppips", "split": "val", "B": args.B, "seed": args.seed, "a1_chosen": chosen,
+               "n_pockets_val": int(n_val), "n_pockets_train_reference": int(ds.train.sum()),
+               "ortho": {"n_queries": int(len(Q)), "n_unique_query_pockets": int(len(np.unique(q_pk))),
+                         "n_units": int(len(np.unique(q_unit))), "candidates_median": float(np.median(n_cand)),
+                         "bur16_tertile_edges": tert_edges.tolist(),
+                         "type_counts": Q.type.value_counts().to_dict()},
+               "sym": {"n_pairs": int(len(S_)), "n_interface_pairs": int(S_.interface.sum()),
+                       "n_queries": int(len(sq)), "n_units": int(len(np.unique(s_unit)))},
+               "chance": chance, "a2": a2_meta, "hypothesis": hyp.to_dict(orient="records"),
+               "hypothesis_verdict": verdict}
+    cfg = {"dataset": "ppips", "split": "val", "B": args.B, "seed": args.seed, "csls_k": CSLS_K,
+           "reference": "PPIPS-train pockets (z-score, A2 fit)", "units": "complex homology group of the query",
+           "a1_chosen": chosen}
+    inputs = sorted(set(map(str, ds.inputs)) | {str(ROOT / "src/pocketcompare/descriptors/a2.py"),
+                                               str(ROOT / "src/pocketcompare/similarity.py")})
+    common = dict(script=__file__, args=sys.argv[1:], config=cfg, inputs=inputs, seed=args.seed, device="cpu",
+                  start_time=t_start)
+    f_sum = out / f"{tag}_summary.parquet"
+    write_result(f_sum, summary, **common)
+    write_result(out / f"{tag}_details.json", details, **common)
+    f_md = out / f"{tag}_summary.md"
+    f_md.write_text(render_md_ppips(summary, hyp, verdict, details))
+    prov = {"result": str(f_md), "result_sha256": sha256_file(f_md), **git_state(), "script": str(Path(__file__)),
+            "script_sha256": sha256_file(__file__), "args": sys.argv[1:], "config": cfg,
+            "evaluate_sha256": ev.module_sha256(), "derived_from": [str(f_sum), str(out / f"{tag}_details.json")],
+            "seed": args.seed, "wall_seconds": round(time.time() - t_start, 1)}
+    (out / f"{tag}_summary.md.prov.json").write_text(json.dumps(prov, indent=2, default=str) + "\n")
+    if not args.no_trials:
+        for r in results:
+            metrics = {k: r[k] for k in ("ortho_n_queries", "ortho_top1", "ortho_top1_lo", "ortho_top1_hi",
+                                         "ortho_top3", "ortho_mrr", "ortho_mrr_lo", "ortho_mrr_hi", "sym_all_pct",
+                                         "sym_all_pct_lo", "sym_all_pct_hi", "sym_all_top1", "sym_if_pct")}
+            append_trial(r["arm"], {"config": r["config"], "variant": r["variant"], "mode": "D",
+                                    "task": "P-ortho + P-sym", "B": args.B, "seed": args.seed,
+                                    "reference": "ppips_train"}, "ppips_val", metrics, f_sum)
+    log(f"done: {f_sum}")
+
+
+def render_md_ppips(summary, hyp, verdict, details) -> str:
+    c = details["chance"]
+    o = details["ortho"]
+    L = ["# ppips-val — P-ortho / P-sym (auto-generated by scripts/eval_dev.py --dataset ppips)", "",
+         f"P-ortho: {o['n_queries']} queries ({o['n_unique_query_pockets']} query pockets), {o['n_units']} units "
+         f"(complex homology groups), median {o['candidates_median']:.0f} candidates; chance top-1 "
+         f"{c['ortho_top1']:.3f}, top-3 {c['ortho_top3']:.3f}, MRR {c['ortho_mrr']:.3f}. P-sym: "
+         f"{details['sym']['n_queries']} queries ({details['sym']['n_interface_pairs']} interface pairs × 2) over "
+         f"{details['n_pockets_val']} val pockets, {details['sym']['n_units']} units; chance percentile 0.5. "
+         f"B = {details['B']}. A1 chosen (D11) = {details['a1_chosen']}.", "",
+         "| arm | config | variant | ortho top-1 [CI] | top-3 [CI] | MRR [CI] | MRR bur T1/T2/T3 | sym pct all [CI] | "
+         "sym top-1 all | sym pct interface [CI] |", "|---|---|---|---|---|---|---|---|---|---|"]
+    for r in summary.itertuples():
+        L.append(f"| {r.arm} | {r.config} | {r.variant} | {_f(r.ortho_top1)} [{_f(r.ortho_top1_lo)}, "
+                 f"{_f(r.ortho_top1_hi)}] | {_f(r.ortho_top3)} [{_f(r.ortho_top3_lo)}, {_f(r.ortho_top3_hi)}] | "
+                 f"{_f(r.ortho_mrr)} [{_f(r.ortho_mrr_lo)}, {_f(r.ortho_mrr_hi)}] | {_f(r.ortho_mrr_bur_t1, 2)}/"
+                 f"{_f(r.ortho_mrr_bur_t2, 2)}/{_f(r.ortho_mrr_bur_t3, 2)} | {_f(r.sym_all_pct)} "
+                 f"[{_f(r.sym_all_pct_lo)}, {_f(r.sym_all_pct_hi)}] | {_f(r.sym_all_top1)} | {_f(r.sym_if_pct)} "
+                 f"[{_f(r.sym_if_pct_lo)}, {_f(r.sym_if_pct_hi)}] |")
+    L += ["", "## PPI sub-hypothesis: fragments − lead-like (P-ortho, paired)", "", verdict["rule"], "",
+          f"**Verdict: {verdict['verdict']}** (Holm p {', '.join(f'{p:.3f}' for p in verdict['p_holm'])} for "
+          f"{', '.join(verdict['blocks'])}).", "",
+          "| block | variant | stratum | n (units) | MRR frag | MRR lead | Δ MRR [CI] p | Δ top-1 [CI] |",
+          "|---|---|---|---|---|---|---|---|"]
+    for r in hyp.itertuples():
+        L.append(f"| {r.block} | {r.variant} | {r.stratum} | {r.n_queries} ({r.n_units}) | {r.mrr_frag:.3f} | "
+                 f"{r.mrr_lead:.3f} | {r.d_mrr:+.3f} [{r.d_mrr_lo:+.3f}, {r.d_mrr_hi:+.3f}] {_f(r.d_mrr_p)} | "
+                 f"{r.d_top1:+.3f} [{r.d_top1_lo:+.3f}, {r.d_top1_hi:+.3f}] |")
+    L += ["", f"Buriedness tertiles (bur16 of the query pocket; T1 = shallowest), edges "
+              f"{', '.join(f'{e:.3f}' for e in o['bur16_tertile_edges'])}."]
+    return "\n".join(L) + "\n"
 
 
 def _f(x, d=3):
