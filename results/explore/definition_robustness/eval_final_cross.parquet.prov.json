@@ -1,0 +1,239 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/explore/definition_robustness/eval_final_cross.parquet",
+  "result_sha256": "3b1e17610cc0ab9f793c48896162c054d29cf3a75f0024410c14949da1c0301d",
+  "n_rows": 12,
+  "git_commit": "ebe71b9d566f34067c2f35154250a3f3292daf0e",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/trials.tsv"
+  ],
+  "git_untracked": 34537,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/explore/defrob_eval.py",
+  "script_sha256": "805c03bfc1363654b365a65b6ba9dcc6a465e8f930ba94ed9a587f9667a9b642",
+  "args": [
+    "scripts/explore/defrob_eval.py",
+    "eval",
+    "--tag",
+    "final_cross",
+    "--cross",
+    "--logged",
+    "a1pair@base,a1@base,b1@base,env@sph8U,b1@sph8U,a1@baseU+env@sph8U,a1@sph8U+env@sph8U,a1@core8U+env@sph8U",
+    "--variants",
+    "a1@base,b1@base,env@sph8U,b1@sph8U,a1@baseU+env@sph8U,a1@sph8U+env@sph8U,a1@core8U+env@sph8U,a1@sph8U+env@sph8U*2,a1@baseU*0.5+env@sph8U,a1@baseU+a1@sph8U+env@sph8U,a1@sph8+env@sph8"
+  ],
+  "config": {
+    "variants": {
+      "a1pair@base": [
+        {
+          "src": "a1",
+          "blocks": [
+            "pair"
+          ],
+          "L": "L_base",
+          "D": "D_base",
+          "w": 1.0
+        }
+      ],
+      "a1@base": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "D_base",
+          "w": 1.0
+        }
+      ],
+      "b1@base": [
+        {
+          "src": "b1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "D_base",
+          "w": 1.0
+        }
+      ],
+      "env@sph8U": [
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "b1@sph8U": [
+        {
+          "src": "b1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@baseU+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "U_base",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@sph8U+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@core8U+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_core8",
+          "D": "U_core8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@sph8U+env@sph8U*2": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 2.0
+        }
+      ],
+      "a1@baseU*0.5+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "U_base",
+          "w": 0.5
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@baseU+a1@sph8U+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "U_base",
+          "w": 1.0
+        },
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@sph8+env@sph8": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "D_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "D_sph8",
+          "w": 1.0
+        }
+      ]
+    },
+    "B": 1000,
+    "seed": 0,
+    "ref": "a1pair@base"
+  },
+  "config_sha256": "a81bdcfe20db74e29f0bb1fa969dc708c37f8ec5d76f85f5aa65d65f70790cca",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/tough_m1_dev_pairs.parquet",
+      "size": 467235,
+      "sha256": "4518a2d6fad5c639cbf15c6a84f1a02a12ded12b996ec0b695a35bd93946e371",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/tough_m1_pockets_split.parquet",
+      "size": 212679,
+      "sha256": "1b602b4aad77340c4830162fcedfb906faeb33f17738df7f82bd46fc1b825726",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/cache/points/tough_m1/index.parquet",
+      "size": 16936060,
+      "sha256": "9b1dc190db72e014b715bcb6dd825310093b87d7c421c9c415d6163a4d60047d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_default_L.ids.parquet",
+      "size": 326373,
+      "sha256": "0be01ac7fbc961aa2d1cad6f94bf88e67ea9fe01eefdc64d86ebaf97b40cd7a0",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/defrob/ids.parquet",
+      "size": 126149,
+      "sha256": "81ee32206993698aaeaab1252cd0d75072fe6ef737f13f42d23999f196457665",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T21:19:39+00:00",
+  "end_time": "2026-10-27T21:20:22+00:00",
+  "wall_seconds": 42.931,
+  "extra": null
+}

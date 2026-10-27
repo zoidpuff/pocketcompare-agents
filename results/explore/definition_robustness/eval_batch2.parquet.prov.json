@@ -1,0 +1,270 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/explore/definition_robustness/eval_batch2.parquet",
+  "result_sha256": "1a4e62e2f76489c35ad14a1caf7e91fbd26e747c435e8187587dfcbc28d4f200",
+  "n_rows": 13,
+  "git_commit": "f2f0ba6dbd6d95505563409692af83550b694826",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "data/splits/SHA256SUMS.txt",
+    "data/splits/SPLITS.md",
+    "results/trials.tsv",
+    "scripts/compute_esm.py",
+    "src/pocketcompare/pockets.py"
+  ],
+  "git_untracked": 34550,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/explore/defrob_eval.py",
+  "script_sha256": "8c1d45192c71d084a8f25b7abd0e9823075a0959524252f247a4a59ec7f0d704",
+  "args": [
+    "scripts/explore/defrob_eval.py",
+    "eval",
+    "--tag",
+    "batch2",
+    "--skip-ref-trial",
+    "--variants",
+    "a1pair@base+env@sph8U,a1@baseU+env@sph8U,a1@sph8U+env@sph8U,a1@sph6U+env@sph8U,env@sph8U+b1@sph8U,a1@sph8U+env@sph8U+b1@sph8U,a1@baseU+env@sph8U+b1@sph8U,a1@core8U+env@sph8U,env@sph8,envbur@sph8U,envmean@sph8U,env@sph6U"
+  ],
+  "config": {
+    "variants": {
+      "a1pair@base": [
+        {
+          "src": "a1",
+          "blocks": [
+            "pair"
+          ],
+          "L": "L_base",
+          "D": "D_base",
+          "w": 1.0
+        }
+      ],
+      "a1pair@base+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": [
+            "pair"
+          ],
+          "L": "L_base",
+          "D": "D_base",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@baseU+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "U_base",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@sph8U+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@sph6U+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph6",
+          "D": "U_sph6",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "env@sph8U+b1@sph8U": [
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "b1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@sph8U+env@sph8U+b1@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "b1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@baseU+env@sph8U+b1@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_base",
+          "D": "U_base",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        },
+        {
+          "src": "b1",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "a1@core8U+env@sph8U": [
+        {
+          "src": "a1",
+          "blocks": null,
+          "L": "L_core8",
+          "D": "U_core8",
+          "w": 1.0
+        },
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "env@sph8": [
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph8",
+          "D": "D_sph8",
+          "w": 1.0
+        }
+      ],
+      "envbur@sph8U": [
+        {
+          "src": "env",
+          "blocks": [
+            "env_bur"
+          ],
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "envmean@sph8U": [
+        {
+          "src": "env",
+          "blocks": [
+            "env_mean"
+          ],
+          "L": "L_sph8",
+          "D": "U_sph8",
+          "w": 1.0
+        }
+      ],
+      "env@sph6U": [
+        {
+          "src": "env",
+          "blocks": null,
+          "L": "L_sph6",
+          "D": "U_sph6",
+          "w": 1.0
+        }
+      ]
+    },
+    "B": 1000,
+    "seed": 0,
+    "ref": "a1pair@base"
+  },
+  "config_sha256": "2ef9ce747c037c40c9675adf9e6a53acac80170ac0a71a7be19b9b4a950cd6bf",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/tough_m1_dev_pairs.parquet",
+      "size": 467235,
+      "sha256": "4518a2d6fad5c639cbf15c6a84f1a02a12ded12b996ec0b695a35bd93946e371",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/tough_m1_pockets_split.parquet",
+      "size": 212679,
+      "sha256": "1b602b4aad77340c4830162fcedfb906faeb33f17738df7f82bd46fc1b825726",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/cache/points/tough_m1/index.parquet",
+      "size": 16936060,
+      "sha256": "9b1dc190db72e014b715bcb6dd825310093b87d7c421c9c415d6163a4d60047d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_default_L.ids.parquet",
+      "size": 326373,
+      "sha256": "0be01ac7fbc961aa2d1cad6f94bf88e67ea9fe01eefdc64d86ebaf97b40cd7a0",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/defrob/ids.parquet",
+      "size": 126149,
+      "sha256": "81ee32206993698aaeaab1252cd0d75072fe6ef737f13f42d23999f196457665",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T21:18:11+00:00",
+  "end_time": "2026-10-27T21:18:47+00:00",
+  "wall_seconds": 35.786,
+  "extra": null
+}

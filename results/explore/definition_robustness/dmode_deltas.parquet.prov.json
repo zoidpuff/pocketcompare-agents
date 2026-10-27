@@ -1,0 +1,65 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/explore/definition_robustness/dmode_deltas.parquet",
+  "result_sha256": "42d55f2c2f53776cddf869705a8894992e09b3944b837d3adc6641a9e86363ed",
+  "n_rows": 16,
+  "git_commit": "ebe71b9d566f34067c2f35154250a3f3292daf0e",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/trials.tsv"
+  ],
+  "git_untracked": 34571,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/explore/defrob_dmode_delta.py",
+  "script_sha256": "5a7fdb151c27390a6f4a1b8739d7c52f650ca43245fc039f35699a14dde35547",
+  "args": [
+    "scripts/explore/defrob_dmode_delta.py"
+  ],
+  "config": {
+    "final": [
+      "a1@baseU+env@sph8U",
+      "a1@sph8U+env@sph8U",
+      "env@sph8U",
+      "a1@baseU+a1@sph8U+env@sph8U"
+    ],
+    "refs": [
+      "a1pair@base",
+      "b1@base"
+    ],
+    "B": 1000
+  },
+  "config_sha256": "0689296cadfdc55065c90b6d036fd2311ee9e48f6e89dd2edae0b9b7a8436ef6",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/tough_m1_dev_pairs.parquet",
+      "size": 467235,
+      "sha256": "4518a2d6fad5c639cbf15c6a84f1a02a12ded12b996ec0b695a35bd93946e371",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/tough_m1_pockets_split.parquet",
+      "size": 212679,
+      "sha256": "1b602b4aad77340c4830162fcedfb906faeb33f17738df7f82bd46fc1b825726",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/cache/points/tough_m1/index.parquet",
+      "size": 16936060,
+      "sha256": "9b1dc190db72e014b715bcb6dd825310093b87d7c421c9c415d6163a4d60047d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/tough_m1/a1_default_L.ids.parquet",
+      "size": 326373,
+      "sha256": "0be01ac7fbc961aa2d1cad6f94bf88e67ea9fe01eefdc64d86ebaf97b40cd7a0",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T21:22:46+00:00",
+  "end_time": "2026-10-27T21:23:17+00:00",
+  "wall_seconds": 30.919,
+  "extra": null
+}

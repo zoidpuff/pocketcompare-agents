@@ -22,6 +22,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D13 (23:10) Tier-1 candidates for A4b: hybrid A1(sub-pocket)+A1(sph8)+env(sph8) (1,141-d) trained with L↔D
+  augmentation; selection on BLiPS-val mean(L,D) per DESIGN. The ligand-free non-learned A1(sph8)+env(sph8) is kept
+  as the robust non-learned fallback (best D-mode, L↔D agreement 0.996). Rationale: mean(L,D) still rewards the
+  L-mode imprint; the learned metric with L↔D augmentation is the principled way to trade it off.
 - D10 (21:45) **A2 gate FAILED** on TOUGH-M1-dev (fusion A1+A2 vs A1, stratified ΔAUC −0.010 [−0.027, +0.007];
   every A2 variant/fusion negative). Per DESIGN, A2 is a negative result and is not developed further for tier 1.
   The pre-registered PPI sub-hypothesis (fragments vs lead-like on PPIPS) is still run (docking already queued).
@@ -137,6 +141,12 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [!] BLiPS D-mode coverage < 0.3 for ~45 % of sites (TOUGH-M1 19 %)
 - [~] P3 Independent split audit (auditor; different code path) — required before first model fit (A4b)
 - [x] P3 A2 docking on all 20,497 PPIPS pockets (both panels, 40 min, 0 failures); interface pose-in-pocket 82 %
+- [x] P3 Definition robustness — reports/definition_robustness.md (36 variants logged)
+  - [!] ligand-free site shaper "sph8" (buried points ≤ 8 Å of buriedness-weighted centroid) + env block (113-d
+        protein-side composition, 0.3 ms): cb D 0.672 (A1 0.541), L 0.648, L↔D agreement 0.996
+  - [x] hybrid A1(best sub-pocket) + A1(sph8) + env(sph8): mean(L,D) 0.693 (+0.024 [−0.039, +0.043] vs ref)
+  - [x] D-mode ligand-free vs B1: +0.052 [−0.004, +0.134]
+  - [-] residue mode (slow, 0.619), sph10, core8, merged-pocket centres, env up-weighting, +B1
 - [ ] P4 A4b learned metric (after audit + BLiPS descriptors)
 - [ ] P4 Fusion, hub correction, AF robustness (C5), blind test, proteome FAISS demo
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
