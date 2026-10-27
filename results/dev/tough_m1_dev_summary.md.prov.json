@@ -1,0 +1,36 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/tough_m1_dev_summary.md",
+  "result_sha256": "d740d418f4d8c9e900b0ca9fe36ea363214386288d97857fda15a87fd7d68792",
+  "git_commit": "8ee839b5926ac025dc5fa5852d108a86b330c657",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "scripts/a2/aggregate.py",
+    "scripts/a2/dock_tough_m1.py",
+    "scripts/a2/run_dock.sh",
+    "scripts/build_point_cache.py",
+    "src/pocketcompare/pockets.py"
+  ],
+  "git_untracked": 34541,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+  "script_sha256": "86b6b3486c0246ed138f98edd6ad42695ae40a57e25006876313601b187ee30c",
+  "args": [
+    "--dataset",
+    "tough_m1"
+  ],
+  "config": {
+    "dataset": "tough_m1",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "n_folds": 5,
+    "strata": "(5,20) if n_pos >= 500 else (5,5)",
+    "a1_grid": "configs/a1_grid.yaml"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/tough_m1_dev_summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/tough_m1_dev_details.json"
+  ],
+  "seed": 0,
+  "wall_seconds": 164.8
+}

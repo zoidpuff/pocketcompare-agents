@@ -20,6 +20,8 @@ Deliverables: (1) the `pocketcompare` package and CLI (pocket → descriptor; pa
 - **C2** ProSPECCTs D5.2 + D6.2 + D7 (self-pairs removed), macro ROC-AUC(final) − macro ROC-AUC(B1) > 0.
 - **C3** PPI ligand-grounded test (§2.5 PPI-L): ROC-AUC(final) − ROC-AUC(B1) > 0 — only if the PPI-L gate
   (§2.5) passes; otherwise C3 is exploratory and the Holm family is {C1a, C1b, C2}.
+- **C1-D** (amendment D11, before any test evaluation) TOUGH-M1-test, D-mode, common-set ROC-AUC(final) −
+  ROC-AUC(B1) > 0. Holm family = {C1a, C1b, C1-D, C2} (C3 exploratory, D7).
 Reported, not in the Holm family: runtime (C4: tier-1 descriptor ≤ 1 s/pocket incl. BURROW and ≤ 10 µs/pair
 CPU); AF robustness (C5: BLiPS-test ROC-AUC with AF-model pockets vs holo pockets, Δ with CI); all other
 benchmarks and arms. Published numbers are context only (different pocket definitions); we additionally run

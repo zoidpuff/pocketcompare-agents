@@ -22,6 +22,19 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D10 (21:45) **A2 gate FAILED** on TOUGH-M1-dev (fusion A1+A2 vs A1, stratified ΔAUC −0.010 [−0.027, +0.007];
+  every A2 variant/fusion negative). Per DESIGN, A2 is a negative result and is not developed further for tier 1.
+  The pre-registered PPI sub-hypothesis (fragments vs lead-like on PPIPS) is still run (docking already queued).
+- D11 (21:45) **L-mode ligand imprint.** A1's L-mode advantage collapses in D-mode (0.808 → 0.560 on the same pairs;
+  B1 −0.06, B4 −0.02). 4 Å ligand-shell pockets encode ligand shape, and TOUGH-M1 positives are ligand-defined, so
+  an L-mode win partly measures the pocket definition. Amendment (before any test evaluation): add claim **C1-D**
+  (TOUGH-M1-test, D-mode, common-set ROC-AUC final − B1 > 0; TOUGH-M1-test is BURROW-clean so D-mode is allowed)
+  to the Holm family {C1a, C1b, C1-D, C2}; selection objective for all further development = mean cluster-balanced
+  AUC over L-mode and D-mode (TOUGH-M1-dev; BLiPS-val when available). Development now targets definition
+  robustness (D-mode pocket core extraction, robust descriptor blocks, L/D-augmented learned metric).
+- D12 (21:45) Power: unit = component of (ligand cluster ∪ homology group) has a giant component (test 710/1,014
+  pockets in one unit, 141 units) → test MDE ≈ 0.13 for Δ(A1−B1); dev Δ = +0.152 (SE 0.050). Kept as
+  pre-registered (not changed after seeing it); C1 power is limited and will be reported as such.
 - D8 (21:00) Keep the pre-registered TOUGH-M1 rule: dev 731 pockets (3,366 pos / 6,463 neg), test 1,014 pockets
   (530 groups, 302 ligand clusters; 10,064 pos / 13,221 neg), 5,779 excluded (touch BURROW AND a sealed set).
   Reason: rules are not changed after seeing counts; test has enough independent units. ADDED (before any test
@@ -111,7 +124,13 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] graph 65k chains; within-dataset largest comp: TOUGH 5.1 %, ProSPECCTs 6.6 %, BLiPS 9.6 %
   - [!] 77 % of TOUGH-M1 excluded by the leakage rule (touches BURROW AND a sealed set) → D8
   - [x] BLiPS train/val/test sites 2,699/163/3,606; val too weak → D9 re-split
-- [~] P3 Dev evaluation of all arms on TOUGH-M1-dev (eval agent; scripts/eval_dev.py)
+- [x] P3 Dev evaluation of all arms on TOUGH-M1-dev — reports/dev_eval_tough_m1.md (137 trials)
+  - [!] L-mode ROC / stratified: A1 pair_only 0.795/0.732 · SiteEngine 0.680/0.672 · B1 0.643/0.630 ·
+        B4 0.601/0.600 · B5 0.599/0.592 · A2 frag-IFP+CSLS 0.632/0.625 · controls 0.50
+  - [!] D-mode: A1 collapses (0.808 → 0.560 same pairs), B1/B4 robust → D11
+  - [-] A2 gate failed (D10)
+  - [!] size shortcut B0 ROC 0.78, B0m 0.857; B0m stratified 0.489 (diagnostic passes)
+  - [x] CSLS: small effect (positive only for A2-IFP)
 - [~] P3 BLiPS re-split (D9) + BLiPS/PPIPS point caches + descriptors (prep agent, cuda:1)
 - [~] P3 Independent split audit (auditor; different code path) — required before first model fit (A4b)
 - [~] P3 A2 docking on PPIPS pockets (A2 agent, cuda:0,2,3) for fragment-vs-lead-like PPI sub-hypothesis
