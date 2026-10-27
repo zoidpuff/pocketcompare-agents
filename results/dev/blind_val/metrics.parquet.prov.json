@@ -1,0 +1,66 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blind_val/metrics.parquet",
+  "result_sha256": "898617eebf02b8146ff349867446318bca1a7feafa369b472260fdc994f9ce69",
+  "n_rows": 82,
+  "git_commit": "ee8215d8715db9ff7e44a4bc440af2a9b1910c29",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "scripts/final_eval.py"
+  ],
+  "git_untracked": 12,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_blind.py",
+  "script_sha256": "1391c1e8a82c50a3df7495d61ef76f056aac88e704c0a344b3a72d4a581acd51",
+  "args": [
+    "--set",
+    "val",
+    "--B",
+    "2000",
+    "--workers",
+    "12"
+  ],
+  "config": {
+    "method": "configs/final_method.yaml",
+    "arms": [
+      "final",
+      "B1",
+      "B0"
+    ],
+    "set": "val",
+    "B": 2000,
+    "min_points": 10,
+    "d_rule": [
+      0.3,
+      0.5
+    ],
+    "pool": "merged region-rule pockets, AF mode",
+    "n_sites": 239,
+    "n_models": 157,
+    "n_pool_pockets": 817,
+    "pockets_per_model_median": 4.0,
+    "n_sites_detected": 147,
+    "n_pairs_pos": 93,
+    "n_directed_pos": 186,
+    "n_directed_both_detected": 84,
+    "median_candidates": 810.0,
+    "b4": "not computed (ESM-2 needs a GPU)",
+    "n_model_errors": 0
+  },
+  "config_sha256": "9b20e1d2688eb7f6f28ceea8137028eac145ae05acf2db3ce7c90b3691867dfd",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/configs/final_method.yaml",
+      "size": 1373,
+      "sha256": "457fcffba78ecf6c806a59b112b40daa0e235ee4b5215061d6fb1605719ec4d7",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T23:12:03+00:00",
+  "end_time": "2026-10-27T23:12:16+00:00",
+  "wall_seconds": 13.599,
+  "extra": null
+}

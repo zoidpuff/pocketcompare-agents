@@ -890,6 +890,37 @@ def stage_blips(ps: PairSet, af: PairSet | None, method, store, args, rel_dates,
     return tab, {"c5_holo_minus_af": c5, "b0p": fsi}
 
 
+PPIL_PAIR_FILE = "ppi_l_test_pairs.parquet"
+
+
+def ppil_set(name: str, pairs: pd.DataFrame) -> PairSet:
+    """PPI-L (exploratory C3; reports/ppi_datasets.md): pairs of PLOC/PLONC modulator pockets (label 1 = cross-group,
+    ECFP4 Tc >= 0.5; 0 = Tc < 0.3).  Units: homology group ('hom') and ligand Butina cluster ('lig').  Descriptors:
+    data/processed/descriptors/ppi_l (scripts/ppi/14_ppil_index.py + compute_n_inputs.py / compute_descriptors.py)."""
+    a = pairs[["pocket_a", "group_a", "ligand_cluster_a"]].set_axis(["pocket_id", "group", "lig"], axis=1)
+    b = pairs[["pocket_b", "group_b", "ligand_cluster_b"]].set_axis(["pocket_id", "group", "lig"], axis=1)
+    P = pd.concat([a, b]).drop_duplicates("pocket_id").sort_values("pocket_id").reset_index(drop=True)
+    P = _attach_geometry(P, "ppi_l")
+    hom = pd.factorize(P.group)[0]
+    lig = pd.factorize(P.lig.astype("string").fillna(P.pocket_id))[0]
+    P["unit"] = hom
+    ia, ib = _pairs_index(P, pairs)
+    y = pairs.label.to_numpy().astype(int)
+    return PairSet(name, "ppi_l", P, ia, ib, y, {"hom": hom, "lig": lig}, subsets={"all": np.ones(len(y), bool)},
+                   pairs=pairs)
+
+
+def stage_ppil(ps: PairSet, method, store, args):
+    log(f"[{ps.name}] {len(ps.pockets)} pockets, {len(ps.y)} pairs ({int(ps.y.sum())} pos); D-set {int(ps.dset.sum())}")
+    if ps.y.sum() < 5:
+        return None, {"n_pairs": int(len(ps.y)), "n_pos": int(ps.y.sum()), "note": "too few positives to evaluate"}
+    specs = [s for s in BASE_SPECS if s[1] != "esm2_noz" and s[0] != "B4"]   # no B4 for PPI-L (ESM not computed)
+    vecs = final_vectors(ps, method, store) + b0_vectors(ps) + descriptor_vectors(ps, store, specs)
+    tab, _ = evaluate_vectors(ps.name, vecs, ps.y, ps.pair_units, None, ps.cov, ps.dset, ps.subsets, args)
+    return tab, {"n_pairs": int(len(ps.y)), "n_pos": int(ps.y.sum()), "n_pockets": int(len(ps.pockets)),
+                 "n_d_set": int(ps.dset.sum()), "arms": sorted({v.key for v in vecs})}
+
+
 def stage_ppips(split: str, ortho: pd.DataFrame, sym: pd.DataFrame, method, store, args):
     """P-ortho / P-sym exactly as eval_dev.main_ppips, for the given split (z-score on PPIPS-train)."""
     P = pd.read_parquet(ROOT / "data/processed/ppi/ppips/pockets.parquet")
@@ -1215,10 +1246,21 @@ def run(args, real: bool, method, cfg_sha, sealed: Sealed, out: Path):
         ptab2 = stage_ppips("val", pd.read_parquet(ROOT / "data/splits/ppips_ortho_queries_val.parquet"),
                             pd.read_parquet(ROOT / "data/splits/ppips_sym_pairs_val.parquet"), method, store, args)
     # ---------------------------------------------------------------- PPI-L (exploratory)
-    if store.available("ppi_l", "b1_default_L"):
-        details["ppi_l"] = "descriptors present but the PPI-L stage is not implemented in this version"
-    else:
+    ppil_ok = all(store.available("ppi_l", st) for st in ("n_inputs_L:a1_sph8", "b1_default_L", "b1_default_D"))
+    if not ppil_ok:
         details["ppi_l"] = "skipped: no PPI-L descriptors (data/processed/descriptors/ppi_l); exploratory per D7"
+    elif real and PPIL_PAIR_FILE not in sealed.expected:
+        details["ppi_l"] = (f"skipped: sha256 of data/sealed/{PPIL_PAIR_FILE} not recorded in data/sealed_SHA256SUMS.txt "
+                            "(PI: add it, then re-run); exploratory per D7")
+    else:
+        pl_pairs = (sealed.read(PPIL_PAIR_FILE, "PPI-L test (exploratory C3)") if real
+                    else pd.read_parquet(ROOT / "data/splits/ppi_l_pairs_val.parquet"))
+        pl = ppil_set("ppi_l_test" if real else "ppi_l_val", pl_pairs)
+        pltab, plinfo = stage_ppil(pl, method, store, args)
+        if pltab is not None:
+            tabs.append(pltab)
+        details["ppi_l"] = {**plinfo, "exploratory": True,
+                            "dry_run_note": None if real else "val has 0 cross-group positives (reports/ppi_datasets.md)"}
     # ---------------------------------------------------------------- runtime
     details["runtime"] = stage_runtime(method, store, tm.pockets.pocket_id)
     details["mde_reference"] = "dev-derived MDE ≈ 0.13 for C1 (results/dev/tough_m1_dev_details.json#mde)"

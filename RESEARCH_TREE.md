@@ -200,6 +200,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] same-site holo→AF retrieval: L top-1 0.78 (B1 0.88), D top-1 0.55 (B1 0.41); pLDDT 70–90 −0.17 top-1
 - [~] P4 L4 point-cloud network candidate (cuda:2,3; training gated on re-audit)
 - [~] P3 Split rebuild with mmseqs -a + exhaustive Foldseek (split agent) → re-audit
-- [ ] P4 blind deployment test (cut-order item)
+- [x] P4 Blind deployment test script + val dry run — reports/blind_and_ppil.md
+  - [x] detection recall 0.615 on val AF models; partner retrieval (84 pairs) final hit@10 0.155 vs B1 0.107, AUC
+        0.634 vs 0.647 — not distinguishable (low power); B0 0.44
+  - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md
