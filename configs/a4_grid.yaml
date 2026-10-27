@@ -1,0 +1,41 @@
+# L4 point-cloud encoder — pre-registered grid (PREREG Addendum A1: <= 6 configs; time box 3 h).
+# Written 2026-10-27 ~23:50 BEFORE any L4 fit on real labels (split audit not yet re-passed; only synthetic smoke
+# tests had been run).  Training / data rules: scripts/train_l4.py docstring (identical pair sources, masking,
+# ES hold-out and loss as scripts/train_a4b.py).  Each config is trained with SEEDS[:3]; score = mean of the three
+# seeds' cosines (ensemble).  Selection: BLiPS-val D-mode cb-AUC objective, one-SE rule (L4 = learned, more complex
+# than A4b), guards (PREREG §1), via scripts/eval_l4.py -> scripts/eval_dev.py main_final_select.
+version: a4-grid-v1
+common:
+  model: egnn            # kNN-graph EGNN, distances only enter as RBF(d_ij); coordinate updates are equivariant
+  layers: 4
+  hidden: 128
+  k: 16                  # kNN graph, recomputed per layer
+  n_rbf: 16
+  r_max: 12.0
+  update_x: true
+  concat_n1: false       # concatenate the (z-scored, clipped) N1 vector before the head
+  out_dim: 128
+  dropout: 0.1
+  lr: 1.0e-3             # AdamW, cosine-free constant lr
+  weight_decay: 1.0e-4
+  tau: 0.1               # InfoNCE temperature
+  batch_pos: 128         # positive pairs per step (in-batch negatives)
+  batch_lab: 128         # labelled BLiPS-train pairs per step for the BCE term (balanced pos / neg)
+  lambda_bce: 1.0
+  graded: false
+  w_blips_pos: 0.5       # positive-pair source mixture (as A4b): BLiPS-train labelled positives
+  w_ld: 0.25             #   L<->D same-site positives (D-matched BLiPS-train sites)
+  w_ppips: 0.25          #   PPIPS-train P-sym + P-ortho positives
+  p_d: 0.5               # probability of drawing a BLiPS endpoint in D mode (if D-matched)
+  rotate: true           # augmentation: uniform random rotation per pocket
+  point_dropout: 0.15    # augmentation: drop this fraction of points per pocket (>= 8 kept)
+  steps_per_epoch: 50
+  max_epochs: 30
+  patience: 6            # epochs without ES improvement (ES = mean L/D ROC-AUC on the 10 % hold-out groups)
+configs:
+  egnn_base:   {}
+  egnn_small:  {layers: 3, hidden: 64}
+  egnn_n1cat:  {concat_n1: true}
+  egnn_inv:    {update_x: false}          # pure distance-based invariant message passing (no coordinate updates)
+  egnn_nce:    {lambda_bce: 0.0}
+  egnn_noppi:  {w_ppips: 0.0}
