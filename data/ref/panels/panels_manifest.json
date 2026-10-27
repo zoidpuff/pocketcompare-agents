@@ -1,0 +1,64 @@
+{
+  "conformer": "RDKit ETKDGv3 (randomSeed=SEEDS[0]) + MMFF94 (UFF fallback), explicit H",
+  "fragments": {
+    "csv_sha256": "88650ce117a65cfe5a360d1e55f114cdaaf5ad516a7bdc3ee1c53720052d1ac8",
+    "filters": {
+      "ha_max": 17,
+      "ha_min": 8,
+      "hba_max": 6,
+      "hbd_max": 3,
+      "logp_max": 3.5,
+      "mw_max": 300.0,
+      "rings_min": 1,
+      "rot_max": 3
+    },
+    "n": 128,
+    "pool_size": 47663,
+    "sdf_sha256": "b5d94fa27a03315a3b0681228573f7b7c96fffddc8ed8809afa466ffd7ed72a1",
+    "smi_sha256": "e75a3336fc424567742773dfac2f73b774c6dd3d66502bf5f7db95595a2bea13",
+    "source": "NCI Open Database release 4 (NCI-Open_2012-05-01.sdf.gz)",
+    "strata": {
+      "acceptor_rich|ha10_14": 14,
+      "acceptor_rich|ha15_17": 4,
+      "acceptor_rich|ha8_9": 4,
+      "anionic|ha10_14": 14,
+      "anionic|ha15_17": 4,
+      "anionic|ha8_9": 4,
+      "apolar_aromatic|ha10_14": 13,
+      "apolar_aromatic|ha15_17": 4,
+      "apolar_aromatic|ha8_9": 4,
+      "cationic|ha10_14": 13,
+      "cationic|ha15_17": 4,
+      "cationic|ha8_9": 4,
+      "donor_rich|ha10_14": 13,
+      "donor_rich|ha15_17": 4,
+      "donor_rich|ha8_9": 4,
+      "mixed|ha10_14": 13,
+      "mixed|ha15_17": 4,
+      "mixed|ha8_9": 4
+    }
+  },
+  "leadlike": {
+    "csv_sha256": "471bee472560ed865c427b39f3660b72ad61407a525d4e03925e86e76505dfc6",
+    "filters": {
+      "mw_max": 450.0,
+      "mw_min": 200.0,
+      "rot_max": 6
+    },
+    "n": 128,
+    "overlap_with_published_TOP128": 16,
+    "pool_size": 840,
+    "sdf_sha256": "c466c319471797793b2fc0d8f10fff1f0e612ae029445efeab35e0417d95c61c",
+    "smi_sha256": "612f8108f6789f96a22a6e1369ca182dc26d301fc05367dc262a178ce6b805cd",
+    "source": "PocketVec lead-like set LLM.smi (sbnb-irb/PocketVec, MIT)"
+  },
+  "n_per_panel": 128,
+  "protonation": "dimorphite-dl 2.1.0, ph_min=ph_max=7.4, precision=0.0 (single dominant microstate)",
+  "seed": 0,
+  "sources_sha256": {
+    "LLM.smi": "326a30bf1093d7a0c08cb8e1054e1d64a87b1195dd4c52c25047ea86dd147777",
+    "NCI-Open_2012-05-01.sdf.gz": "64394fc0e07e49b0cfdbd79f4481d7b304662c8792df28f1a87a0f7e0279f45b",
+    "PocketVec_LICENSE.txt": "59c12b29a575d2c769e3fa5828c5ede215eebb67fc7b73e6c263eb596244f918",
+    "TOP_128_rDock_LLM.smi": "66c2aa6aab8c9851a641fc0bf181ee412daac6ecff5bc0505bb345896bb53c5b"
+  }
+}

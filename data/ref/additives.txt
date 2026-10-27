@@ -1,0 +1,21 @@
+# BLiPS label exclusions (DESIGN §2.6): crystallisation additives, cryoprotectants, buffers, detergents,
+# membrane lipids, photosystem pigments, N/O-glycan building blocks, unknown ligands.
+# One CCD code per line; text after '#' is ignored. Ions/metals (1 heavy atom) and ligands < 10 heavy atoms are
+# excluded by rule, so small codes here are listed for documentation only.
+# Curated 2026-10-27 (data agent) from the DESIGN list + round-1 data review (M7) + common PDB artefact lists.
+# DECISIONS: free fatty acids (PLM, MYR, STE, OLA, ...) are KEPT (bona fide FABP/albumin/PPAR ligands);
+# heme/flavin/nucleotide cofactors are KEPT; glucose/galactose-type free sugars are KEPT, N-glycan core sugars excluded.
+## cryoprotectants / polyols / PEG family / alcohols
+GOL EDO PEG PGE PG4 PG5 PG6 1PE 2PE P6G PE3 PE4 PE5 PE8 P33 12P 15P 7PE XPE PEU P4G P2E 2PG PG0 PGO PGR MPD MRD BU3 BU1 BU2 HEZ 1BO IPA EOH MOH ETX TBU DIO 2OP P3G PEO
+## buffers / salts / small organics
+TRS TAM MES EPE PIN MPO CPS NHE CXS BTB B3P BCN CIT FLC ACT ACE ACY FMT MLI MLA TAR TLA SRT IMD AZI SCN NO3 SO4 PO4 PI 2HP PO3 SUL DMS DMF DMSO BME DTT DTU TCE GAI URE NH4 IOD BR CL F CO3 BCT OXL OXY MLT SIN MAE ACN
+## detergents
+C8E C10 C12 LDA BOG BNG LMT LMU DMU UMQ HTG SOG OLC MPG SDS 12M CPS CHT DDQ TWE P4C 1PG 2CV DXC DAO F09 LMN HXG JEF MYS NKP OTG SGM AV0 B7N UNX
+## membrane lipids / sterols / glycolipids (not free fatty acids)
+CLR Y01 CHD PEE PEF PEV PEH PEK PC1 PCW POV PGV PGW LHG LMG DGD MGE SQD CDL 3PE PTY LPP PSF 6PL LBN 6OU PCF PLC D10 D12 DD9 UND OCT DEC HEX LNK TGL 1EM PEX PGT PTL 9Z9 L2P LPE SPH CN3 CN6 7Q9 8K6 A6L PIO PII 2P0 PLX MC3 POC IP9
+## photosystem / light-harvesting pigments
+CLA CHL BCL BCR BPH PHO LUT XAT NEX A86 ZEX ECH DGA SPN CRT HTG RRX KC1 KC2 PEB PUB CYC PCB
+## N-/O-glycan building blocks (glycosylation, not binding sites)
+NAG NDG BMA MAN FUC FUL SIA A2G NGA
+## unknown / placeholder ligands
+UNL UNK UNX

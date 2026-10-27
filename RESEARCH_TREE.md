@@ -96,5 +96,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] B6 PSI re-implemented from 108 descriptors (r = 0.96 vs API sample)
 - [x] P3 B4 ESM-2 pocket mean (L+D, 0.06 s/pocket) and B5 EPoCS (ESM-2 3B, L only, 0.3 s/pocket), all 7,524
       TOUGH-M1 pockets — reports/baselines_b4_b5.md
+- [x] P3 A2 docking on TOUGH-M1 (128 NCI fragments + 128 lead-like, stock Vina, 12 Å box) — reports/a2_docking.md
+  - [x] L 7,524 + D 6,068 pockets, 0 failures, 0.30 GPU-s/pocket/256 mols (≈13 pockets/s/node)
+  - [x] seed r 0.988 (frag) / 0.972 (lead); ~¼ of best poses flip between seeds
+  - [!] LE residualisation does not remove the size axis; IFP block least confounded (label-free observation)
 - [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md

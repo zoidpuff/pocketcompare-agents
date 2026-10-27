@@ -1,0 +1,43 @@
+{
+  "mode": "D",
+  "raw": "raw_D",
+  "n_shards": 8,
+  "n_pockets_done": 6068,
+  "n_pockets_expected": 6068,
+  "n_fail": 0,
+  "wall_s_max_shard": 907.6,
+  "s_per_pocket_per_shard": 1.1918,
+  "n_mols": 256,
+  "preset": "frag_lite_np",
+  "box_side": 12.0,
+  "seeds": [
+    0
+  ],
+  "rec_annot_match": 1.0,
+  "fragments": {
+    "n_rows": 776704,
+    "n_molecules": 128,
+    "bytes": 17524709,
+    "score_mean": -4.9667,
+    "score_sd": 1.5417,
+    "le_mean": -0.4179,
+    "in_pocket_rate": 0.95124,
+    "frac_positive_score": 0.011114,
+    "nonbinder_rate_90pct": 0.1,
+    "median_pocket_p90": -4.0493,
+    "buried_frac_mean": 0.9563
+  },
+  "leadlike": {
+    "n_rows": 776704,
+    "n_molecules": 128,
+    "bytes": 18145726,
+    "score_mean": -4.9051,
+    "score_sd": 6.8334,
+    "le_mean": -0.2202,
+    "in_pocket_rate": 0.95453,
+    "frac_positive_score": 0.081809,
+    "nonbinder_rate_90pct": 0.1,
+    "median_pocket_p90": -5.1357,
+    "buried_frac_mean": 0.8578
+  }
+}
