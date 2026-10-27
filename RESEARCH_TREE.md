@@ -22,6 +22,9 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D6 (20:25) Amend size strata to 5 (mean log-vol) × 20 (|Δ log-vol|) quantile bins (5 × 5 for sets with < 500
+  positives). Evidence: simulation only (reports/evaluate_module.md: 5×5 → 0.539, 5×20 → 0.507 for a pure size
+  scorer). No real data had been evaluated. evaluate.py frozen at this commit (hash goes into every sidecar).
 - D5 (20:12) Design frozen at v2 after 2 review rounds; no round 3: round-2 changes were exact text, adopted
   verbatim, and all build agents were re-briefed (splits, PPI, eval). Raw label lists chmod 000 (sealed_raw_SHA256SUMS).
   TOUGH-M1 ships per-pair APoc/G-LoSA/SiteEngine scores → paired prior-art baselines B5-T.
@@ -77,5 +80,6 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
 - [~] P3 Build (parallel, 19:50): evaluate.py + provenance (eval agent); homology graph + splits (split agent);
       PPI-L (Pasteur pocketome) + PPIPS (PPI agent, 3 h box); A1 + B0/B1 descriptors (A1 agent);
       B4 ESM-2 + B5 external (baseline agent, cuda:1); A2 docking panels on TOUGH-M1 (A2 agent, cuda:0,2)
+- [x] P3 evaluate.py + provenance + check_report (41 tests; 1M pairs × 2000 boot in 1.7 s) — reports/evaluate_module.md
 - [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md

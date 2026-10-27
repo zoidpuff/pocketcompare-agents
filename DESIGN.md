@@ -180,7 +180,9 @@ Tanimoto and Tversky. Only if A1/A4b are done by 03:00.
   **cluster-balanced AUC** (each ligand cluster / homology group weighted equally) next to pair AUC; per-cluster
   AUC for the 10 largest clusters; retrieval: top-1/top-10/MRR.
 - Size control: **2-D size-stratified AUC** — strata = quintiles of the pair's mean L-mode log-volume ×
-  quintiles of |Δ log-volume| (edges from the evaluated partition); per-stratum AUC weighted by n positives;
+  **20 quantile bins** of |Δ log-volume| (amendment D6: 5 × 5 left a residual size shortcut of 0.539 in
+  simulation, 5 × 20 gave 0.507; sets with < 500 positives use 5 × 5) (edges from the evaluated partition);
+  per-stratum AUC weighted by n positives;
   strata lacking a class dropped and counted. Diagnostic B0m (logistic on log v_a + log v_b and |Δ|, fit on dev)
   must give stratified AUC 0.5 ± 0.03.
   Pocket-marginal shortcut baseline (score = f(pocket a) + f(pocket b), e.g. per-pocket mean similarity).
