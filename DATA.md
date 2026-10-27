@@ -14,6 +14,7 @@ Raw data lives in `data/raw/` (git-ignored); fetch scripts in `scripts/data/`. R
 | KLIFS metadata | https://klifs.net/api (kinase_information, structures_list) | live API snapshot 2026-10-27 | kinase_information.json e9718d7342f8a50b…, structures_list.json 92f4aa708ed6642e… | unstated (none found on klifs.net; cite Kanev et al. 2021) | scripts/data/fetch_klifs.py | 14,917 structures / 7,382 PDB / 371 kinases; 85-residue pocket strings only, no residue numbers |
 | LIGYSIS (Utgés & Barton) | Zenodo 10.5281/zenodo.14645504 | not fetched | — | CC-BY-4.0 | — | site-prediction reference set, no similarity pairs; distributed only as Python pickles (unsafe to unpickle untrusted data) |
 | PoSSuM (Ito et al.) | https://possum.cbrc.pj.aist.go.jp/PoSSuM/ | not fetched (site release Jul-2022) | — | unstated | — | no bulk download found; per-query result downloads only |
+| iPPI-DB cavity summary (feasibility only) | https://ippidb.pasteur.fr/api/summary/ | live API 2026-10-27; partial (10/117 pages, server 503s) | per-page JSON in data/raw/ippidb/pages/ (no combined file yet) | see ippidb.pasteur.fr (unstated in API) | scripts/ppi/07_ippidb_feasibility.py | used only for overlap counts in reports/ppi_dimers.md |
 
 ## Tools (binaries)
 | tool | source | version (commit) | sha256 (archive) | license |

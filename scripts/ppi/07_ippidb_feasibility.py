@@ -11,7 +11,8 @@ Licence: see the iPPI-DB website (record in DATA.md before any use beyond this f
 Prints: cavity counts by partner type and orthosteric/allosteric label, PDB / UniProt counts, and how many
 iPPI-DB protein pairs (and ligand-bound proteins) are also in the AFDB dimer set (any organism).
 Writes data/processed/dimers/ippidb/summary.txt
-Usage: python scripts/ppi/07_ippidb_feasibility.py
+Usage: python scripts/ppi/07_ippidb_feasibility.py [--partial]
+(2026-10-27: the server returned 503s under paging; only 10/117 pages were fetched -> --partial was used.)
 """
 from __future__ import annotations
 
@@ -30,35 +31,49 @@ URL = "https://ippidb.pasteur.fr/api/summary/?format=json&limit=200&offset={}"
 
 
 def fetch() -> list[dict]:
+    """Resumable: each 200-row page is cached in data/raw/ippidb/pages/; rerun to continue after a 503."""
     RAW.mkdir(parents=True, exist_ok=True)
     f = RAW / "summary.json"
     if not f.exists():
-        rows, off = [], 0
+        pdir = RAW / "pages"
+        pdir.mkdir(exist_ok=True)
+        off = 0
         while True:
-            for attempt in range(5):
-                try:
-                    with urllib.request.urlopen(URL.format(off), timeout=120) as r:
-                        d = json.load(r)
-                    break
-                except Exception:  # noqa: BLE001  (server returns sporadic 502s)
-                    if attempt == 4:
-                        raise
-                    time.sleep(30 * (attempt + 1))
-            rows += d["results"]
+            pf = pdir / f"{off:06d}.json"
+            if not pf.exists():
+                for attempt in range(5):
+                    try:
+                        with urllib.request.urlopen(URL.format(off), timeout=120) as r:
+                            pf.write_bytes(r.read())
+                        break
+                    except Exception:  # noqa: BLE001  (server returns 502/503 under load)
+                        if attempt == 4:
+                            raise
+                        time.sleep(60 * (attempt + 1))
+                time.sleep(3.0)   # be polite: the server rate-limits rapid paging
+            d = json.loads(pf.read_text())
             off += 200
-            time.sleep(1.0)   # be polite: the server rate-limits (503) under rapid paging
             if not d.get("next"):
                 break
+        rows = [r for pf in sorted(pdir.glob("*.json")) for r in json.loads(pf.read_text())["results"]]
         f.write_text(json.dumps(rows))
     print(f"{f}: sha256 {hashlib.sha256(f.read_bytes()).hexdigest()}")
     return json.loads(f.read_text())
 
 
 def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--partial", action="store_true", help="summarise only the pages cached so far (no network)")
+    a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    rows = fetch()
+    if a.partial:
+        rows = [r for pf in sorted((RAW / "pages").glob("*.json")) for r in json.loads(pf.read_text())["results"]]
+    else:
+        rows = fetch()
     df = pd.json_normalize(rows)
-    lines = [f"cavities: {len(df)}; PDB entries: {df['chain.pdb'].nunique()}; UniProt (cavity chain): {df['chain.uniprot'].nunique()}",
+    lines = [f"{'PARTIAL (cached pages only, first rows of the API order)' if a.partial else 'FULL'} summary",
+             f"cavities: {len(df)}; PDB entries: {df['chain.pdb'].nunique()}; UniProt (cavity chain): {df['chain.uniprot'].nunique()}",
              f"partner type counts: {df['partner.type'].value_counts().to_dict()}",
              f"site label counts: {df['type'].value_counts().to_dict()}",
              f"organisms (top): {df['chain.organism'].value_counts().head(5).to_dict()}"]

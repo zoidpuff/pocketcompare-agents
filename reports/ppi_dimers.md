@@ -97,7 +97,7 @@ Positives and negatives should be defined at the **site** level: residues mapped
   - Stratify by pair identity (< 30 / 30–50 / > 50 %).
   - OMA's REST API is reachable and can separate orthologues from paralogues. The eggNOG API was unreachable. MMseqs2 alone suffices for feasibility.
 - **(c) PDB PPI-inhibitor sites: external validation, small.**
-  - iPPI-DB is reachable via REST (`/api/summary`, `/api/ligand`, `/api/pdb`; counts at query time: 23,238 cavities, 8,774 PDB entries, 4,424 ligand records, 5,549 proteins). [iPPI_OVERLAP]
+  - iPPI-DB is reachable via REST (`/api/summary`, `/api/ligand`, `/api/pdb`; counts at query time: 23,238 cavities, 8,774 PDB entries, 4,424 ligand records, 5,549 proteins). The full summary pull was rate-limited (HTTP 503); 2,000 of the 23,238 cavities came through (resumable script, `--partial` summary). In that slice, 26 of 311 iPPI-DB protein pairs (8 %) are also AFDB dimers, e.g. CDK2–cyclin E, Ku70/80 and eIF4E–4E-BP1, so PDB-vs-AF comparisons of the same interface are possible for a few hundred complexes.
   - 2P2I-DB: the host resolves but does not respond. TIMBAL: no DNS (defunct).
   - Most PPI inhibitors bind a groove on one partner (single-chain "interface" pockets). True PPI-created ligand sites (molecular glues, 14-3-3 stabilisers) are rare. BURROW's own dimer benchmark (`pocket_detect/data/processed/dimer`, 400 PDB assemblies with homo/hetero-interface ligand sites, symmetric copies grouped) is a ready source of them.
 - **(d) Negatives.**
