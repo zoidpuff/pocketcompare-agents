@@ -1,0 +1,8 @@
+3ptb BEN in 3ptb_A_p2 (crystal ligand inside box: True) v2_fast        top-pose RMSD per seed [0.4, 0.4, 0.41] A, affinity [-6.08, -6.08, -6.08]
+3ptb BEN in 3ptb_A_p2 (crystal ligand inside box: True) frag_lite_np   top-pose RMSD per seed [0.33, 0.32, 0.26] A, affinity [-5.97, -5.97, -5.96]
+3ptb BEN in 3ptb_A_p2 (crystal ligand inside box: True) frag_xlite_np  top-pose RMSD per seed [0.32, 0.29, 0.33] A, affinity [-5.97, -5.94, -6.0]
+3ptb BEN in 3ptb_A_p2 (crystal ligand inside box: True) frag_scan      top-pose RMSD per seed [3.34, 0.22, 0.24] A, affinity [-4.86, -5.91, -5.87]
+3ert OHT in 3ert_A_p1 (crystal ligand inside box: False) v2_fast        top-pose RMSD per seed [1.07, 1.15, 1.08] A, affinity [-9.58, -9.59, -9.55]
+3ert OHT in 3ert_A_p1 (crystal ligand inside box: False) frag_lite_np   top-pose RMSD per seed [1.07, 1.21, 1.15] A, affinity [-9.47, -9.5, -9.45]
+3ert OHT in 3ert_A_p1 (crystal ligand inside box: False) frag_xlite_np  top-pose RMSD per seed [1.36, 1.12, 1.15] A, affinity [-9.56, -9.49, -9.44]
+3ert OHT in 3ert_A_p1 (crystal ligand inside box: False) frag_scan      top-pose RMSD per seed [1.39, 5.2, 1.39] A, affinity [-8.79, -4.72, -8.64]

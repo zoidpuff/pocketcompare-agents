@@ -1,0 +1,208 @@
+=== gpu_v2_fast_pp: 27 pockets x 64 fragments, seeds [0, 1, 2]
+seed reproducibility (raw): per-pocket Pearson r median 0.999, min 0.989, 10th pct 0.994
+seed reproducibility (dz): per-pocket Pearson r median 0.994, min 0.945, 10th pct 0.971
+|score(seed0)-score(seed1)| kcal/mol: median 0.000, 95th pct 0.091, max 1.06
+Spearman(mean fragment score, volume_A3) = -0.742
+Spearman(mean fragment score, bur16_mean) = -0.510
+Spearman(mean fragment score, n_points) = -0.832
+Spearman(mean fragment score, depth_mean) = +0.239
+variance share: pocket means 0.57, fragment means 0.17, residual (pocket x fragment) 0.26
+Spearman(fragment mean score, heavy atoms) = -0.819
+--- pocket-pair Pearson r (raw); all 351 pairs: median +0.819, 90th pct +0.935
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.933  (rank of B among 26 for A: 7)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.912  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.296  (rank of B among 26 for A: 16)
+  same site type, other protein: ATP CDK2/PKA             r=+0.931  (rank of B among 26 for A: 9)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.915  (rank of B among 26 for A: 8)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.887  (rank of B among 26 for A: 12)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.918  (rank of B among 26 for A: 11)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=+0.610  (rank of B among 26 for A: 22)
+  different: heme vs S1 (Mb/trypsin)                      r=+0.600  (rank of B among 26 for A: 23)
+  different: ER ligand site vs S1                         r=+0.514  (rank of B among 26 for A: 23)
+  same-site partner retrieval ranks (raw): [7, 6, 1, 1, 16, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.305
+--- pocket-pair Pearson r (dz); all 351 pairs: median +0.130, 90th pct +0.672
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.773  (rank of B among 26 for A: 3)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.778  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.603  (rank of B among 26 for A: 2)
+  same site type, other protein: ATP CDK2/PKA             r=+0.726  (rank of B among 26 for A: 6)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.624  (rank of B among 26 for A: 9)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.455  (rank of B among 26 for A: 11)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.646  (rank of B among 26 for A: 9)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=-0.216  (rank of B among 26 for A: 21)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.212  (rank of B among 26 for A: 17)
+  different: ER ligand site vs S1                         r=-0.364  (rank of B among 26 for A: 20)
+  same-site partner retrieval ranks (dz): [3, 6, 1, 1, 2, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.347
+=== gpu_v2_default_pp: 27 pockets x 64 fragments, seeds [0, 1, 2]
+seed reproducibility (raw): per-pocket Pearson r median 1.000, min 0.992, 10th pct 0.997
+seed reproducibility (dz): per-pocket Pearson r median 0.999, min 0.972, 10th pct 0.989
+|score(seed0)-score(seed1)| kcal/mol: median 0.000, 95th pct 0.018, max 0.63
+Spearman(mean fragment score, volume_A3) = -0.742
+Spearman(mean fragment score, bur16_mean) = -0.510
+Spearman(mean fragment score, n_points) = -0.832
+Spearman(mean fragment score, depth_mean) = +0.239
+variance share: pocket means 0.57, fragment means 0.17, residual (pocket x fragment) 0.26
+Spearman(fragment mean score, heavy atoms) = -0.820
+--- pocket-pair Pearson r (raw); all 351 pairs: median +0.823, 90th pct +0.934
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.931  (rank of B among 26 for A: 9)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.910  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.300  (rank of B among 26 for A: 15)
+  same site type, other protein: ATP CDK2/PKA             r=+0.932  (rank of B among 26 for A: 8)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.917  (rank of B among 26 for A: 8)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.883  (rank of B among 26 for A: 12)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.917  (rank of B among 26 for A: 11)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=+0.617  (rank of B among 26 for A: 22)
+  different: heme vs S1 (Mb/trypsin)                      r=+0.601  (rank of B among 26 for A: 23)
+  different: ER ligand site vs S1                         r=+0.512  (rank of B among 26 for A: 23)
+  same-site partner retrieval ranks (raw): [9, 7, 1, 1, 15, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.307
+--- pocket-pair Pearson r (dz); all 351 pairs: median +0.129, 90th pct +0.674
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.766  (rank of B among 26 for A: 3)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.774  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.603  (rank of B among 26 for A: 2)
+  same site type, other protein: ATP CDK2/PKA             r=+0.730  (rank of B among 26 for A: 5)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.633  (rank of B among 26 for A: 8)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.438  (rank of B among 26 for A: 11)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.643  (rank of B among 26 for A: 9)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=-0.203  (rank of B among 26 for A: 21)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.212  (rank of B among 26 for A: 19)
+  different: ER ligand site vs S1                         r=-0.368  (rank of B among 26 for A: 20)
+  same-site partner retrieval ranks (dz): [3, 6, 1, 1, 2, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.350
+=== gpu_frag_lite_np_multi: 27 pockets x 64 fragments, seeds [0, 1, 2]
+seed reproducibility (raw): per-pocket Pearson r median 0.995, min 0.974, 10th pct 0.982
+seed reproducibility (dz): per-pocket Pearson r median 0.980, min 0.902, 10th pct 0.940
+|score(seed0)-score(seed1)| kcal/mol: median 0.013, 95th pct 0.200, max 0.90
+Spearman(mean fragment score, volume_A3) = -0.736
+Spearman(mean fragment score, bur16_mean) = -0.502
+Spearman(mean fragment score, n_points) = -0.825
+Spearman(mean fragment score, depth_mean) = +0.235
+variance share: pocket means 0.57, fragment means 0.17, residual (pocket x fragment) 0.27
+Spearman(fragment mean score, heavy atoms) = -0.809
+--- pocket-pair Pearson r (raw); all 351 pairs: median +0.821, 90th pct +0.938
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.943  (rank of B among 26 for A: 7)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.901  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.283  (rank of B among 26 for A: 19)
+  same site type, other protein: ATP CDK2/PKA             r=+0.938  (rank of B among 26 for A: 9)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.913  (rank of B among 26 for A: 8)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.887  (rank of B among 26 for A: 12)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.927  (rank of B among 26 for A: 10)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=+0.589  (rank of B among 26 for A: 23)
+  different: heme vs S1 (Mb/trypsin)                      r=+0.594  (rank of B among 26 for A: 23)
+  different: ER ligand site vs S1                         r=+0.504  (rank of B among 26 for A: 23)
+  same-site partner retrieval ranks (raw): [7, 4, 1, 1, 19, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.300
+--- pocket-pair Pearson r (dz); all 351 pairs: median +0.118, 90th pct +0.698
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.805  (rank of B among 26 for A: 3)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.761  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.610  (rank of B among 26 for A: 2)
+  same site type, other protein: ATP CDK2/PKA             r=+0.749  (rank of B among 26 for A: 5)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.615  (rank of B among 26 for A: 8)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.472  (rank of B among 26 for A: 10)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.688  (rank of B among 26 for A: 9)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=-0.258  (rank of B among 26 for A: 21)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.219  (rank of B among 26 for A: 17)
+  different: ER ligand site vs S1                         r=-0.381  (rank of B among 26 for A: 21)
+  same-site partner retrieval ranks (dz): [3, 6, 1, 1, 2, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.344
+=== gpu_frag_xlite_np_multi: 27 pockets x 64 fragments, seeds [0, 1, 2]
+seed reproducibility (raw): per-pocket Pearson r median 0.985, min 0.899, 10th pct 0.956
+seed reproducibility (dz): per-pocket Pearson r median 0.939, min 0.692, 10th pct 0.877
+|score(seed0)-score(seed1)| kcal/mol: median 0.033, 95th pct 0.320, max 1.40
+Spearman(mean fragment score, volume_A3) = -0.727
+Spearman(mean fragment score, bur16_mean) = -0.492
+Spearman(mean fragment score, n_points) = -0.811
+Spearman(mean fragment score, depth_mean) = +0.233
+variance share: pocket means 0.56, fragment means 0.16, residual (pocket x fragment) 0.28
+Spearman(fragment mean score, heavy atoms) = -0.778
+--- pocket-pair Pearson r (raw); all 351 pairs: median +0.811, 90th pct +0.935
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.947  (rank of B among 26 for A: 5)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.901  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.299  (rank of B among 26 for A: 20)
+  same site type, other protein: ATP CDK2/PKA             r=+0.934  (rank of B among 26 for A: 10)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.910  (rank of B among 26 for A: 8)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.882  (rank of B among 26 for A: 12)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.917  (rank of B among 26 for A: 12)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=+0.568  (rank of B among 26 for A: 22)
+  different: heme vs S1 (Mb/trypsin)                      r=+0.572  (rank of B among 26 for A: 23)
+  different: ER ligand site vs S1                         r=+0.496  (rank of B among 26 for A: 23)
+  same-site partner retrieval ranks (raw): [5, 4, 1, 1, 20, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.289
+--- pocket-pair Pearson r (dz); all 351 pairs: median +0.101, 90th pct +0.706
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.822  (rank of B among 26 for A: 2)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.767  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.627  (rank of B among 26 for A: 1)
+  same site type, other protein: ATP CDK2/PKA             r=+0.753  (rank of B among 26 for A: 7)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.630  (rank of B among 26 for A: 9)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.498  (rank of B among 26 for A: 10)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.672  (rank of B among 26 for A: 10)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=-0.261  (rank of B among 26 for A: 22)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.214  (rank of B among 26 for A: 16)
+  different: ER ligand site vs S1                         r=-0.350  (rank of B among 26 for A: 22)
+  same-site partner retrieval ranks (dz): [2, 5, 1, 1, 1, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.323
+=== gpu_frag_scan_multi: 27 pockets x 64 fragments, seeds [0, 1, 2]
+seed reproducibility (raw): per-pocket Pearson r median 0.906, min 0.661, 10th pct 0.766
+seed reproducibility (dz): per-pocket Pearson r median 0.763, min 0.398, 10th pct 0.559
+|score(seed0)-score(seed1)| kcal/mol: median 0.182, 95th pct 0.772, max 6.83
+Spearman(mean fragment score, volume_A3) = -0.701
+Spearman(mean fragment score, bur16_mean) = -0.478
+Spearman(mean fragment score, n_points) = -0.786
+Spearman(mean fragment score, depth_mean) = +0.231
+variance share: pocket means 0.57, fragment means 0.10, residual (pocket x fragment) 0.33
+Spearman(fragment mean score, heavy atoms) = -0.663
+--- pocket-pair Pearson r (raw); all 351 pairs: median +0.760, 90th pct +0.919
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.947  (rank of B among 26 for A: 2)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.893  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.312  (rank of B among 26 for A: 3)
+  same site type, other protein: ATP CDK2/PKA             r=+0.922  (rank of B among 26 for A: 8)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.919  (rank of B among 26 for A: 5)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.814  (rank of B among 26 for A: 11)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.861  (rank of B among 26 for A: 13)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=+0.504  (rank of B among 26 for A: 22)
+  different: heme vs S1 (Mb/trypsin)                      r=+0.565  (rank of B among 26 for A: 22)
+  different: ER ligand site vs S1                         r=+0.447  (rank of B among 26 for A: 22)
+  same-site partner retrieval ranks (raw): [2, 3, 1, 1, 3, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.285
+--- pocket-pair Pearson r (dz); all 351 pairs: median +0.162, 90th pct +0.739
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.851  (rank of B among 26 for A: 2)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.788  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.567  (rank of B among 26 for A: 2)
+  same site type, other protein: ATP CDK2/PKA             r=+0.807  (rank of B among 26 for A: 5)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.795  (rank of B among 26 for A: 5)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.464  (rank of B among 26 for A: 10)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=+0.607  (rank of B among 26 for A: 11)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=-0.149  (rank of B among 26 for A: 21)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.012  (rank of B among 26 for A: 15)
+  different: ER ligand site vs S1                         r=-0.237  (rank of B among 26 for A: 21)
+  same-site partner retrieval ranks (dz): [2, 4, 1, 1, 2, 2]  (random expectation ~14)
+  Spearman(pair r, -|dlog volume|) over pairs = +0.286
+=== probe: 27 pockets x 40 features (column-z then row-z)
+--- pocket-pair Pearson r (dz); all 351 pairs: median -0.039, 90th pct +0.780
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=-0.278  (rank of B among 26 for A: 15)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.987  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=-0.090  (rank of B among 26 for A: 13)
+  same site type, other protein: ATP CDK2/PKA             r=-0.724  (rank of B among 26 for A: 22)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.452  (rank of B among 26 for A: 11)
+  same ligand, other fold: heme myoglobin/P450cam         r=-0.413  (rank of B among 26 for A: 22)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=-0.240  (rank of B among 26 for A: 14)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=-0.647  (rank of B among 26 for A: 21)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.304  (rank of B among 26 for A: 19)
+  different: ER ligand site vs S1                         r=-0.188  (rank of B among 26 for A: 15)
+  same-site partner retrieval ranks (dz): [15, 15, 1, 1, 13, 12]
+  Spearman(pair r, -|dlog volume|) over pairs = +0.131
+=== desc: 27 pockets x 39 features (column-z then row-z)
+--- pocket-pair Pearson r (dz); all 351 pairs: median -0.037, 90th pct +0.564
+  same site, same protein: CDK2 ATP 1hck/1aq1             r=+0.027  (rank of B among 26 for A: 12)
+  same site, same protein: trypsin S1 3ptb/2ptn(apo)      r=+0.979  (rank of B among 26 for A: 1)
+  same site, same protein: trypsin Ca site 3ptb/2ptn      r=+0.879  (rank of B among 26 for A: 1)
+  same site type, other protein: ATP CDK2/PKA             r=+0.057  (rank of B among 26 for A: 10)
+  same ligand, other fold: ATP site PKA/HSP90             r=+0.743  (rank of B among 26 for A: 4)
+  same ligand, other fold: heme myoglobin/P450cam         r=+0.031  (rank of B among 26 for A: 12)
+  different: kinase ATP vs heme (CDK2/Mb)                 r=-0.611  (rank of B among 26 for A: 26)
+  different: kinase ATP vs S1 (CDK2/trypsin)              r=+0.334  (rank of B among 26 for A: 6)
+  different: heme vs S1 (Mb/trypsin)                      r=-0.537  (rank of B among 26 for A: 22)
+  different: ER ligand site vs S1                         r=-0.034  (rank of B among 26 for A: 14)
+  same-site partner retrieval ranks (dz): [12, 13, 1, 1, 1, 1]
+  Spearman(pair r, -|dlog volume|) over pairs = +0.204

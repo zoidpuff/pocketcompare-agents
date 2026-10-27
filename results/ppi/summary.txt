@@ -1,0 +1,113 @@
+[verify] export vs CLI dimer_default: structures differing = 0
+[verify] export vs CLI dimer_full: structures differing = 0
+[verify] export vs CLI mono_default: structures differing = 0
+[verify] export vs CLI mono_full: structures differing = 0
+[timing] CLI dimer_default: 600 inputs in 15.2 s wall (39.6/s, cpu, 16 workers; includes process start-up)
+[timing] CLI dimer_full: 600 inputs in 15.5 s wall (38.8/s, cpu, 16 workers; includes process start-up)
+[timing] CLI mono_default: 1200 inputs in 14.5 s wall (83.0/s, cpu, 16 workers; includes process start-up)
+[timing] CLI mono_full: 1200 inputs in 14.6 s wall (82.0/s, cpu, 16 workers; includes process start-up)
+[timing] CLI dimer_default_gpu: 600 inputs in 21.2 s wall (28.3/s, cuda:3, 8 workers; includes process start-up)
+[timing] CLI dimer_default per structure (worker-internal, incl. parse): median 322 ms, p95 792 ms; atoms median 4874
+[timing] CLI dimer_full per structure (worker-internal, incl. parse): median 328 ms, p95 807 ms; atoms median 4874
+[timing] CLI mono_default per structure (worker-internal, incl. parse): median 149 ms, p95 405 ms; atoms median 2391
+[timing] CLI dimer_default_gpu per structure (worker-internal, incl. parse): median 193 ms, p95 608 ms; atoms median 4874
+[timing] reference export (1 thread/process) dimers: median 0.80 s, p95 1.91 s
+[timing] reference export (1 thread/process) monomers: median 0.39 s, p95 0.95 s
+
+== Pocket counts: dimers 600, pockets FULL 28981, DEFAULT 8560; per dimer DEFAULT 12.00 [8.00-18.00], FULL 50.00 [50.00-50.00]
+monomer pockets per chain DEFAULT 7.00 [5.00-11.00], FULL 50.00 [35.00-50.00]
+DEFAULT pockets with n_points < 10 (excluded below as non-cavity): 40.1% (3429/8560); of which metal-candidate singletons (volume 0): 750; 1-point surface tiles: 2436
+FULL pockets with n_points < 10: 62.8% (18211/28981)
+cavity pockets (n_points >= 10) per dimer: DEFAULT 7.00 [4.00-11.00], FULL 18.00 [14.00-21.00]
+
+== f_min distribution (DEFAULT pockets): share with f_min = 0: 0.592; (0,0.1): 0.044; [0.1,0.25): 0.098; [0.25,0.4): 0.136; >=0.4: 0.130
+f_min histogram (f_min>0, bins of 0.05 from 0 to 0.5): [38, 190, 185, 128, 190, 271, 217, 208, 311, 358]
+  f_pts_both (share of points with both chains <= 6 A) for single   : 0.00 [0.00-0.00]
+  f_pts_both (share of points with both chains <= 6 A) for touching : 0.54 [0.32-0.76]
+  f_pts_both (share of points with both chains <= 6 A) for interface: 0.91 [0.76-0.99]
+
+== Fraction of dimers with >=1 interface pocket (f_min >= T)
+  T=0.10 DEFAULT: all 89.5% (537/600) | homo 90.7% (272/300) | hetero 88.3% (265/300)
+  T=0.10 FULL   : all 98.5% (591/600) | homo 99.0% (297/300) | hetero 98.0% (294/300)
+  T=0.10 top-3  : all 52.3% (314/600) | homo 54.0% (162/300) | hetero 50.7% (152/300)
+  T=0.10 top-1  : all 28.3% (170/600) | homo 30.0% (90/300) | hetero 26.7% (80/300)
+  T=0.25 DEFAULT: all 82.5% (495/600) | homo 85.7% (257/300) | hetero 79.3% (238/300)
+  T=0.25 FULL   : all 96.2% (577/600) | homo 97.0% (291/300) | hetero 95.3% (286/300)
+  T=0.25 top-3  : all 42.7% (256/600) | homo 43.0% (129/300) | hetero 42.3% (127/300)
+  T=0.25 top-1  : all 20.3% (122/600) | homo 21.7% (65/300) | hetero 19.0% (57/300)
+  T=0.40 DEFAULT: all 61.2% (367/600) | homo 68.7% (206/300) | hetero 53.7% (161/300)
+  T=0.40 FULL   : all 84.7% (508/600) | homo 89.0% (267/300) | hetero 80.3% (241/300)
+  T=0.40 top-3  : all 25.3% (152/600) | homo 27.0% (81/300) | hetero 23.7% (71/300)
+  T=0.40 top-1  : all 9.3% (56/600) | homo 9.7% (29/300) | hetero 9.0% (27/300)
+  DEFAULT T=0.25 ecoli  hetero: 72.0% (72/100); interface pockets/dimer 2.01
+  DEFAULT T=0.25 ecoli  homo  : 84.0% (84/100); interface pockets/dimer 2.62
+  DEFAULT T=0.25 human  hetero: 84.0% (84/100); interface pockets/dimer 2.08
+  DEFAULT T=0.25 human  homo  : 86.0% (86/100); interface pockets/dimer 2.68
+  DEFAULT T=0.25 yeast  hetero: 82.0% (82/100); interface pockets/dimer 1.84
+  DEFAULT T=0.25 yeast  homo  : 87.0% (87/100); interface pockets/dimer 2.42
+  ipTM tertile low (0.34-0.77): 81.5% (163/200)
+  ipTM tertile mid (0.77-0.88): 82.0% (164/200)
+  ipTM tertile high (0.88-0.97): 84.0% (168/200)
+  share of DEFAULT pockets that are interface: 26.6% (1365/5131); touching 14.2% (731/5131)
+  rank of best interface pocket (dimers having one): rank1 24.6% (122/495), <=3 51.7% (256/495)
+
+== Interface vs single-chain pockets (DEFAULT list): median [IQR]
+  score         interface 0.08 [0.05-0.16] | single 0.09 [0.05-0.22] | touching 0.10 [0.05-0.22]
+  volume_A3     interface 98.00 [54.00-180.00] | single 91.00 [51.00-150.00] | touching 123.00 [71.00-241.50]
+  n_lining      interface 14.00 [10.00-19.00] | single 13.00 [9.00-17.00] | touching 16.00 [11.00-23.00]
+  bur10_mean    interface 0.80 [0.74-0.90] | single 0.79 [0.72-0.89] | touching 0.81 [0.73-0.90]
+  bur16_mean    interface 0.86 [0.80-0.95] | single 0.84 [0.78-0.93] | touching 0.87 [0.80-0.95]
+  burbb16_mean  interface 0.71 [0.63-0.83] | single 0.70 [0.60-0.81] | touching 0.73 [0.63-0.84]
+  depth_mean    interface 6.14 [4.87-7.05] | single 6.23 [5.04-7.16] | touching 6.03 [4.86-7.05]
+  escape        interface 0.13 [0.05-0.19] | single 0.15 [0.06-0.21] | touching 0.12 [0.05-0.19]
+  psp_mean      interface 3.77 [2.80-5.14] | single 3.57 [2.57-4.89] | touching 3.80 [2.71-5.10]
+  plddt_mean    interface 91.55 [86.36-95.30] | single 91.62 [86.16-95.00] | touching 90.62 [86.28-94.54]
+  score >= 0.1: interface 41.2% (562/1365) | single 46.6% (1413/3035)
+  score >= 0.3: interface 9.9% (135/1365) | single 17.1% (519/3035)
+  score >= 0.5: interface 2.8% (38/1365) | single 7.1% (215/3035)
+  homo: score interface 0.09 [0.05-0.18] vs single 0.10 [0.05-0.25]; bur16 interface 0.88 [0.80-0.96] vs single 0.86 [0.79-0.94]
+  hetero: score interface 0.08 [0.05-0.15] vs single 0.08 [0.05-0.18]; bur16 interface 0.84 [0.80-0.92] vs single 0.82 [0.77-0.92]
+
+== Monomer comparison (dimer pocket covered by monomer pockets; points within 2 A)
+  CONTROL single-chain pockets >= 12 A from partner (n=1170): best_cov (monomer FULL) 0.88 [0.42-1.00]; recovered (best_cov>=0.5) 72.7% (851/1170); in monomer DEFAULT 66.9% (783/1170); union_cov<0.2 17.1% (200/1170)
+  interface DEFAULT (n=1365): created(union_cov<0.2) 48.8% (666/1365); partial 27.5% (376/1365); pre-existing(best_cov>=0.5, mono FULL) 23.7% (323/1365); absent from monomer DEFAULT (best_cov_def<0.5) 85.8% (1171/1365); union_cov 0.21 [0.04-0.56]
+  touching DEFAULT (n=731): created(union_cov<0.2) 25.0% (183/731); partial 23.0% (168/731); pre-existing(best_cov>=0.5, mono FULL) 52.0% (380/731); absent from monomer DEFAULT (best_cov_def<0.5) 55.3% (404/731); union_cov 0.62 [0.20-0.91]
+  single near-interface (<12 A) DEFAULT (n=1865): created(union_cov<0.2) 10.0% (187/1865); partial 13.3% (248/1865); pre-existing(best_cov>=0.5, mono FULL) 76.7% (1430/1865); absent from monomer DEFAULT (best_cov_def<0.5) 27.7% (516/1865); union_cov 0.90 [0.62-1.00]
+  interface FULL (n=2540): created(union_cov<0.2) 54.3% (1380/2540); partial 25.6% (650/2540); pre-existing(best_cov>=0.5, mono FULL) 20.1% (510/2540); absent from monomer DEFAULT (best_cov_def<0.5) 89.9% (2284/2540); union_cov 0.16 [0.02-0.47]
+  score-stratified (DEFAULT cavity pockets): created = union_cov<0.2, recovered = best_cov>=0.5
+   score (0,0.1]: CONTROL n=746 recovered 67.0% (500/746) created 22.8% (170/746) | INTERFACE n=803 recovered 20.2% (162/803) created 54.2% (435/803)
+   score (0.1,0.3]: CONTROL n=312 recovered 80.8% (252/312) created 8.3% (26/312) | INTERFACE n=427 recovered 24.6% (105/427) created 47.5% (203/427)
+   score (0.3,1.0]: CONTROL n=112 recovered 88.4% (99/112) created 3.6% (4/112) | INTERFACE n=135 recovered 41.5% (56/135) created 20.7% (28/135)
+  interface DEFAULT homo (n=772): created 47.5% (367/772); absent from monomer DEFAULT 84.3% (651/772)
+  interface DEFAULT hetero (n=593): created 50.4% (299/593); absent from monomer DEFAULT 87.7% (520/593)
+  pre-existing interface pockets: dimer score 0.10 [0.05-0.22] vs best monomer pocket score 0.04 [0.02-0.10]
+  interface created     : score 0.07 [0.04-0.13], vol 88 [46-153], bur16 0.84 [0.79-0.92], f_min 0.40 [0.33-0.46]
+  interface partial     : score 0.09 [0.05-0.19], vol 140 [82-316], bur16 0.84 [0.80-0.92], f_min 0.39 [0.32-0.44]
+  interface pre-existing: score 0.10 [0.05-0.22], vol 82 [49-139], bur16 0.93 [0.84-0.98], f_min 0.35 [0.29-0.43]
+  dimers with >=1 PPI-created interface pocket in DEFAULT list: 57.3% (344/600)
+
+== Homodimer symmetry (same residue numbers on A and B)
+  chain A vs B CA RMSD after superposition: 0.10 [0.03-0.52]; >2 A: 14.7% (44/300)
+  on-axis (interface, J_self>=0.3): 23.6% (182/772) of 772 interface DEFAULT pockets
+  on-axis (interface, J_self>=0.5): 19.9% (154/772) of 772 interface DEFAULT pockets
+  on-axis (interface, J_self>=0.7): 15.0% (116/772) of 772 interface DEFAULT pockets
+  DEFAULT homodimer pockets 2811: on-axis interface 154; off-axis 2657
+   off-axis interface (n=618): symmetric copy in DEFAULT 47.7% (295/618); in FULL 54.0% (334/618); partner J 0.53 [0.33-0.75]
+   off-axis touching  (n=426): symmetric copy in DEFAULT 53.1% (226/426); in FULL 57.7% (246/426); partner J 0.56 [0.38-0.75]
+   off-axis single    (n=1613): symmetric copy in DEFAULT 60.5% (976/1613); in FULL 64.8% (1046/1613); partner J 0.61 [0.41-0.80]
+   off-axis score (0,0.1] (n=1339): copy in DEFAULT 47.4% (635/1339); FULL 56.8% (760/1339); interface-only: FULL 56.7% (199/351)
+   off-axis score (0.1,0.3] (n=802): copy in DEFAULT 61.6% (494/802); FULL 62.1% (498/802); interface-only: FULL 48.1% (90/187)
+   off-axis score (0.3,1.0] (n=516): copy in DEFAULT 71.3% (368/516); FULL 71.3% (368/516); interface-only: FULL 56.2% (45/80)
+   geometric copy check (p's points mapped by the A<->B superposition; other FULL pockets): best single-pocket coverage >= 0.5 73.8% (1961/2657); union coverage >= 0.5 78.0% (2072/2657); union < 0.2 (copy site not a pocket at all) 12.9% (343/2657)
+    interface: geo best >= 0.5 66.0% (408/618); geo union >= 0.5 71.5% (442/618)
+    single: geo best >= 0.5 77.3% (1247/1613); geo union >= 0.5 80.6% (1300/1613)
+   all off-axis: copy in DEFAULT 56.3% (1497/2657); FULL 61.2% (1626/2657); with J>=0.3 in FULL 83.4% (2217/2657)
+   top-3 off-axis pockets: copy in FULL 69.2% (454/656)
+  mutual symmetric pairs (J>=0.5, FULL lists): 1318 in 293 of 300 homodimers; both in DEFAULT: 748
+   DEFAULT pairs involving interface: 171 (131 dimers)
+   DEFAULT pairs involving touching: 155 (128 dimers)
+   DEFAULT pairs involving single: 510 (202 dimers)
+   pair |score diff| 0.017 [0.007-0.034]; geometric coverage after superposition 0.97 [0.85-1.00]; J 0.75 [0.62-0.86]
+   pairs per homodimer (DEFAULT both): 2.00 [1.00-3.00]
+   share of off-axis pockets with a copy, by chain RMSD: <=1 A 0.67 [0.44-0.80]; >1 A 0.60 [0.28-0.77] (n=54 dimers)
+   extrapolated symmetric DEFAULT pairs over all 6673 homodimers: 15869 (interface-involving 3987); per dimer by organism {'ecoli': 2.56, 'human': 2.3, 'yeast': 2.62}; on-axis interface pockets/homodimer 0.51

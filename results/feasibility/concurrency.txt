@@ -1,0 +1,5 @@
+frag_lite_np, layout multi, chunk 2048, 27 pockets x 64 fragments x 3 seeds per process (5184 pairs), 2026-10-27, node eu-g6-048 (shared, load ~25)
+4 GPUs x 1 proc/GPU: 4 procs, 20736 pairs, mean per-process timed wall 4.24 s -> 4893 pairs/s per node (1223 per GPU)
+4 GPUs x 2 proc/GPU: 8 procs, 41472 pairs, mean per-process timed wall 5.94 s -> 6987 pairs/s per node (1747 per GPU)
+4 GPUs x 4 proc/GPU: 16 procs, 82944 pairs, mean per-process timed wall 8.71 s -> 9521 pairs/s per node (2380 per GPU)
+outer wall incl. python start-up + warm-up (~4-5 s/process): 1 proc/GPU 9.0 s (2313 pairs/s), 2: 11.3 s (3664), 4: 16.3 s (5080)
