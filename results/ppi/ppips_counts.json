@@ -1,0 +1,60 @@
+{
+ "complexes": {
+  "train": 1472,
+  "val": 268,
+  "test": 251
+ },
+ "complex_groups": {
+  "test": 34,
+  "train": 119,
+  "val": 34
+ },
+ "giant_group_complexes": 113,
+ "n_groups": 187,
+ "burrow_train_complexes": 79,
+ "pockets": {
+  "train": 15593,
+  "val": 2472,
+  "test": 2432
+ },
+ "interface_pockets": {
+  "train": 3756,
+  "test": 667,
+  "val": 580
+ },
+ "sym_pairs": {
+  "train": 2088,
+  "test": 440,
+  "val": 366
+ },
+ "sym_pairs_interface": {
+  "train": 425,
+  "test": 83,
+  "val": 72
+ },
+ "sym_on_axis_pockets": 694,
+ "ortho_interface_queries_considered": 20693,
+ "ortho_queries": {
+  "train": 1088,
+  "test": 229,
+  "val": 95
+ },
+ "ortho_complex_pairs": {
+  "test": 195,
+  "train": 878,
+  "val": 79
+ },
+ "ortho_queries_by_type": {
+  "test/hetero": 148,
+  "test/homo": 81,
+  "train/hetero": 432,
+  "train/homo": 656,
+  "val/hetero": 62,
+  "val/homo": 33
+ },
+ "ortho_queries_if_overlap_coef_rule": 8905,
+ "ortho_candidates_p50": 10.0,
+ "ortho_positives_p50": 1.0,
+ "ortho_frac_mapped_ge_0.5_and_no_counterpart": 16148,
+ "ortho_low_mapping": 3133
+}

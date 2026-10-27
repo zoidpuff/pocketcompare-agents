@@ -1,0 +1,88 @@
+{
+ "cavities_PL_by_label": {
+  "PLOC": 2325,
+  "PLA": 1830,
+  "PLONC": 817
+ },
+ "cavities_HD_by_label": {
+  "orthosteric": 18266
+ },
+ "HD_pdb_entries": 4770,
+ "n_descriptors": 108,
+ "ligand_instances": 4424,
+ "ligand_instances_by_label": {
+  "PLOC": 1929,
+  "PLA": 1734,
+  "PLONC": 761
+ },
+ "ligand_parsed": 4270,
+ "ligand_ge12_heavy_atoms": 3934,
+ "in_pdb_mirror": 4421,
+ "distinct_ccd_ids": 3358,
+ "distinct_molecules": 3317,
+ "distinct_molecules_ge12HA": 3104,
+ "ligand_clusters_butina0.6": 1564,
+ "ligand_clusters_ge12HA": 1447,
+ "pdb_entries": 4005,
+ "uniprot": 285,
+ "pfam_families": 141,
+ "pfam_missing": 1454,
+ "top_uniprot": {
+  "O60885": 367,
+  "P07900": 227,
+  "P11838": 186,
+  "Q16539": 160,
+  "P00533": 150,
+  "P00760": 136,
+  "O14965": 122,
+  "P37231": 112,
+  "P01116": 97,
+  "P47811": 89,
+  "P28482": 87,
+  "P18031": 76,
+  "Q04771": 73,
+  "Q92793": 67,
+  "P22303": 59
+ },
+ "top_pfam": {
+  "Pkinase": 543,
+  "Bromodomain": 336,
+  "Trypsin": 223,
+  "HATPase_c_3": 204,
+  "Hormone_recep": 191,
+  "PK_Tyr_Ser-Thr": 159,
+  "Asp": 111,
+  "Y_phosphatase": 68,
+  "Beta-lactamase": 57,
+  "Ras": 48,
+  "Peptidase_M10": 47,
+  "Lipocalin": 47,
+  "SWIB": 47,
+  "BIR": 36,
+  "SET": 35
+ },
+ "top_ccd": {
+  "U1H": 65,
+  "LU8": 62,
+  "SAM": 49,
+  "BNG": 32,
+  "MA4": 30,
+  "GCP": 20,
+  "SAH": 15,
+  "SB4": 15,
+  "MYA": 14,
+  "OTA": 13,
+  "DHT": 11,
+  "UDP": 11,
+  "2AN": 11,
+  "DBH": 10,
+  "ANH": 10
+ },
+ "heavy_atoms_q": {
+  "0.05": 10.0,
+  "0.25": 19.0,
+  "0.5": 27.0,
+  "0.75": 34.0,
+  "0.95": 46.0
+ }
+}

@@ -1,0 +1,143 @@
+{
+ "exclusions": {
+  "not_ok": 46,
+  "no_smiles": 153,
+  "lt12HA": 335,
+  "sdf_incomplete": 187,
+  "cofactor_additive": 228,
+  "eligible_any": 3740,
+  "primary_PLOC_PLONC": 2236,
+  "PLA_eligible": 1504
+ },
+ "homology": {
+  "chains": 4003,
+  "groups": 157,
+  "largest_group_chains": 969,
+  "seq_edges": 735235,
+  "struct_edges": 1426826
+ },
+ "primary": {
+  "train": {
+   "pockets": 1278,
+   "groups": 49,
+   "ligand_clusters": 509,
+   "positives": 34,
+   "negatives": 663250,
+   "pos_groups": 17,
+   "pos_ligand_clusters": 14,
+   "pos_pockets": 40,
+   "pos_identical_molecule": 4
+  },
+  "val": {
+   "pockets": 528,
+   "groups": 18,
+   "ligand_clusters": 270,
+   "positives": 0,
+   "negatives": 70501,
+   "pos_groups": 0,
+   "pos_ligand_clusters": 0,
+   "pos_pockets": 0,
+   "pos_identical_molecule": 0
+  },
+  "test": {
+   "pockets": 430,
+   "groups": 26,
+   "ligand_clusters": 198,
+   "positives": 3,
+   "negatives": 70310,
+   "pos_groups": 2,
+   "pos_ligand_clusters": 1,
+   "pos_pockets": 4,
+   "pos_identical_molecule": 0
+  },
+  "all_cross_group": {
+   "positives": 175,
+   "negatives": 2253653,
+   "pos_groups": 38,
+   "pos_ligand_clusters": 37,
+   "pos_pockets": 130,
+   "pos_identical_molecule": 9
+  },
+  "top_group_share_of_cross_group_positives": 0.23142857142857143,
+  "gate_PI_round2": {
+   "rule": "test positives >= 50, spanning >= 10 groups and >= 5 ligand clusters",
+   "pass": false
+  },
+  "gate_DESIGN_v1": {
+   "rule": "test cross-group positives >= 100",
+   "pass": false
+  }
+ },
+ "sealed_sha256": {
+  "ppi_l_test_pairs.parquet": "8a10795f4753cbcd640a393b3f25ad7ac4d027097591a4593ad7f195f49b027b"
+ },
+ "primary_all_cross_group_positive_family_pairs_top": {
+  "Bromodomain | P47811": 31,
+  "O60885 | P47811": 28,
+  "TPR_12 | TcdB_N": 6,
+  "Q10471 | TcdB_N": 6,
+  "Q8THG6 | Q9BYW2": 6,
+  "O95149 | Ras": 4,
+  "Cupin_8 | Peptidase_M14": 4,
+  "Glyco_hydro_20b | P00698": 4,
+  "JmjC | P00698": 4,
+  "Q8THG6 | SIR2": 4,
+  "AWS | Q8THG6": 4,
+  "Q10471 | TPR_12": 4,
+  "P47811 | Q6PL18": 4,
+  "Peptidase_C1 | Peptidase_M4": 3,
+  "Ras | SIR2": 3
+ },
+ "with_PLA": {
+  "train": {
+   "pockets": 2302,
+   "groups": 42,
+   "ligand_clusters": 906,
+   "positives": 164,
+   "negatives": 1971149,
+   "pos_groups": 15,
+   "pos_ligand_clusters": 29,
+   "pos_pockets": 103,
+   "pos_identical_molecule": 13
+  },
+  "val": {
+   "pockets": 736,
+   "groups": 28,
+   "ligand_clusters": 292,
+   "positives": 7,
+   "negatives": 220981,
+   "pos_groups": 8,
+   "pos_ligand_clusters": 6,
+   "pos_pockets": 12,
+   "pos_identical_molecule": 2
+  },
+  "test": {
+   "pockets": 702,
+   "groups": 58,
+   "ligand_clusters": 313,
+   "positives": 15,
+   "negatives": 213455,
+   "pos_groups": 10,
+   "pos_ligand_clusters": 5,
+   "pos_pockets": 16,
+   "pos_identical_molecule": 1
+  },
+  "all_cross_group": {
+   "positives": 406,
+   "negatives": 6228698,
+   "pos_groups": 56,
+   "pos_ligand_clusters": 61,
+   "pos_pockets": 231,
+   "pos_identical_molecule": 26
+  },
+  "top_group_share_of_cross_group_positives": 0.22413793103448276,
+  "gate_PI_round2": {
+   "rule": "test positives >= 50, spanning >= 10 groups and >= 5 ligand clusters",
+   "pass": false
+  },
+  "gate_DESIGN_v1": {
+   "rule": "test cross-group positives >= 100",
+   "pass": false
+  }
+ }
+}

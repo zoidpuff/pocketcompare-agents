@@ -22,6 +22,11 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D7 (20:50) **C3 gate failed** (recorded before any similarity score): PPI-L (Pasteur, 2,236 PLOC+PLONC modulator
+  pockets, 93 homology groups) has only 175 cross-group positive pairs in total; test split has 3 pairs / 2
+  groups / 1 ligand cluster. C3 → exploratory; Holm family = {C1a, C1b, C2}. PPI evaluation relies on PPIPS
+  (P-ortho transfer retrieval, P-sym sanity) and an exploratory PPI-R retrieval task (modulator pockets retrieving
+  other families' modulator pockets over matched non-PPI pockets) if time allows.
 - D6 (20:25) Amend size strata to 5 (mean log-vol) × 20 (|Δ log-vol|) quantile bins (5 × 5 for sets with < 500
   positives). Evidence: simulation only (reports/evaluate_module.md: 5×5 → 0.539, 5×20 → 0.507 for a pure size
   scorer). No real data had been evaluated. evaluate.py frozen at this commit (hash goes into every sidecar).
@@ -85,5 +90,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] 6.3 ms/L-pocket, 0.73 µs/pair; invariance error ≤ 1.3e-7; 17 tests
   - [!] label-free check: same site L vs D mode: A1 AUC 0.70 vs B1 0.94 → A1 is sensitive to pocket definition
   - [~] re-run from committed tree for clean provenance (pid in logs/descriptors_tough_m1.pid)
+- [x] P3 PPI datasets — reports/ppi_datasets.md
+  - [-] PPI-L gate failed (175 cross-group positives in the whole set; shared modulators stay within families)
+  - [x] PPIPS: 1,991 dimers; P-ortho queries 1,088 / 95 / 229; P-sym pairs 2,088 / 366 / 440 (train/val/test)
+  - [x] B6 PSI re-implemented from 108 descriptors (r = 0.96 vs API sample)
 - [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md
