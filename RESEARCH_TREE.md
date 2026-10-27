@@ -13,6 +13,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D2 (19:12) Technical sealing: all benchmark pair/label tables moved to `data/sealed/` (chmod 000, sha256 in
+  `data/sealed_SHA256SUMS.txt`). Raw label lists under data/raw/ are sealed by protocol (agents told not to read
+  them). Before sealing, the data agent only counted pairs (no analysis). TOUGH-M1 dev pairs will be extracted by
+  a split script that writes dev pairs only. Point featurisation of structures (label-free) is allowed for all sets.
 - D1 (18:25) Mount check: `/cluster/work/beltrao/shared/rsyncPDB` (referenced by pocket_detect manifests) is NOT
   mounted; use `/cluster/scratch/jjaenes/pdb/<mid2>/<id>.cif.gz`. BioLiP2 snapshot 2025-11-12 is readable at
   pocket_detect/data/raw/biolip2/current (read-only) — candidate source for a ligand-labelled pair set.
@@ -36,6 +40,8 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
         and must beat a volume-only baseline (n=27 pockets, anecdotal)
   - [-] Probe-atom energy maps on BURROW points and rigid GPU scan: poor signal / no faster (prototype only)
 - [~] P1 PPI / dimer pocket characterization (BURROW on AFDB dimers)
-- [ ] P2 DESIGN.md draft + review rounds (≤3)
+- [~] P2 DESIGN.md draft v0 (19:15) + review round 1 (PI, stats, data, algorithms, agent-failure, domain)
+  - [x] R1 agent-failure-modes review → reviews/round1_agent_failure_modes.md (sealing, eval-first, provenance)
+- [~] P3 Pocket adapter (L/D-mode) + point-feature cache on TOUGH-M1 (label-free)
 - [ ] P3 Implement + evaluate candidate representations
 - [ ] P4 Final held-out evaluation, REPORT.md
