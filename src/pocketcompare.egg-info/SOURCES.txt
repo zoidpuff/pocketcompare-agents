@@ -1,0 +1,7 @@
+pyproject.toml
+src/pocketcompare/__init__.py
+src/pocketcompare/seeds.py
+src/pocketcompare.egg-info/PKG-INFO
+src/pocketcompare.egg-info/SOURCES.txt
+src/pocketcompare.egg-info/dependency_links.txt
+src/pocketcompare.egg-info/top_level.txt
