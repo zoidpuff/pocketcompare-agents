@@ -111,5 +111,11 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] graph 65k chains; within-dataset largest comp: TOUGH 5.1 %, ProSPECCTs 6.6 %, BLiPS 9.6 %
   - [!] 77 % of TOUGH-M1 excluded by the leakage rule (touches BURROW AND a sealed set) → D8
   - [x] BLiPS train/val/test sites 2,699/163/3,606; val too weak → D9 re-split
-- [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
-- [ ] P4 Final held-out evaluation, REPORT.md
+- [~] P3 Dev evaluation of all arms on TOUGH-M1-dev (eval agent; scripts/eval_dev.py)
+- [~] P3 BLiPS re-split (D9) + BLiPS/PPIPS point caches + descriptors (prep agent, cuda:1)
+- [~] P3 Independent split audit (auditor; different code path) — required before first model fit (A4b)
+- [~] P3 A2 docking on PPIPS pockets (A2 agent, cuda:0,2,3) for fragment-vs-lead-like PPI sub-hypothesis
+- [ ] P4 A4b learned metric (after audit + BLiPS descriptors)
+- [ ] P4 Fusion, hub correction, AF robustness (C5), blind test, proteome FAISS demo
+- [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
+- [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md
