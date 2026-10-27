@@ -585,3 +585,114 @@ def resolve_pocket(fs: Featurized, row: dict, root: Path | None = None, cutoff: 
 __all__ = ["Featurized", "featurize_structure", "LPocket", "lmode_from_ligand", "lmode_from_residues",
            "MergedPocket", "merge_pockets", "DMatch", "dmode_match", "coverage", "read_ligand_heavy_atoms",
            "parse_residue_list", "resolve_pocket", "sort_residues", "model_path", "ADAPTER_VERSION"]
+
+
+# --------------------------------------------------------------------------- ligand-free site shapers (D11)
+# A "locator" gives a point set S (L-mode: the ligand shell; D-mode: the matched detected pocket).  A "shaper"
+# turns S into the site actually described, using S only to *locate* the site, so that L- and D-mode differ only
+# in where the site is, not in how its extent is cut.  Duck-typed: ``fs`` needs points, vol, feats,
+# feature_names, atom_xyz, atom_res (a Featurized or the light namespace of scripts/compute_descriptors.py).
+SITE_BUR_FEATURE = "bur10"
+SITE_BUR_MIN = 0.5
+
+
+def _feat(fs, name):
+    return np.asarray(fs.feats[:, list(fs.feature_names).index(name)], np.float64)
+
+
+def buried_centroid(fs, idx, feature: str = "bur16", power: float = 4.0) -> np.ndarray:
+    """Centroid of ``idx`` weighted by vol * feature^power (input frame).  Falls back to the vol-weighted centroid
+    (then the plain centroid) if the weights vanish."""
+    idx = np.asarray(idx, np.int64)
+    if len(idx) == 0:
+        raise ValueError("empty point set")
+    P = np.asarray(fs.points[idx], np.float64)
+    v = np.asarray(fs.vol[idx], np.float64)
+    for w in (v * np.clip(_feat(fs, feature)[idx], 0, None) ** power, v, np.ones(len(idx))):
+        if w.sum() > 0:
+            return (w[:, None] * P).sum(0) / w.sum()
+    return P.mean(0)
+
+
+def site_sphere(fs, center, radius: float, bur_feature: str = SITE_BUR_FEATURE,
+                bur_min: float = SITE_BUR_MIN) -> np.ndarray:
+    """All points of the structure within ``radius`` Å of ``center`` with ``bur_feature >= bur_min`` (sorted)."""
+    P = np.asarray(fs.points, np.float64)
+    d2 = ((P - np.asarray(center, np.float64)) ** 2).sum(1)
+    return np.flatnonzero((d2 <= radius * radius) & (_feat(fs, bur_feature) >= bur_min))
+
+
+def site_core(fs, idx, radius: float, center=None) -> np.ndarray:
+    """Points of ``idx`` within ``radius`` Å of the buriedness-weighted centroid of ``idx`` (never empty: the
+    point nearest to the centre is kept)."""
+    idx = np.asarray(idx, np.int64)
+    c = buried_centroid(fs, idx) if center is None else np.asarray(center, np.float64)
+    d2 = ((np.asarray(fs.points[idx], np.float64) - c) ** 2).sum(1)
+    keep = d2 <= radius * radius
+    if not keep.any():
+        keep[np.argmin(d2)] = True
+    return np.sort(idx[keep])
+
+
+def lining_residue_index(fs, idx, cutoff: float = LINING_CUTOFF) -> np.ndarray:
+    """Residue indices (into res_ids) with a heavy atom <= ``cutoff`` Å of any point of ``idx``."""
+    idx = np.asarray(idx, np.int64)
+    if len(idx) == 0:
+        return np.zeros(0, np.int64)
+    A = np.asarray(fs.atom_xyz, np.float64)
+    near = cKDTree(np.asarray(fs.points[idx], np.float64)).query(A, k=1, distance_upper_bound=cutoff + 1e-9)[0]
+    return np.unique(np.asarray(fs.atom_res)[np.isfinite(near)]).astype(np.int64)
+
+
+def site_residue_shell(fs, idx, lining_cutoff: float = LINING_CUTOFF, cutoff: float = RES_CUTOFF,
+                       bur_feature: str = SITE_BUR_FEATURE, bur_min: float = SITE_BUR_MIN) -> np.ndarray:
+    """"Residue mode": the residues lining ``idx`` (heavy atom <= ``lining_cutoff`` Å of a point) -> all points
+    <= ``cutoff`` Å of a heavy atom of those residues with ``bur_feature >= bur_min`` (as ``lmode_from_residues``).
+    The point set ``idx`` only selects residues; the described site is cut by the residues, not by ``idx``."""
+    res = lining_residue_index(fs, idx, lining_cutoff)
+    if len(res) == 0:
+        return np.zeros(0, np.int64)
+    atoms = np.flatnonzero(np.isin(np.asarray(fs.atom_res), res))
+    hits = cKDTree(np.asarray(fs.atom_xyz, np.float64)[atoms]).query(
+        np.asarray(fs.points, np.float64), k=1, distance_upper_bound=cutoff + 1e-9)[0]
+    return np.flatnonzero(np.isfinite(hits) & (_feat(fs, bur_feature) >= bur_min))
+
+
+def best_member(fs, l_idx, members, cover_dist: float = COVER_DIST) -> tuple[int, float]:
+    """Unmerged D-mode: the single detected (full-list) pocket among ``members`` with maximal coverage of the
+    L-mode points (ties -> lower index = better BURROW rank).  Returns (member, coverage)."""
+    l_idx = np.asarray(l_idx, np.int64)
+    best, bc = int(members[0]), -1.0
+    for m in sorted(int(x) for x in members):
+        d_idx = fs.pk_indices[fs.pk_indptr[m]:fs.pk_indptr[m + 1]]
+        if len(l_idx) == 0 or len(d_idx) == 0:
+            c = 0.0
+        else:
+            d, _ = cKDTree(np.asarray(fs.points[d_idx], np.float64)).query(
+                np.asarray(fs.points[l_idx], np.float64), k=1, distance_upper_bound=cover_dist + 1e-9)
+            c = float(np.isfinite(d).mean())
+        if c > bc:
+            best, bc = m, c
+    return best, bc
+
+
+SHAPERS = ("base", "res", "sph6", "sph8", "sph10", "core8")
+
+
+def shape_site(fs, idx, shaper: str) -> np.ndarray:
+    """Apply a named shaper to a located point set: base (S itself), res (residue shell), sph<R> (buried points
+    within R Å of the buriedness-weighted centroid of S), core<R> (S within R Å of that centroid)."""
+    idx = np.asarray(idx, np.int64)
+    if shaper == "base":
+        return idx
+    if shaper == "res":
+        return site_residue_shell(fs, idx)
+    if shaper.startswith("sph"):
+        return site_sphere(fs, buried_centroid(fs, idx), float(shaper[3:]))
+    if shaper.startswith("core"):
+        return site_core(fs, idx, float(shaper[4:]))
+    raise ValueError(shaper)
+
+
+__all__ += ["buried_centroid", "site_sphere", "site_core", "lining_residue_index", "site_residue_shell",
+            "best_member", "shape_site", "SHAPERS"]

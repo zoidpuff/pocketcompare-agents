@@ -1,0 +1,225 @@
+{
+ "rule": "see script header",
+ "n_pool_v1_sites": 2862,
+ "excluded_by_v1_partition": {
+  "train": {
+   "excluded_lt10": 1,
+   "pool": 2698
+  },
+  "val": {
+   "excluded_lt10": 0,
+   "pool": 163
+  }
+ },
+ "candidates": [
+  {
+   "k": 0,
+   "seed": 2968811710,
+   "val_site_frac": 0.2017,
+   "n_val_sites": 577,
+   "feasible": true,
+   "n_val_pos_clusters": 38
+  },
+  {
+   "k": 1,
+   "seed": 3677149159,
+   "val_site_frac": 0.2027,
+   "n_val_sites": 580,
+   "feasible": true,
+   "n_val_pos_clusters": 37
+  },
+  {
+   "k": 2,
+   "seed": 745650761,
+   "val_site_frac": 0.1999,
+   "n_val_sites": 572,
+   "feasible": true,
+   "n_val_pos_clusters": 40
+  },
+  {
+   "k": 3,
+   "seed": 2884920346,
+   "val_site_frac": 0.2062,
+   "n_val_sites": 590,
+   "feasible": true,
+   "n_val_pos_clusters": 40
+  },
+  {
+   "k": 4,
+   "seed": 2642120001,
+   "val_site_frac": 0.2338,
+   "n_val_sites": 669,
+   "feasible": true,
+   "n_val_pos_clusters": 46
+  },
+  {
+   "k": 5,
+   "seed": 549907821,
+   "val_site_frac": 0.1846,
+   "n_val_sites": 528,
+   "feasible": true,
+   "n_val_pos_clusters": 40
+  },
+  {
+   "k": 6,
+   "seed": 574372308,
+   "val_site_frac": 0.1786,
+   "n_val_sites": 511,
+   "feasible": true,
+   "n_val_pos_clusters": 48
+  },
+  {
+   "k": 7,
+   "seed": 742431198,
+   "val_site_frac": 0.2087,
+   "n_val_sites": 597,
+   "feasible": true,
+   "n_val_pos_clusters": 47
+  },
+  {
+   "k": 8,
+   "seed": 2597619198,
+   "val_site_frac": 0.1915,
+   "n_val_sites": 548,
+   "feasible": true,
+   "n_val_pos_clusters": 44
+  },
+  {
+   "k": 9,
+   "seed": 150917237,
+   "val_site_frac": 0.2027,
+   "n_val_sites": 580,
+   "feasible": true,
+   "n_val_pos_clusters": 47
+  },
+  {
+   "k": 10,
+   "seed": 4253401181,
+   "val_site_frac": 0.1954,
+   "n_val_sites": 559,
+   "feasible": true,
+   "n_val_pos_clusters": 44
+  },
+  {
+   "k": 11,
+   "seed": 1546742079,
+   "val_site_frac": 0.2195,
+   "n_val_sites": 628,
+   "feasible": true,
+   "n_val_pos_clusters": 47
+  },
+  {
+   "k": 12,
+   "seed": 2296626681,
+   "val_site_frac": 0.1922,
+   "n_val_sites": 550,
+   "feasible": true,
+   "n_val_pos_clusters": 45
+  },
+  {
+   "k": 13,
+   "seed": 634801725,
+   "val_site_frac": 0.2167,
+   "n_val_sites": 620,
+   "feasible": true,
+   "n_val_pos_clusters": 47
+  },
+  {
+   "k": 14,
+   "seed": 533521220,
+   "val_site_frac": 0.202,
+   "n_val_sites": 578,
+   "feasible": true,
+   "n_val_pos_clusters": 42
+  },
+  {
+   "k": 15,
+   "seed": 1647092370,
+   "val_site_frac": 0.1842,
+   "n_val_sites": 527,
+   "feasible": true,
+   "n_val_pos_clusters": 43
+  },
+  {
+   "k": 16,
+   "seed": 1142507027,
+   "val_site_frac": 0.2132,
+   "n_val_sites": 610,
+   "feasible": true,
+   "n_val_pos_clusters": 39
+  },
+  {
+   "k": 17,
+   "seed": 661176739,
+   "val_site_frac": 0.1842,
+   "n_val_sites": 527,
+   "feasible": true,
+   "n_val_pos_clusters": 40
+  },
+  {
+   "k": 18,
+   "seed": 3884194044,
+   "val_site_frac": 0.1922,
+   "n_val_sites": 550,
+   "feasible": true,
+   "n_val_pos_clusters": 44
+  },
+  {
+   "k": 19,
+   "seed": 308368335,
+   "val_site_frac": 0.2055,
+   "n_val_sites": 588,
+   "feasible": true,
+   "n_val_pos_clusters": 44
+  }
+ ],
+ "chosen_candidate": 6,
+ "train": {
+  "n_sites": 2350,
+  "n_proteins": 1526,
+  "n_groups": 1024,
+  "n_from_v1_train": 2215,
+  "n_from_v1_val": 135,
+  "largest_group_proteins": 28,
+  "n_site_ligand_clusters": 510,
+  "n_pos": 7186,
+  "n_neg": 35930,
+  "n_pos_shared_1": 7015,
+  "n_pos_shared_ge2": 171,
+  "n_pos_ligand_clusters": 144,
+  "max_pos_cluster_share": 0.0417,
+  "n_pos_promiscuous": 3147,
+  "n_pos_uncapped": 97996,
+  "cluster_cap": 300,
+  "cap_meets_10pct": true,
+  "n_neg_eligible": 2439933,
+  "n_ambiguous_dropped": 216817
+ },
+ "val": {
+  "n_sites": 511,
+  "n_proteins": 344,
+  "n_groups": 256,
+  "n_from_v1_train": 483,
+  "n_from_v1_val": 28,
+  "largest_group_proteins": 9,
+  "n_site_ligand_clusters": 187,
+  "n_pos": 563,
+  "n_neg": 2815,
+  "n_pos_shared_1": 553,
+  "n_pos_shared_ge2": 10,
+  "n_pos_ligand_clusters": 48,
+  "max_pos_cluster_share": 0.0995,
+  "n_pos_promiscuous": 252,
+  "n_pos_uncapped": 3193,
+  "cluster_cap": 56,
+  "cap_meets_10pct": true,
+  "n_neg_eligible": 116032,
+  "n_ambiguous_dropped": 10483,
+  "n_pos_chemotype_seen": 550,
+  "n_pos_chemotype_unseen": 13,
+  "n_site_clusters_unseen": 99
+ },
+ "val_site_frac": 0.1786,
+ "val_component_frac": 0.2,
+ "n_components": 1280
+}

@@ -131,7 +131,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [-] A2 gate failed (D10)
   - [!] size shortcut B0 ROC 0.78, B0m 0.857; B0m stratified 0.489 (diagnostic passes)
   - [x] CSLS: small effect (positive only for A2-IFP)
-- [~] P3 BLiPS re-split (D9) + BLiPS/PPIPS point caches + descriptors (prep agent, cuda:1)
+- [x] P3 BLiPS re-split (D9) + caches + descriptors — reports/blips_ppips_prep.md (verify_splits 97/97)
+  - [x] BLiPS v2 train 2,350 sites (7,186 pos) / val 511 sites (563 pos, 48 ligand clusters, max share 9.95 %)
+  - [x] test holo 3,606 / AF 3,603 caches; transferred test ligands clash (< 2 Å) in 29 % holo / 55 % AF sites (flagged)
+  - [!] BLiPS D-mode coverage < 0.3 for ~45 % of sites (TOUGH-M1 19 %)
 - [~] P3 Independent split audit (auditor; different code path) — required before first model fit (A4b)
 - [x] P3 A2 docking on all 20,497 PPIPS pockets (both panels, 40 min, 0 failures); interface pose-in-pocket 82 %
 - [ ] P4 A4b learned metric (after audit + BLiPS descriptors)

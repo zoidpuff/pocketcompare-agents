@@ -69,3 +69,33 @@ tm_min, fs_alntm; 18.6 MB) · `homology_components.json` · `tough_m1_pockets_sp
 · `tough_m1_split_counts.json` · `blips_sites.parquet` (test rows without ligand columns) · `blips_{train,val}_pairs.parquet`
 · `blips_split_counts.json` · `split_sensitivity.json`. Sealed (mode 000): `data/sealed/tough_m1_test_pairs.parquet`,
 `data/sealed/blips_test_{pairs,sites}.parquet`. Not committed: `data/processed/homology/` (sequences, raw hits).
+
+## D9 re-split (BLiPS train/val v2; `scripts/data/make_blips_resplit_v2.py`, built 2026-10-27 22:00)
+Rule (script header, written before the first run): pool = v1 train + val sites (2,862; test-homology removal and
+≤ 3 sites/protein kept, the 53 dropped v1-val proteins not restored) minus DESIGN §2.6 "< 10 BURROW points" (L-mode,
+point cache `blips`); units = v1 group ids (re-checked = components of the pooled graph); 20 candidates, seed_k =
+`SeedSequence(SEEDS[0]).generate_state(20)[k]`, val = first round(20 %) of permuted components; feasible = val
+15–25 % of sites; choose max distinct positive pair ligand clusters in val, ties → lowest k. Pairs rebuilt with
+`make_blips_split.make_pairs` unchanged (rng `SEEDS[0]`, train then val; cross-split pairs dropped); ligand
+clusters reproduce v1 exactly; top-20 promiscuous list = v1 list; seen/unseen recomputed against v2 train.
+
+| | train v2 | val v2 |
+|---|---|---|
+| sites / proteins / groups | 2,350 / 1,526 / 1,024 | 511 / 344 / 256 |
+| from v1 train / v1 val | 2,215 / 135 | 483 / 28 |
+| largest group (proteins) | 28 | 9 |
+| positives (n_shared 1 / ≥ 2) | 7,186 (7,015 / 171) | 563 (553 / 10) |
+| negatives | 35,930 | 2,815 |
+| positive ligand clusters; max share; cap | 144; 4.2 %; 300 | **48; 9.95 %**; 56 |
+| positives with a top-20 promiscuous CCD | 3,147 | 252 |
+| chemotype seen / unseen (positives) | — | 550 / 13 |
+Excluded (< 10 L-mode points): 1 site (v1 train); 0 without a pocket. Candidates: 20/20 feasible (val 17.9–23.4 % of
+sites), 37–48 val positive clusters; chosen k = 6 (seed 574372308; val 17.9 % of sites, 256 / 1,280 components).
+`verify_splits.py`: 31 new v2 checks (no component shared train↔val, no test-homologous protein, labels recomputed),
+all pass. Files: `blips_sites_v2.parquet` (partition train | val | excluded_lt10; `partition_v1`, `n_lmode_points`),
+`blips_{train,val}_pairs_v2.parquet`, `blips_split_counts_v2.json`.
+
+**BLiPS-test exclusion** (`scripts/data/blips_test_exclusions.py` → `blips_test_exclusions_v2.parquet`, ids and point
+counts only): 3 / 3,606 sites have < 10 holo-chain L-mode points → excluded; 13 AF-model pockets have < 10 points
+(3 empty), flagged `af_lt10`. Filter the sealed test pairs by site id at final evaluation (they were not opened).
+The sealed test pairs' `chemotype_seen` flag refers to v1 train; recompute against v2 train at final evaluation.
