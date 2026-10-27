@@ -179,7 +179,13 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [!] non-learned BLiPS-val D cb-AUC: N1 0.686 (SE 0.041), N2+CSLS 0.701, B1 0.641, B4 0.655; N1 passes guards
   - [x] a4b grid pre-declared (configs/a4b_grid.yaml, 12 configs); train script refuses without audit flag (after audit + BLiPS descriptors)
 - [~] P4 Final-eval infrastructure: final_eval.py + dev dry run; label-free caches for ProSPECCTs/Vertex; B0' TM tables
-- [~] P4 Human-proteome FAISS demo (cuda:2,3)
+- [x] P4 Human-proteome FAISS demo — reports/proteome_demo.md
+  - [!] 23,586 AF models → 116,246 pockets, 0 failures; fast GPU backend 133 structures/s (716 pockets/s) on
+        2×4090 + 22 workers (CPU-bound); descriptor 6.4 ms/pocket; backends byte-identical
+  - [x] FAISS exact GPU all-vs-all top-50 0.51 s; OPQ+IVF-PQ 64 B codes recall@10 0.81–0.85, +re-rank 0.995
+  - [x] extrapolation 200 M structures: ≈0.95 B pockets, ≈7,150 CPU-core-h + 223 GPU-h; 0.11 TB PQ index
+  - [x] sanity: rotation self-retrieval 100 %; 1 Å atom noise → re-described site self-rank-1 83 %; CSLS cuts hubness
+        skew 1.82 → 0.62 (proteome radii)
 - [ ] P4 AF robustness (C5) development on val; blind test
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md

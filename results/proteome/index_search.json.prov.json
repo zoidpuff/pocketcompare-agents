@@ -1,0 +1,63 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/proteome/index_search.json",
+  "result_sha256": "63f8c92f43018858e4a14cf56826898fa4f07edfa4d1f554e974f4952baaab64",
+  "n_rows": null,
+  "git_commit": "ed8afe2cf441255d787d9c85c2540155937fbb41",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "DATA.md",
+    "scripts/build_point_cache.py",
+    "scripts/compute_esm.py",
+    "scripts/data/build_homology_graph.py",
+    "scripts/data/run_splits.sh",
+    "scripts/data/verify_splits.py",
+    "scripts/data/write_split_sums.py",
+    "scripts/ppi/21_ppips_homology.py",
+    "src/pocketcompare/pockets.py"
+  ],
+  "git_untracked": 43,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/proteome/index_search.py",
+  "script_sha256": "89cd7a2f93bdd0b867fa5ff0366c2f51b1c3d520f5108af703cfcd784dd7d4b1",
+  "args": [],
+  "config": {
+    "producer": "index_search.py"
+  },
+  "config_sha256": "eda4964a9e04c96ab08a10e706b60056a1ae22e668d3e7d1878e394f6b1e62e8",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/zstats.npz",
+      "size": 7738676,
+      "sha256": "0ba457ba634650f9367519ce59ab83adcd886e356e46839d3e7dd56f7f242b55",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/index/pockets.parquet",
+      "size": 12659983,
+      "sha256": "0b020e7c700164028e2c2c167dbbaf35cf5649d1ceabf149527f80b00208f9e0",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/index/emb.npy",
+      "size": 291545096,
+      "sha256": "35f2ab07d0a0c10acc6769704f6696789993d991370004175259e28f01918b7f",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/index/knn_exact_I.npy",
+      "size": 23249328,
+      "sha256": "bd93c3f56aa682406b917e0f9c3c27253b7557d990b11e13a713a8db153b7d0d",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "see result",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T22:34:03+00:00",
+  "end_time": "2026-10-27T22:34:03+00:00",
+  "wall_seconds": 0.852,
+  "extra": {
+    "note": "sidecar added afterwards by write_sidecars.py; result produced by scripts/proteome/index_search.py"
+  }
+}

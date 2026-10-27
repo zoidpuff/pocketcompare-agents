@@ -1,0 +1,38 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/proteome/fast_equivalence.json",
+  "result_sha256": "de4dd8cccdf5f1065915ba613613c6f7335106c3892c1e0e62b8cd3c4a76dd76",
+  "n_rows": null,
+  "git_commit": "ed8afe2cf441255d787d9c85c2540155937fbb41",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "DATA.md",
+    "scripts/build_point_cache.py",
+    "scripts/compute_esm.py",
+    "scripts/data/build_homology_graph.py",
+    "scripts/data/run_splits.sh",
+    "scripts/data/verify_splits.py",
+    "scripts/data/write_split_sums.py",
+    "scripts/ppi/21_ppips_homology.py",
+    "src/pocketcompare/pockets.py"
+  ],
+  "git_untracked": 47,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/proteome/check_fast_equivalence.py",
+  "script_sha256": "bbdb7f814846f64a19e20779a1e690d1523b17760408e6024dc3f5729c88b068",
+  "args": [],
+  "config": {
+    "producer": "check_fast_equivalence.py"
+  },
+  "config_sha256": "9eccc7ae65f9716b6a1f97eaab0b024161619a28c2f2b375f3681febfb6a187e",
+  "inputs": [],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "see result",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T22:34:03+00:00",
+  "end_time": "2026-10-27T22:34:04+00:00",
+  "wall_seconds": 1.523,
+  "extra": {
+    "note": "sidecar added afterwards by write_sidecars.py; result produced by scripts/proteome/check_fast_equivalence.py"
+  }
+}

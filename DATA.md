@@ -5,6 +5,7 @@ Raw data lives in `data/raw/` (git-ignored); fetch scripts in `scripts/data/`. R
 | dataset | source URL | version / date fetched | sha256 (archive) | license | fetch script | notes |
 |---|---|---|---|---|---|---|
 | AFDB (local copy) | /cluster/work/beltrao/shared/alphafold/v6 | v6 | n/a (mount) | CC-BY-4.0 | — | proteome tarballs |
+| AFDB human proteome (UP000005640, proteome demo) | /cluster/work/beltrao/shared/alphafold/v6/UP000005640_9606_HUMAN_v6.tar | v6; tar mtime 2025-08-24 12:51:42, 5,177,506,304 B | 1de6f3d7df0373be7d49e61cb4a9eb501b0a2216aeec262471812fac9faeeaa6 | CC-BY-4.0 | scripts/proteome/index_tar.py | 47,172 members = 23,586 models x (cif.gz + pdb.gz); 20,550 UniProt; 215 proteins > 2,700 aa split into 3,251 fragment models (1,400 aa every 200; UniProt offset from DBREF). Read by byte offset (pdb.gz), never extracted; index in data/processed/proteome_human/members.{parquet,json} |
 | PDB (local copy) | /cluster/scratch/jjaenes/pdb | mirror | n/a (mount) | CC0 | — | mmCIF.gz, 2-char dirs |
 | AFDB predicted dimers | /cluster/project/beltrao/gmagnus/dimers | AFDB complexes v1 | per-file in manifests | CC-BY-4.0 | — | human/yeast/ecoli homo+hetero |
 | ProSPECCTs (Ehrt et al. 2018) | http://www.ewit.ccb.tu-dortmund.de/ag-koch/prospeccts/ (POST form; old www.ccb… URL is 404) | 2026-10-27 (files dated 2018) | 7 tarballs, full sha256 in data/raw/prospeccts/MANIFEST.json; e.g. decoy.tar.gz 0f7d1221c9b95d97…, review_structures.tar.gz aa2fae208212c949… | TU Dortmund terms of use (license_en.pdf): free, internal use only, **no redistribution**, cite paper — never commit raw or per-structure derived files | scripts/data/fetch_prospeccts.py | 10 subsets P1–P7; counts match paper Table 2 exactly |
@@ -22,6 +23,7 @@ Raw data lives in `data/raw/` (git-ignored); fetch scripts in `scripts/data/`. R
 |---|---|---|---|---|
 | MMseqs2 | github.com/soedinglab/MMseqs2 releases/latest mmseqs-linux-avx2.tar.gz (2026-10-27) | 8cc5ce367b5638c4306c2d7cfc652dd099a4643f | bd9b0234da5949ad528d5b5f9ea4cda9c1e23dce14b46c0791d4d919a76e61ce | MIT |
 | Foldseek | mmseqs.com/foldseek/foldseek-linux-avx2.tar.gz (2026-10-27) | 463739e0014a1549a527de589102cde98f802f37 | f886374e29ebbf03849cd9c4c8929be00904856dd271627d8c3043607e2af95a | GPL-3.0 |
+| FAISS (Python, GPU) | PyPI `faiss-gpu-cu12` installed into .venv with `uv pip` (2026-10-27) | 1.14.1 (faiss-gpu-cu12==1.14.1.post1) | wheel from PyPI | MIT |
 
 ## External baselines
 | tool | source | version (commit) | licence | sha256 | notes |

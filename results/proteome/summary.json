@@ -1,0 +1,394 @@
+{
+  "extrapolation_200M": {
+    "cpu_core_hours": 7150.265230440559,
+    "cpu_core_hours_burrow": 3572.847974330729,
+    "cpu_core_hours_descriptors": 1622.761967225295,
+    "cpu_core_hours_read": 1954.655288884535,
+    "days_on_this_node_config": 15.539699351661378,
+    "exact_all_vs_all_gpu_hours": 9446.376935995931,
+    "exact_single_query_s_cpu_1thread": 109.42338251296887,
+    "gpu_hours": 223.08566939588732,
+    "ivfpq_note": "ANN latency at 1e9 vectors is NOT measured; IVF-PQ cost per query scales with nprobe/nlist x N codes scanned + the coarse search, so nlist must grow with N (e.g. 2^16-2^20 with an HNSW coarse quantizer).",
+    "note": "EXTRAPOLATED linearly from the human AFDB run (23,586 models, 2 x RTX 4090 + 22 CPU workers, shared node). Assumes AFDB structures cost what human non-fragment models cost on average (human models are longer than the AFDB average, so this is likely conservative) and the same pockets per model.",
+    "pockets": 950607327.2682567,
+    "pockets_per_structure": 4.7530366363412835,
+    "storage_TB": {
+      "float16": 1.1920615883943937,
+      "ivfpq64_index": 0.10870705802331362,
+      "metadata_parquet": 0.1035276276421689,
+      "raw_float32_627d": 2.3841231767887874
+    },
+    "structures": 200000000.0
+  },
+  "nonfragment_cost_per_structure": {
+    "cpu_burrow_s": 0.06431126353795312,
+    "cpu_desc_s": 0.02920971541005531,
+    "cpu_read_s": 0.03518379519992163,
+    "cpu_worker_utilisation_full_run": 0.8714563062379128,
+    "gpu_s": 0.004015542049125972
+  },
+  "pockets": {
+    "N_index": 116246,
+    "frac_structures_without_pocket": 0.07835156448740778,
+    "metadata_bytes_per_pocket_parquet": 108.90682690157081,
+    "n_points": {
+      "median": 53.0,
+      "p90": 181.0
+    },
+    "n_res": {
+      "median": 10.0
+    },
+    "per_model_nonfragment": 4.7530366363412835,
+    "per_protein": 6.091280653950954,
+    "plddt_mean": {
+      "frac_lt_70": 0.05588149269652289,
+      "median": 88.78755932762509
+    },
+    "score": {
+      "frac_ge_0_1": 0.2847409803348072,
+      "median": 0.050993730007788174
+    },
+    "site_volume_A3": {
+      "median": 376.0,
+      "p90": 679.0
+    },
+    "volume_A3": {
+      "median": 73.0,
+      "p90": 261.0
+    }
+  },
+  "runs": {
+    "bench_fastcpu": {
+      "backend": "fastcpu",
+      "cpu_s_per_structure": {
+        "burrow": 0.25205538066616284,
+        "descriptors": 0.03479243190633133,
+        "read_decompress": 0.014899177478160709,
+        "total": 0.30174699005065486
+      },
+      "cpu_workers": 22,
+      "descriptor_ms_per_pocket": 6.153596021636245,
+      "devices": [],
+      "dropped_lt10_per_structure": 12.138,
+      "dropped_single_metal_per_structure": 2.149,
+      "errors": {},
+      "gpu_feat_s_total": 0.0,
+      "gpu_s_per_structure": 0.0,
+      "loadavg_end": [
+        54.25048828125,
+        52.765625,
+        46.3388671875
+      ],
+      "loadavg_start": [
+        56.78857421875,
+        53.13525390625,
+        46.3505859375
+      ],
+      "median_atoms": 2594.0,
+      "median_points": 6468.5,
+      "merged_per_structure": 17.792,
+      "n_errors": 0,
+      "n_pockets": 5654,
+      "n_structures": 1000,
+      "pockets_per_s": 376.4745953967999,
+      "pockets_per_structure": 5.654,
+      "region_per_structure": 18.323,
+      "share_of_cpu": {
+        "burrow": 0.8353202814843316,
+        "descriptors": 0.11530332713672026,
+        "read": 0.049376391378948156
+      },
+      "stage_cpu_s_total": {
+        "t_burrow_post_s": 67.0576201705262,
+        "t_desc_s": 31.471557724056765,
+        "t_merge_s": 3.320874182274565,
+        "t_parse_s": 27.584819067502394,
+        "t_prep_s": 0.0,
+        "t_read_s": 14.89917747816071
+      },
+      "structures_per_s": 66.58553155231692,
+      "wall_s": 15.018277645111084
+    },
+    "bench_gpu": {
+      "backend": "gpu",
+      "cpu_s_per_structure": {
+        "burrow": 0.09798889771173708,
+        "descriptors": 0.03735832981951535,
+        "read_decompress": 0.013878255068091675,
+        "total": 0.1492254825993441
+      },
+      "cpu_workers": 22,
+      "descriptor_ms_per_pocket": 6.607415956758993,
+      "devices": [
+        "cuda:2",
+        "cuda:3"
+      ],
+      "dropped_lt10_per_structure": 12.138,
+      "dropped_single_metal_per_structure": 2.149,
+      "errors": {},
+      "gpu_feat_s_total": 8.773188647581264,
+      "gpu_s_per_structure": 0.008773188647581264,
+      "loadavg_end": [
+        56.78857421875,
+        53.13525390625,
+        46.3505859375
+      ],
+      "loadavg_start": [
+        59.544921875,
+        53.46435546875,
+        46.3447265625
+      ],
+      "median_atoms": 2594.0,
+      "median_points": 6468.5,
+      "merged_per_structure": 17.792,
+      "n_errors": 0,
+      "n_pockets": 5654,
+      "n_structures": 1000,
+      "pockets_per_s": 387.1874885772433,
+      "pockets_per_structure": 5.654,
+      "region_per_structure": 18.323,
+      "share_of_cpu": {
+        "burrow": 0.6566498965517018,
+        "descriptors": 0.25034819233802597,
+        "read": 0.09300191111027223
+      },
+      "stage_cpu_s_total": {
+        "t_burrow_post_s": 50.29718194482848,
+        "t_desc_s": 33.86608746997081,
+        "t_merge_s": 3.49224234954454,
+        "t_parse_s": 32.81326390430331,
+        "t_prep_s": 14.878451862605289,
+        "t_read_s": 13.878255068091676
+      },
+      "structures_per_s": 68.48027742788173,
+      "wall_s": 14.602744579315186
+    },
+    "bench_refcpu": {
+      "backend": "refcpu",
+      "cpu_s_per_structure": {
+        "burrow": 0.5591444216941017,
+        "descriptors": 0.034455827452475205,
+        "read_decompress": 0.01422220395808108,
+        "total": 0.6078224531046581
+      },
+      "cpu_workers": 22,
+      "descriptor_ms_per_pocket": 6.0940621599708535,
+      "devices": [],
+      "dropped_lt10_per_structure": 12.186746987951807,
+      "dropped_single_metal_per_structure": 2.1576305220883536,
+      "errors": {
+        "refcpu: ValueError: no protein heavy atoms": 4
+      },
+      "gpu_feat_s_total": 0.0,
+      "gpu_s_per_structure": 0.0,
+      "loadavg_end": [
+        53.31787109375,
+        52.626953125,
+        46.4951171875
+      ],
+      "loadavg_start": [
+        52.46826171875,
+        52.42041015625,
+        46.26171875
+      ],
+      "median_atoms": 2599.5,
+      "median_points": 6519.0,
+      "merged_per_structure": 17.863453815261042,
+      "n_errors": 4,
+      "n_pockets": 5654,
+      "n_structures": 1000,
+      "pockets_per_s": 192.65037525303006,
+      "pockets_per_structure": 5.676706827309237,
+      "region_per_structure": 18.396586345381525,
+      "share_of_cpu": {
+        "burrow": 0.9199140618088114,
+        "descriptors": 0.05668732255032773,
+        "read": 0.023398615640860883
+      },
+      "stage_cpu_s_total": {
+        "t_burrow_post_s": 305.76310948538594,
+        "t_desc_s": 31.083548619877547,
+        "t_merge_s": 3.372278832597658,
+        "t_parse_s": 53.6470326250419,
+        "t_prep_s": 0.0,
+        "t_read_s": 14.222203958081082
+      },
+      "structures_per_s": 34.073288866825266,
+      "wall_s": 29.34850239753723
+    },
+    "run_fastcpu": {
+      "backend": "fastcpu",
+      "cpu_s_per_structure": {
+        "burrow": 0.24597166778733293,
+        "descriptors": 0.03392434490017252,
+        "read_decompress": 0.03205160941958595,
+        "total": 0.31194762210709137
+      },
+      "cpu_workers": 22,
+      "descriptor_ms_per_pocket": 6.290405651065009,
+      "devices": [],
+      "dropped_lt10_per_structure": 12.230094123632663,
+      "dropped_single_metal_per_structure": 2.144407699482744,
+      "errors": {},
+      "gpu_feat_s_total": 0.0,
+      "gpu_s_per_structure": 0.0,
+      "loadavg_end": [
+        52.55810546875,
+        37.921875,
+        34.0849609375
+      ],
+      "loadavg_start": [
+        19.55859375,
+        20.92138671875,
+        29.31884765625
+      ],
+      "median_atoms": 2666.0,
+      "median_points": 6579.5,
+      "merged_per_structure": 17.623166285084373,
+      "n_errors": 0,
+      "n_pockets": 127200,
+      "n_structures": 23586,
+      "pockets_per_s": 377.07997524549864,
+      "pockets_per_structure": 5.393029763418977,
+      "region_per_structure": 18.123632663444415,
+      "share_of_cpu": {
+        "burrow": 0.788503102302511,
+        "descriptors": 0.10875013141958273,
+        "read": 0.10274676627790628
+      },
+      "stage_cpu_s_total": {
+        "t_burrow_post_s": 1524.4752434852999,
+        "t_desc_s": 722.9030530818272,
+        "t_merge_s": 77.23654573364183,
+        "t_parse_s": 669.2254133692477,
+        "t_prep_s": 0.0,
+        "t_read_s": 755.9692597703543
+      },
+      "structures_per_s": 69.91987654198374,
+      "wall_s": 337.32897090911865
+    },
+    "run_gpu": {
+      "backend": "gpu",
+      "cpu_s_per_structure": {
+        "burrow": 0.07738286994172094,
+        "descriptors": 0.03445651894271418,
+        "read_decompress": 0.03248476308421143,
+        "total": 0.14432415196864656
+      },
+      "cpu_workers": 22,
+      "descriptor_ms_per_pocket": 6.389083771877805,
+      "devices": [
+        "cuda:2",
+        "cuda:3"
+      ],
+      "dropped_lt10_per_structure": 12.230094123632663,
+      "dropped_single_metal_per_structure": 2.144407699482744,
+      "errors": {},
+      "gpu_feat_s_total": 112.04634462529793,
+      "gpu_s_per_structure": 0.0047505445868438025,
+      "loadavg_end": [
+        59.544921875,
+        53.46435546875,
+        46.3447265625
+      ],
+      "loadavg_start": [
+        51.75537109375,
+        44.68994140625,
+        42.43359375
+      ],
+      "median_atoms": 2666.0,
+      "median_points": 6579.5,
+      "merged_per_structure": 17.623166285084373,
+      "n_errors": 0,
+      "n_pockets": 127200,
+      "n_structures": 23586,
+      "pockets_per_s": 716.410760950024,
+      "pockets_per_structure": 5.393029763418977,
+      "region_per_structure": 18.123632663444415,
+      "share_of_cpu": {
+        "burrow": 0.5361740837287708,
+        "descriptors": 0.23874395569079546,
+        "read": 0.2250819605804337
+      },
+      "stage_cpu_s_total": {
+        "t_burrow_post_s": 989.0237976361532,
+        "t_desc_s": 734.6364859277382,
+        "t_merge_s": 78.05496985511854,
+        "t_parse_s": 693.6351894331165,
+        "t_prep_s": 142.49338337616064,
+        "t_read_s": 766.1856221042108
+      },
+      "structures_per_s": 132.84012741955397,
+      "wall_s": 177.55177187919617
+    },
+    "run_refcpu": {
+      "backend": "refcpu",
+      "cpu_s_per_structure": {
+        "burrow": 0.5717461422268939,
+        "descriptors": 0.03534915948763331,
+        "read_decompress": 0.021745223909822826,
+        "total": 0.62884052562435
+      },
+      "cpu_workers": 22,
+      "descriptor_ms_per_pocket": 6.554601223862572,
+      "devices": [],
+      "dropped_lt10_per_structure": 12.268586253827833,
+      "dropped_single_metal_per_structure": 2.1511568560734946,
+      "errors": {
+        "refcpu: ValueError: no protein heavy atoms": 74
+      },
+      "gpu_feat_s_total": 0.0,
+      "gpu_s_per_structure": 0.0,
+      "loadavg_end": [
+        67.21484375,
+        74.25244140625,
+        58.25390625
+      ],
+      "loadavg_start": [
+        52.55810546875,
+        37.921875,
+        34.0849609375
+      ],
+      "median_atoms": 2673.0,
+      "median_points": 6598.0,
+      "merged_per_structure": 17.678632187818987,
+      "n_errors": 74,
+      "n_pockets": 127200,
+      "n_structures": 23586,
+      "pockets_per_s": 187.18017967524437,
+      "pockets_per_structure": 5.410003402517863,
+      "region_per_structure": 18.180673698536918,
+      "share_of_cpu": {
+        "burrow": 0.9092068957534671,
+        "descriptors": 0.05621323379649645,
+        "read": 0.03457987045003641
+      },
+      "stage_cpu_s_total": {
+        "t_burrow_post_s": 7114.675241366029,
+        "t_desc_s": 753.2736340276897,
+        "t_merge_s": 80.47164164762944,
+        "t_parse_s": 1473.9736054076348,
+        "t_prep_s": 0.0,
+        "t_read_s": 512.8828511370812
+      },
+      "structures_per_s": 34.707796523744605,
+      "wall_s": 679.5591297149658
+    }
+  },
+  "tar": {
+    "member_counts": {
+      "cif.gz": 23586,
+      "pdb.gz": 23586
+    },
+    "mtime": "2025-08-24T12:51:42",
+    "n_fragment_models": 3251,
+    "n_fragmented_proteins": 215,
+    "n_members": 47172,
+    "n_pdb_models": 23586,
+    "n_uniprot": 20550,
+    "sha256": "1de6f3d7df0373be7d49e61cb4a9eb501b0a2216aeec262471812fac9faeeaa6",
+    "size_bytes": 5177506304,
+    "tar": "/cluster/work/beltrao/shared/alphafold/v6/UP000005640_9606_HUMAN_v6.tar",
+    "wall_s": 23.1
+  }
+}

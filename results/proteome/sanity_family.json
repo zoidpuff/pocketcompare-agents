@@ -1,0 +1,93 @@
+{
+  "frac_kinase_pockets": 0.044457443696987425,
+  "n_at_known_sm_site": 1336,
+  "n_kinase_pockets": 5168,
+  "n_kinase_proteins_in_index": 542,
+  "n_kinase_proteins_with_site_pocket": 181,
+  "n_kinase_site_pockets": 196,
+  "n_pockets": 116246,
+  "rankings": {
+    "csls_db": {
+      "Q-all": {
+        "enrichment": 3.2310754563485378,
+        "enrichment_kinase_site": 15.006534492576664,
+        "expected_kinase_site_size_matched": 0.001701758371505901,
+        "expected_size_matched": 0.04451870463559658,
+        "frac_hits_kinase": 0.143843293896506,
+        "frac_hits_kinase_site": 0.025537495700034395,
+        "frac_queries_with_any_kinase_hit": 0.5119969040247678,
+        "mean_hits_considered": 9.794117647058824,
+        "n_queries": 5168,
+        "same_group_expected": 0.1689109123181436,
+        "same_klifs_group_among_kinase_hits": 0.3737828288281803
+      },
+      "Q-site": {
+        "enrichment": 14.895765755195102,
+        "enrichment_kinase_site": 110.2746373749512,
+        "expected_kinase_site_size_matched": 0.002475781190624784,
+        "expected_size_matched": 0.04586291678679627,
+        "frac_hits_kinase": 0.6831632653061225,
+        "frac_hits_kinase_site": 0.273015873015873,
+        "frac_queries_with_any_kinase_hit": 0.9540816326530612,
+        "mean_hits_considered": 9.974489795918368,
+        "n_queries": 196,
+        "same_group_expected": 0.12366724060859918,
+        "same_klifs_group_among_kinase_hits": 0.5296812664459724
+      },
+      "control: non-kinase site pockets": {
+        "enrichment": 0.7699158702084473,
+        "enrichment_kinase_site": 1.2618542353553663,
+        "expected_kinase_site_size_matched": 0.001892385160752742,
+        "expected_size_matched": 0.044609531400349914,
+        "frac_hits_kinase": 0.03434558618769146,
+        "frac_hits_kinase_site": 0.002387914230019493,
+        "frac_queries_with_any_kinase_hit": 0.2657894736842105,
+        "mean_hits_considered": 9.973684210526315,
+        "n_queries": 1140,
+        "same_group_expected": null,
+        "same_klifs_group_among_kinase_hits": null
+      }
+    },
+    "raw": {
+      "Q-all": {
+        "enrichment": 3.2578414701922394,
+        "enrichment_kinase_site": 16.15522601743592,
+        "expected_kinase_site_size_matched": 0.0017211599221310528,
+        "expected_size_matched": 0.04454007062397801,
+        "frac_hits_kinase": 0.1451044891640867,
+        "frac_hits_kinase_site": 0.027805727554179566,
+        "frac_queries_with_any_kinase_hit": 0.4901315789473684,
+        "mean_hits_considered": 10.0,
+        "n_queries": 5168,
+        "same_group_expected": 0.1706922187496562,
+        "same_klifs_group_among_kinase_hits": 0.3764817112527337
+      },
+      "Q-site": {
+        "enrichment": 16.17390542710913,
+        "enrichment_kinase_site": 115.49191723628772,
+        "expected_kinase_site_size_matched": 0.0025754960754810104,
+        "expected_size_matched": 0.04608708556041915,
+        "frac_hits_kinase": 0.7454081632653061,
+        "frac_hits_kinase_site": 0.2974489795918367,
+        "frac_queries_with_any_kinase_hit": 0.9489795918367347,
+        "mean_hits_considered": 10.0,
+        "n_queries": 196,
+        "same_group_expected": 0.12280493691534339,
+        "same_klifs_group_among_kinase_hits": 0.46849718381976446
+      },
+      "control: non-kinase site pockets": {
+        "enrichment": 0.7706561223481204,
+        "enrichment_kinase_site": 2.0796660210145985,
+        "expected_kinase_site_size_matched": 0.001898078047708278,
+        "expected_size_matched": 0.044619077063203935,
+        "frac_hits_kinase": 0.03438596491228071,
+        "frac_hits_kinase_site": 0.003947368421052632,
+        "frac_queries_with_any_kinase_hit": 0.24210526315789474,
+        "mean_hits_considered": 10.0,
+        "n_queries": 1140,
+        "same_group_expected": null,
+        "same_klifs_group_among_kinase_hits": null
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "n_pockets_gpu": 127200,
+  "run_fastcpu": {
+    "a1_identical": true,
+    "env_identical": true,
+    "errors": {},
+    "n_pockets": 127200,
+    "n_struct_errors": 0,
+    "table_identical": true
+  },
+  "run_refcpu": {
+    "a1_identical": true,
+    "env_identical": true,
+    "errors": {
+      "refcpu: ValueError: no protein heavy atoms": 74
+    },
+    "gpu_n_atoms_of_error_structures_max": 0,
+    "gpu_n_kept_of_error_structures": 0,
+    "n_pockets": 127200,
+    "n_struct_errors": 74,
+    "table_identical": true
+  }
+}

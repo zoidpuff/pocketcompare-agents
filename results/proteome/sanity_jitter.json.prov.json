@@ -1,0 +1,57 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/proteome/sanity_jitter.json",
+  "result_sha256": "ba0c1358f755d323243c78befe9a46f0465245713bb915eaf62bc1bcedec7597",
+  "n_rows": null,
+  "git_commit": "ed8afe2cf441255d787d9c85c2540155937fbb41",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "DATA.md",
+    "scripts/build_point_cache.py",
+    "scripts/compute_esm.py",
+    "scripts/data/build_homology_graph.py",
+    "scripts/data/run_splits.sh",
+    "scripts/data/verify_splits.py",
+    "scripts/data/write_split_sums.py",
+    "scripts/ppi/21_ppips_homology.py",
+    "src/pocketcompare/pockets.py"
+  ],
+  "git_untracked": 44,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/proteome/sanity_jitter.py",
+  "script_sha256": "a9d745ed1e94646b92a2d6ec72e1990ed0d3dfc3840d24ff0204fb885e1a11a5",
+  "args": [],
+  "config": {
+    "producer": "sanity_jitter.py"
+  },
+  "config_sha256": "576a4e75875b00e2133f8ed96d17858ca291ffef106f17f2aa16213a0a63f914",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/index/emb.npy",
+      "size": 291545096,
+      "sha256": "35f2ab07d0a0c10acc6769704f6696789993d991370004175259e28f01918b7f",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/index/pockets.parquet",
+      "size": 12659983,
+      "sha256": "0b020e7c700164028e2c2c167dbbaf35cf5649d1ceabf149527f80b00208f9e0",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/index/sanity_jitter.parquet",
+      "size": 17856,
+      "sha256": "3aa78ec6a3341fd58235c871e83576bb9ee5a2f92930f933aa8e23bfd52d003f",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "see result",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T22:34:03+00:00",
+  "end_time": "2026-10-27T22:34:04+00:00",
+  "wall_seconds": 1.131,
+  "extra": {
+    "note": "sidecar added afterwards by write_sidecars.py; result produced by scripts/proteome/sanity_jitter.py"
+  }
+}

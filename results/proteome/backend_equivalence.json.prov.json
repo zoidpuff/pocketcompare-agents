@@ -1,0 +1,57 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/proteome/backend_equivalence.json",
+  "result_sha256": "35ad0738d5c21c9eb06137360de959aa4fe01ef18b270541db95a51ef8613e85",
+  "n_rows": null,
+  "git_commit": "ed8afe2cf441255d787d9c85c2540155937fbb41",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "DATA.md",
+    "scripts/build_point_cache.py",
+    "scripts/compute_esm.py",
+    "scripts/data/build_homology_graph.py",
+    "scripts/data/run_splits.sh",
+    "scripts/data/verify_splits.py",
+    "scripts/data/write_split_sums.py",
+    "scripts/ppi/21_ppips_homology.py",
+    "src/pocketcompare/pockets.py"
+  ],
+  "git_untracked": 46,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/proteome/compare_backends.py",
+  "script_sha256": "bafc92a01448da9d759d169cad5d76e5886a40adb22fd964e271b0ffde7c5bd1",
+  "args": [],
+  "config": {
+    "producer": "compare_backends.py"
+  },
+  "config_sha256": "bc4a8f9ce06ac3e4093b7d8ac86a3b88d310e9a8e396c76585eaf12e0c85b8dd",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/run_gpu/run.json",
+      "size": 702,
+      "sha256": "60481361daa53ca82f69c0eecc2286943e8c7df81b4fba67e37b9e145c4dfeb0",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/run_fastcpu/run.json",
+      "size": 616,
+      "sha256": "ab789ee04e1efbe9796aa8c3b4984fce0f2608d507d28c936e826aa3225dc423",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/run_refcpu/run.json",
+      "size": 609,
+      "sha256": "26cd8b08162f56f5b6c06532e6b61e35a58dda2f0fa5e1301a0da87139db23ac",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "see result",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-27T22:34:03+00:00",
+  "end_time": "2026-10-27T22:34:04+00:00",
+  "wall_seconds": 1.487,
+  "extra": {
+    "note": "sidecar added afterwards by write_sidecars.py; result produced by scripts/proteome/compare_backends.py"
+  }
+}
