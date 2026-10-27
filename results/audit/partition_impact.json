@@ -1,0 +1,139 @@
+{
+ "TM_test vs BUR": {
+  "pockets_with_edge": 16,
+  "seq_only_edge_pockets": 10,
+  "groups": 15,
+  "pockets_in_those_groups": 23,
+  "examples": [
+   "tough_m1:1ecmA",
+   "tough_m1:1kapA",
+   "tough_m1:1q8aB",
+   "tough_m1:1xnfB",
+   "tough_m1:2gtvA",
+   "tough_m1:2lxyA",
+   "tough_m1:2pz8A",
+   "tough_m1:2qeuA",
+   "tough_m1:2qiaA",
+   "tough_m1:2yktA"
+  ]
+ },
+ "TM_dev vs PROS+VTX+AF+PPIL_test": {
+  "pockets_with_edge": 7,
+  "seq_only_edge_pockets": 7,
+  "groups": 7,
+  "pockets_in_those_groups": 14,
+  "examples": [
+   "tough_m1:1id8A",
+   "tough_m1:1mwvA",
+   "tough_m1:2pyhB",
+   "tough_m1:2qo3A",
+   "tough_m1:3nlcA",
+   "tough_m1:3nmxB",
+   "tough_m1:4ekwC"
+  ]
+ },
+ "TM_dev vs TM_test": {
+  "pockets_with_edge": 3,
+  "seq_only_edge_pockets": 2,
+  "groups": 3,
+  "pockets_in_those_groups": 3,
+  "examples": [
+   "tough_m1:2pyhB",
+   "tough_m1:3remA",
+   "tough_m1:4xg0A"
+  ]
+ },
+ "BL_train vs AF+PROS+VTX+TM_test+PPIL_test": {
+  "chains_with_edge": 19,
+  "seq_only": 11,
+  "members": 19,
+  "members_total": 1772,
+  "examples": [
+   "A0A0A2ACP7__6rar_I",
+   "A2QAN3__5ifp_A",
+   "A4PHN0__8ahq_C",
+   "D5CN26__4xxl_A",
+   "G1T469__5irn_A",
+   "J9W473__7lpq_B",
+   "L0R8F8__8qu5_v",
+   "O88273__4jph_A"
+  ]
+ },
+ "BL_val vs AF+PROS+VTX+TM_test+PPIL_test": {
+  "chains_with_edge": 0,
+  "seq_only": 0,
+  "members": 0,
+  "members_total": 99,
+  "examples": []
+ },
+ "BL2_train vs BL2_val": {
+  "chains_with_edge": 9,
+  "seq_only": 5,
+  "members": 9,
+  "members_total": 1526,
+  "examples": [
+   "A0A2U3BXY4__8r2s_A",
+   "A0A3A6VNK6__9emk_A",
+   "A0AA86ANQ3__5m90_B",
+   "P0ABE5__5oc0_A",
+   "P13314__7uq2_A",
+   "P51834__5h67_A",
+   "Q45071__3c7f_A",
+   "Q8W453__2rkn_A"
+  ]
+ },
+ "BL2_val vs AF+PROS+VTX+TM_test+PPIL_test": {
+  "chains_with_edge": 5,
+  "seq_only": 4,
+  "members": 5,
+  "members_total": 344,
+  "examples": [
+   "L0R8F8__8qu5_v",
+   "O88273__4jph_A",
+   "Q0GYW2__6z0p_A",
+   "Q9HXY6__6uec_A",
+   "Q9X4B9__9exq_A"
+  ]
+ },
+ "PPIPS_train vs PPIPS_val+PPIPS_test": {
+  "chains_with_edge": 2,
+  "seq_only": 0,
+  "members": 1,
+  "members_total": 1472,
+  "examples": [
+   "AF-0000000066231028"
+  ]
+ },
+ "PPIPS_test vs BUR": {
+  "chains_with_edge": 347,
+  "seq_only": 12,
+  "members": 191,
+  "members_total": 251,
+  "examples": [
+   "AF-0000000065763220",
+   "AF-0000000065763225",
+   "AF-0000000065767650",
+   "AF-0000000065769230",
+   "AF-0000000065770430",
+   "AF-0000000065775992",
+   "AF-0000000065777027",
+   "AF-0000000065777163"
+  ]
+ },
+ "PPIPS_val vs BUR": {
+  "chains_with_edge": 324,
+  "seq_only": 3,
+  "members": 179,
+  "members_total": 268,
+  "examples": [
+   "AF-0000000065769965",
+   "AF-0000000065772745",
+   "AF-0000000065773226",
+   "AF-0000000065776276",
+   "AF-0000000065778493",
+   "AF-0000000065778498",
+   "AF-0000000065778502",
+   "AF-0000000065783445"
+  ]
+ }
+}

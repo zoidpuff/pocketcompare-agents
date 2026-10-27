@@ -34,6 +34,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D15 (23:05) Audit failed before any model fit (gate worked). Rebuild graph with mmseqs -a + exhaustive Foldseek,
+  re-derive all splits with unchanged rules; re-audit; re-run dev evaluations on the new splits (dev numbers so far
+  are provisional, expected shifts small: ~2 % of units move). PPIPS val/test: most complexes have a BURROW-train
+  homologue (BURROW prepares their pockets) → PPIPS-test reported stratified by BURROW homology; membership unchanged.
 - D14 (22:45) Milestone M2 retrospective (reviews/milestone_M2_retrospective.md) adopted: LESSONS pruned to 11 rules;
   all amendments consolidated in PREREG.md (sha256 d3598a048cb397729a533948656591ea449ed64eb49b9c00fc0a10b27309d840). Selection objective = BLiPS-val D-mode cluster-balanced
   AUC with one-SE rule (deployment definition), guards on L-mode and TOUGH-M1-dev D-mode; Holm {C1a, C1b, C1-D, C2}.
@@ -155,7 +159,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] BLiPS v2 train 2,350 sites (7,186 pos) / val 511 sites (563 pos, 48 ligand clusters, max share 9.95 %)
   - [x] test holo 3,606 / AF 3,603 caches; transferred test ligands clash (< 2 Å) in 29 % holo / 55 % AF sites (flagged)
   - [!] BLiPS D-mode coverage < 0.3 for ~45 % of sites (TOUGH-M1 19 %)
-- [~] P3 Independent split audit (auditor; different code path) — required before first model fit (A4b)
+- [-] P3 Independent split audit — **FAILED** (reports/audit_splits.md): mmseqs search without -a underestimates
+      identity near 30 %; non-exhaustive Foldseek missed edges → leaks: TOUGH-test↔BURROW 16 pockets, TOUGH-dev↔sealed 7,
+      dev↔test 3, BLiPS-train↔sealed 19 proteins, BLiPS train↔val 9, PPIPS 1 complex → rebuild (D15)
 - [x] P3 A2 docking on all 20,497 PPIPS pockets (both panels, 40 min, 0 failures); interface pose-in-pocket 82 %
 - [x] P3 Definition robustness — reports/definition_robustness.md (36 variants logged)
   - [!] ligand-free site shaper "sph8" (buried points ≤ 8 Å of buriedness-weighted centroid) + env block (113-d

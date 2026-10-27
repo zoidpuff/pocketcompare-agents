@@ -1,0 +1,780 @@
+{
+ "TM_test vs BUR": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 16,
+   "query_chains": 15,
+   "query_members": 15
+  },
+  "design": {
+   "seq_pairs": 8,
+   "query_chains": 8,
+   "query_members": 8
+  },
+  "strict": {
+   "seq_pairs": 2,
+   "query_chains": 2,
+   "query_members": 2
+  },
+  "near": {
+   "seq_pairs": 33,
+   "query_chains": 31,
+   "query_members": 31
+  },
+  "near_miss_maxid_quantiles": [
+   0.251,
+   0.261,
+   0.269,
+   0.277,
+   0.294
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   6,
+   8,
+   7,
+   4,
+   3
+  ]
+ },
+ "TM_dev vs PROS": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 5,
+   "query_chains": 5,
+   "query_members": 5
+  },
+  "design": {
+   "seq_pairs": 3,
+   "query_chains": 3,
+   "query_members": 3
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 11,
+   "query_chains": 11,
+   "query_members": 11
+  },
+  "near_miss_maxid_quantiles": [
+   0.252,
+   0.26,
+   0.26,
+   0.261,
+   0.277
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   2,
+   5,
+   2,
+   0,
+   0
+  ]
+ },
+ "TM_dev vs VTX": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 2,
+   "query_chains": 1,
+   "query_members": 1
+  },
+  "near_miss_maxid_quantiles": [
+   0.26,
+   0.26,
+   0.26,
+   0.26,
+   0.26
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   1,
+   0,
+   0,
+   0
+  ]
+ },
+ "TM_dev vs AF": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 5,
+   "query_chains": 3,
+   "query_members": 3
+  },
+  "design": {
+   "seq_pairs": 5,
+   "query_chains": 3,
+   "query_members": 3
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 25,
+   "query_chains": 11,
+   "query_members": 11
+  },
+  "near_miss_maxid_quantiles": [
+   0.251,
+   0.269,
+   0.278,
+   0.284,
+   0.288
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   1,
+   1,
+   3,
+   3,
+   0
+  ]
+ },
+ "TM_dev vs PPIL_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near_miss_maxid_quantiles": [],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "TM_dev vs TM_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 2,
+   "query_chains": 2,
+   "query_members": 2
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 4,
+   "query_chains": 3,
+   "query_members": 3
+  },
+  "near_miss_maxid_quantiles": [
+   0.264,
+   0.266,
+   0.268,
+   0.272,
+   0.276
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   2,
+   1,
+   0,
+   0
+  ]
+ },
+ "BL_train vs AF": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 2,
+   "query_chains": 2,
+   "query_members": 2
+  },
+  "design": {
+   "seq_pairs": 2,
+   "query_chains": 2,
+   "query_members": 2
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 38,
+   "query_chains": 29,
+   "query_members": 29
+  },
+  "near_miss_maxid_quantiles": [
+   0.251,
+   0.258,
+   0.272,
+   0.285,
+   0.298
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   9,
+   4,
+   6,
+   5,
+   4
+  ]
+ },
+ "BL_train vs PROS": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 8,
+   "query_chains": 7,
+   "query_members": 7
+  },
+  "design": {
+   "seq_pairs": 4,
+   "query_chains": 4,
+   "query_members": 4
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 19,
+   "query_chains": 18,
+   "query_members": 18
+  },
+  "near_miss_maxid_quantiles": [
+   0.251,
+   0.258,
+   0.266,
+   0.28,
+   0.291
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   5,
+   5,
+   1,
+   5,
+   1
+  ]
+ },
+ "BL_train vs VTX": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 8,
+   "query_chains": 4,
+   "query_members": 4
+  },
+  "near_miss_maxid_quantiles": [
+   0.256,
+   0.27,
+   0.282,
+   0.289,
+   0.291
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   1,
+   0,
+   1,
+   1,
+   1
+  ]
+ },
+ "BL_train vs TM_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 7,
+   "query_chains": 6,
+   "query_members": 6
+  },
+  "design": {
+   "seq_pairs": 3,
+   "query_chains": 3,
+   "query_members": 3
+  },
+  "strict": {
+   "seq_pairs": 1,
+   "query_chains": 1,
+   "query_members": 1
+  },
+  "near": {
+   "seq_pairs": 13,
+   "query_chains": 10,
+   "query_members": 10
+  },
+  "near_miss_maxid_quantiles": [
+   0.255,
+   0.268,
+   0.271,
+   0.284,
+   0.292
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   2,
+   2,
+   2,
+   1,
+   2
+  ]
+ },
+ "BL_train vs PPIL_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near_miss_maxid_quantiles": [],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "BL_val vs AF": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 2,
+   "query_chains": 1,
+   "query_members": 1
+  },
+  "near_miss_maxid_quantiles": [
+   0.283,
+   0.283,
+   0.283,
+   0.283,
+   0.283
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   1,
+   0
+  ]
+ },
+ "BL_val vs PROS": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 2,
+   "query_chains": 2,
+   "query_members": 2
+  },
+  "near_miss_maxid_quantiles": [
+   0.261,
+   0.264,
+   0.266,
+   0.269,
+   0.272
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   1,
+   1,
+   0,
+   0
+  ]
+ },
+ "BL_val vs VTX": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near_miss_maxid_quantiles": [],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "BL_val vs TM_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near_miss_maxid_quantiles": [],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "BL_val vs PPIL_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near_miss_maxid_quantiles": [],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "BL_train vs BL_val": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 1,
+   "query_chains": 1,
+   "query_members": 1
+  },
+  "near_miss_maxid_quantiles": [
+   0.283,
+   0.283,
+   0.283,
+   0.283,
+   0.283
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   1,
+   0
+  ]
+ },
+ "BL2_train vs BL2_val": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 7,
+   "query_chains": 6,
+   "query_members": 6
+  },
+  "design": {
+   "seq_pairs": 5,
+   "query_chains": 4,
+   "query_members": 4
+  },
+  "strict": {
+   "seq_pairs": 1,
+   "query_chains": 1,
+   "query_members": 1
+  },
+  "near": {
+   "seq_pairs": 8,
+   "query_chains": 7,
+   "query_members": 7
+  },
+  "near_miss_maxid_quantiles": [
+   0.25,
+   0.269,
+   0.278,
+   0.282,
+   0.285
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   1,
+   1,
+   1,
+   3,
+   0
+  ]
+ },
+ "PPIPS_train vs PPIPS_val+PPIPS_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 1,
+   "query_chains": 1,
+   "query_members": 1
+  },
+  "near_miss_maxid_quantiles": [
+   0.283,
+   0.283,
+   0.283,
+   0.283,
+   0.283
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   1,
+   0
+  ]
+ },
+ "PPIPS_val vs PPIPS_test": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "design": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "strict": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near": {
+   "seq_pairs": 0,
+   "query_chains": 0,
+   "query_members": 0
+  },
+  "near_miss_maxid_quantiles": [],
+  "near_miss_hist_25_30_by1pct": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "PPIPS_val vs BUR": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 28,
+   "query_chains": 37,
+   "query_members": 21
+  },
+  "design": {
+   "seq_pairs": 24,
+   "query_chains": 29,
+   "query_members": 16
+  },
+  "strict": {
+   "seq_pairs": 21,
+   "query_chains": 26,
+   "query_members": 14
+  },
+  "near": {
+   "seq_pairs": 175,
+   "query_chains": 170,
+   "query_members": 88
+  },
+  "near_miss_maxid_quantiles": [
+   0.25,
+   0.262,
+   0.269,
+   0.289,
+   0.299
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   12,
+   31,
+   10,
+   8,
+   19
+  ]
+ },
+ "PPIPS_test vs BUR": {
+  "identical_seq_uids": 0,
+  "their": {
+   "seq_pairs": 60,
+   "query_chains": 156,
+   "query_members": 101
+  },
+  "design": {
+   "seq_pairs": 59,
+   "query_chains": 154,
+   "query_members": 100
+  },
+  "strict": {
+   "seq_pairs": 47,
+   "query_chains": 141,
+   "query_members": 95
+  },
+  "near": {
+   "seq_pairs": 127,
+   "query_chains": 134,
+   "query_members": 82
+  },
+  "near_miss_maxid_quantiles": [
+   0.253,
+   0.263,
+   0.274,
+   0.28,
+   0.292
+  ],
+  "near_miss_hist_25_30_by1pct": [
+   10,
+   8,
+   14,
+   12,
+   2
+  ]
+ }
+}

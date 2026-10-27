@@ -11,3 +11,5 @@
 9. Prefer shipped prior-art scores or published numbers over bespoke external baselines with no marginal information. (B5 EPoCS 0.599 ≈ B4 0.601 after ~38 GPU-min + env hacks; TOUGH-M1 ships APoc/G-LoSA/SiteEngine.)
 10. Run jobs > 5 min detached with log + marker + stored PID; never `pkill -f`; append to LD_LIBRARY_PATH, never overwrite; check mounts first. (Overwritten LD_LIBRARY_PATH silently ran ESM on CPU; rsyncPDB not mounted, D1.)
 11. The PI must not `git add` directories that running agents are editing; commit agents' files only after they report. (22:00: an in-progress pockets.py was swept into a commit.)
+12. Homology rules need exact alignment identities (mmseqs `-a`) and exhaustive structural search near thresholds;
+    score-based identity estimates leaked 16 TOUGH-M1-test pockets past a 30 % rule (D15, independent audit).
