@@ -14,6 +14,12 @@ non-empty); ``d_coverage``, ``d_precision``, ``d_missed`` and ``d_match`` (cover
 DESIGN §2.2) are carried in the ids table so callers apply the DESIGN rule themselves.
 Per-pocket descriptor time (``time_ms``: pocket assembly + typing + descriptor, one thread, excluding npz I/O)
 is recorded per row.
+
+Dataset adapters (index -> rows; the TOUGH-M1 path is unchanged):
+  tough_m1, blips, blips_test_holo, blips_test_af, ppi_l   point-cache index.parquet as written by build_point_cache.py
+  ppips   data/processed/ppi/ppips/pockets.parquet (merged BURROW region-rule pockets of the AF dimers, >= 10 points;
+          scripts/ppi/22_ppips_build.py); there is no ligand, so only mode D exists (pocket = union of the merged
+          pocket's members); the ids table carries complex / is_interface / split instead of the d_* columns.
 """
 from __future__ import annotations
 
@@ -142,17 +148,37 @@ def layout_json(arm, cfg) -> list:
 
 
 def _b1_names() -> list:
-    idx = pd.read_parquet(_INDEX_PATH)
+    idx = load_index(_DATASET)
     fs = load_light(ROOT / idx.cache_file.iloc[0])
-    _, names = BL.burrow_pocket_descriptors(fs, np.asarray(idx.lmode_idx.iloc[0]), residues=[])
+    pidx = np.asarray(idx.lmode_idx.iloc[0]) if idx.lmode_idx.iloc[0] is not None \
+        else _dmode_idx(fs, list(idx.d_members.iloc[0]))
+    _, names = BL.burrow_pocket_descriptors(fs, pidx, residues=[])
     return names
 
 
 _INDEX_PATH = None
+_DATASET = None
+PPIPS_POCKETS = ROOT / "data/processed/ppi/ppips/pockets.parquet"
+D_ONLY = {"ppips"}
+
+
+def index_path(dataset: str) -> Path:
+    return PPIPS_POCKETS if dataset == "ppips" else ROOT / "data/processed/cache/points" / dataset / "index.parquet"
+
+
+def load_index(dataset: str) -> pd.DataFrame:
+    """Rows with pocket_id, structure_key, cache_file, lmode_idx, d_members, d_coverage, d_precision, d_missed."""
+    if dataset != "ppips":
+        return pd.read_parquet(index_path(dataset))
+    P = pd.read_parquet(PPIPS_POCKETS)
+    return pd.DataFrame(dict(pocket_id=P.pocket_id, structure_key=P.complex, status="ok",
+                             cache_file=[f"data/processed/cache/points/ppips/{c}.npz" for c in P.complex],
+                             lmode_idx=None, d_members=P.members, d_coverage=np.nan, d_precision=np.nan,
+                             d_missed=False, complex=P.complex, is_interface=P.is_interface, split=P.split))
 
 
 def main(argv=None):
-    global _INDEX_PATH
+    global _INDEX_PATH, _DATASET
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dataset", default="tough_m1")
     ap.add_argument("--arm", choices=("a1", "b0", "b1"), required=True)
@@ -166,15 +192,19 @@ def main(argv=None):
     t_start = time.time()
     if a.dataset in ("prospeccts", "vertex") and os.environ.get("FINAL_EVAL") != "1":
         raise SystemExit(f"{a.dataset} is sealed (FINAL_EVAL=1 required)")
-    cache = ROOT / "data/processed/cache/points" / a.dataset
-    _INDEX_PATH = cache / "index.parquet"
+    _DATASET = a.dataset
+    _INDEX_PATH = index_path(a.dataset)
     out_dir = Path(a.out) if a.out else ROOT / "data/processed/descriptors" / a.dataset
     out_dir.mkdir(parents=True, exist_ok=True)
-    index = pd.read_parquet(_INDEX_PATH)
+    index = load_index(a.dataset)
     index = index[index.status == "ok"].reset_index(drop=True)
     if a.limit:
         index = index.iloc[:a.limit]
     modes = ["L", "D"] if a.mode == "both" else [a.mode]
+    if a.dataset in D_ONLY:
+        if "L" in modes:
+            print(f"[compute_descriptors] {a.dataset} has no L-mode pockets; computing D only", flush=True)
+        modes = ["D"]
     cfgs = arm_configs(a.arm, a.config)
     cols = ["pocket_id", "structure_key", "cache_file", "lmode_idx", "d_members", "d_coverage", "d_precision",
             "d_missed"]
@@ -215,7 +245,9 @@ def main(argv=None):
                        "n_points": r.get("n_points"), "volume_A3": r.get("volume_A3"),
                        "n_cells": r["info"].get(cname, {}).get("n_cells"),
                        "time_ms": r["time_ms"].get(cname), "io_ms": r["io_ms"]}
-                if mode == "D":
+                if a.dataset == "ppips":
+                    row.update(complex=m.complex, is_interface=bool(m.is_interface), split=m.split)
+                elif mode == "D":
                     row.update(d_coverage=float(m.d_coverage), d_precision=float(m.d_precision),
                                d_missed=bool(m.d_missed),
                                d_match=bool(m.d_coverage >= 0.3 or m.d_precision >= 0.5))

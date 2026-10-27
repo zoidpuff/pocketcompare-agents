@@ -3,6 +3,7 @@
 
   python scripts/a2/aggregate.py --raw raw_L --suffix ""        # -> data/processed/docking/tough_m1/fragments.parquet
   python scripts/a2/aggregate.py --raw raw_D --suffix _dmode
+  python scripts/a2/aggregate.py --dataset ppips --raw raw_L --suffix _ppips
 """
 from __future__ import annotations
 
@@ -20,7 +21,6 @@ sys.path.insert(0, str(ROOT / "src"))
 from pocketcompare import provenance as prov  # noqa: E402
 from pocketcompare.seeds import SEEDS  # noqa: E402
 
-BASE = ROOT / "data/processed/docking/tough_m1"
 
 
 def main():
@@ -28,14 +28,21 @@ def main():
     ap.add_argument("--raw", default="raw_L")
     ap.add_argument("--suffix", default="")
     ap.add_argument("--mode", default="L")
+    ap.add_argument("--dataset", default="tough_m1", choices=["tough_m1", "ppips"])
+    ap.add_argument("--device", default="cuda:0+cuda:2")
     a = ap.parse_args()
     t0 = time.time()
+    BASE = ROOT / "data/processed/docking" / a.dataset
     raw = BASE / a.raw
     shards = sorted(raw.glob("shard*.parquet"))
     stats = [json.loads(p.read_text()) for p in sorted(raw.glob("shard*.json"))]
     df = pd.concat([pd.read_parquet(p) for p in shards], ignore_index=True)
     geom = pd.read_parquet(BASE / "pocket_geom.parquet")
     expected = int(geom.d_matched.sum()) if a.mode == "D" else len(geom)
+    # per-pocket covariates carried into the raw table (shallow-pocket sub-hypothesis)
+    carry = [c for c in ("f_min", "is_interface", "split", "complex", "volume_L", "bur16_L", "n_points_L")
+             if c in geom.columns]
+    df = df.merge(geom[["pocket_id", *carry]], on="pocket_id", how="left", validate="many_to_one")
 
     summary = dict(mode=a.mode, raw=a.raw, n_shards=len(shards),
                    n_pockets_done=int(df.pocket_id.nunique()), n_pockets_expected=expected,
@@ -53,7 +60,7 @@ def main():
                                       panel=panel, in_pocket_cut=2.0),
                           inputs=[ROOT / f"data/ref/panels/{panel}_v1.sdf",
                                   BASE / "pocket_geom.npz", BASE / "pocket_geom.parquet"],
-                          seed=SEEDS[0], device="cuda:0+cuda:2", start_time=t0,
+                          seed=SEEDS[0], device=a.device, start_time=t0,
                           extra=dict(shard_stats=stats))
         nb = dp.groupby("pocket_id").score.quantile(0.9)
         summary[panel] = dict(
@@ -66,8 +73,18 @@ def main():
             nonbinder_rate_90pct=round(float((dp.score > dp.score.quantile(0.90)).mean()), 5),
             median_pocket_p90=round(float(nb.median()), 4),
             buried_frac_mean=round(float(dp.buried_frac.mean()), 4))
+        if "is_interface" in dp.columns:
+            g = dp.groupby("is_interface")
+            summary[panel]["by_interface"] = {
+                str(k): dict(n_pockets=int(v.pocket_id.nunique()), score_mean=round(float(v.score.mean()), 4),
+                             le_mean=round(float(v["le"].mean()), 4),
+                             in_pocket_rate=round(float(v.in_pocket.mean()), 5),
+                             buried_frac_mean=round(float(v.buried_frac.mean()), 4))
+                for k, v in g}
+            summary[panel]["by_split"] = {str(k): int(v.pocket_id.nunique())
+                                          for k, v in dp.groupby("split")}
     (ROOT / "results/a2").mkdir(parents=True, exist_ok=True)
-    (ROOT / f"results/a2/run_summary{a.suffix}_{a.mode}.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (ROOT / f"results/a2/run_summary_{a.dataset}{a.suffix}_{a.mode}.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
 
 

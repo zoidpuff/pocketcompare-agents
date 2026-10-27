@@ -12,6 +12,9 @@
     shared; label rules recomputed with RDKit's legacy Morgan API + DataStructs Tanimoto from BioLiP SMILES
     (positives max Tc >= 0.7, negatives < 0.3, n_shared), qualifying-ligand rules, <= 3 sites/protein, cluster
     caps; pairs within partition and across groups; counts reproduced.
+  * BLiPS v2 (D9 re-split): same site set as v1 train+val; exclusions == < 10 L-mode points; no protein adjacent
+    to a test set; no direct edge and no shared homology component train <-> val; val 15-25 % of sites and
+    round(20 %) of components; v2 pair labels recomputed as above; counts reproduced.
   * data/splits/SHA256SUMS.txt matches.
 Sealed test files are NOT opened (mode and presence only). Exit code 1 on any failure.
 Usage: python scripts/data/verify_splits.py
@@ -204,13 +207,12 @@ def main():
             tc_cache[k] = DataStructs.TanimotoSimilarity(fp(a), fp(b))
         return tc_cache[k]
 
-    for p in ("train", "val"):
-        df = pd.read_parquet(SPL / f"blips_{p}_pairs.parquet")
+    def check_pairs(df, site, S, bc, p, tag=""):
         sa, sb = site.loc[df.site_a], site.loc[df.site_b]
-        check((sa.partition.values == p).all() and (sb.partition.values == p).all(), f"BLiPS {p}: pairs within partition")
-        check((sa.group_id.values != sb.group_id.values).all(), f"BLiPS {p}: pairs across homology groups")
+        check((sa.partition.values == p).all() and (sb.partition.values == p).all(), f"BLiPS {tag}{p}: pairs within partition")
+        check((sa.group_id.values != sb.group_id.values).all(), f"BLiPS {tag}{p}: pairs across homology groups")
         check(not df[["site_a", "site_b"]].apply(lambda x: tuple(sorted(x)), axis=1).duplicated().any(),
-              f"BLiPS {p}: no duplicate pairs")
+              f"BLiPS {tag}{p}: no duplicate pairs")
         bad_pos = bad_neg = bad_ns = 0
         for r, qa, qb in zip(df.itertuples(), sa.q_ccds, sb.q_ccds):
             A, B = qa.split(";"), qb.split(";")
@@ -221,17 +223,54 @@ def main():
                 bad_ns += ns != r.n_shared
             else:
                 bad_neg += mx >= 0.3 - 1e-6
-        check(bad_pos == 0, f"BLiPS {p}: positives have max Tc >= 0.7 ({bad_pos} bad)")
-        check(bad_neg == 0, f"BLiPS {p}: negatives have max Tc < 0.3 ({bad_neg} bad)")
-        check(bad_ns == 0, f"BLiPS {p}: n_shared recomputed ({bad_ns} bad)")
+        check(bad_pos == 0, f"BLiPS {tag}{p}: positives have max Tc >= 0.7 ({bad_pos} bad)")
+        check(bad_neg == 0, f"BLiPS {tag}{p}: negatives have max Tc < 0.3 ({bad_neg} bad)")
+        check(bad_ns == 0, f"BLiPS {tag}{p}: n_shared recomputed ({bad_ns} bad)")
         pos = df[df.label == 1]
         vc = pos.pair_cluster.value_counts()
-        check(vc.max() <= 300, f"BLiPS {p}: <= 300 positives per ligand cluster (max {vc.max()})")
+        check(vc.max() <= 300, f"BLiPS {tag}{p}: <= 300 positives per ligand cluster (max {vc.max()})")
         c = bc[p]
         check(c["n_pos"] == len(pos) and c["n_neg"] == int((df.label == 0).sum())
               and c["n_sites"] == int((S.partition == p).sum()) and c["n_proteins"] == S[S.partition == p].protein.nunique()
-              and c["n_groups"] == S[S.partition == p].group_id.nunique(), f"BLiPS {p}: counts reproduced")
-        check(abs(c["max_pos_cluster_share"] - round(vc.iloc[0] / len(pos), 4)) < 1e-9, f"BLiPS {p}: cluster share reproduced")
+              and c["n_groups"] == S[S.partition == p].group_id.nunique(), f"BLiPS {tag}{p}: counts reproduced")
+        check(abs(c["max_pos_cluster_share"] - round(vc.iloc[0] / len(pos), 4)) < 1e-9, f"BLiPS {tag}{p}: cluster share reproduced")
+
+    for p in ("train", "val"):
+        check_pairs(pd.read_parquet(SPL / f"blips_{p}_pairs.parquet"), site, S, bc, p)
+
+    # ---------------- BLiPS v2 (D9 re-split of the pooled non-test sites; scripts/data/make_blips_resplit_v2.py)
+    if (SPL / "blips_sites_v2.parquet").exists():
+        S2 = pd.read_parquet(SPL / "blips_sites_v2.parquet")
+        bc2 = json.loads((SPL / "blips_split_counts_v2.json").read_text())
+        check(set(S2.site_id) == set(tv.site_id) and S2.site_id.is_unique,
+              "BLiPS v2: site set == v1 train+val sites (no test rows)")
+        check(((S2.partition == "excluded_lt10") == (S2.n_lmode_points.fillna(0) < 10)).all()
+              and ((S2.partition == "excluded_no_pocket") == S2.n_lmode_points.isna()).all(),
+              "BLiPS v2: exclusions == sites with < 10 L-mode BURROW points / no pocket")
+        tv2 = S2[S2.partition.isin(["train", "val"])]
+        for name_, tg in (("TOUGH-M1-test", tough_test), ("ProSPECCTs", ds_sids["prospeccts"]),
+                          ("Vertex", ds_sids["vertex"]), ("af_set/BLiPS-test", ds_sids["af_set"]),
+                          ("PPI-L-test", ppi_test)):
+            check(not (nbr(set(tv2.sid)) & tg), f"BLiPS v2 train/val: no protein adjacent to {name_}")
+        tr2, va2 = set(tv2[tv2.partition == "train"].sid), set(tv2[tv2.partition == "val"].sid)
+        check(not (nbr(tr2) & va2), "BLiPS v2: no direct edge / shared sequence train <-> val")
+        H2 = G.subgraph(tr2 | va2)
+        check(not [c for c in nx.connected_components(H2) if c & tr2 and c & va2],
+              "BLiPS v2: no homology component shared between train and val")
+        check(tv2.groupby("group_id").partition.nunique().max() == 1, "BLiPS v2: groups do not span partitions")
+        comp2 = {s_: i for i, c in enumerate(nx.connected_components(H2)) for s_ in c}
+        a2 = tv2.sid.map(comp2)
+        check(pd.crosstab(a2, tv2.group_id).astype(bool).sum(axis=1).max() == 1
+              and pd.crosstab(tv2.group_id, a2).astype(bool).sum(axis=1).max() == 1,
+              "BLiPS v2: group_id == networkx components of the pooled proteins")
+        fr = float((tv2.partition == "val").mean())
+        check(0.15 <= fr <= 0.25, f"BLiPS v2: val holds 15-25 % of sites ({fr:.3f})")
+        ng = tv2.group_id.nunique()
+        check(tv2[tv2.partition == "val"].group_id.nunique() == int(round(0.2 * ng)),
+              f"BLiPS v2: val = round(20 %) of {ng} components")
+        site2 = tv2.set_index("site_id")
+        for p in ("train", "val"):
+            check_pairs(pd.read_parquet(SPL / f"blips_{p}_pairs_v2.parquet"), site2, tv2, bc2, p, tag="v2 ")
     te = S[S.partition == "test"]
     check(te.label_ccd.isna().all() if "label_ccd" in te else True, "BLiPS test sites in data/splits carry no ligand labels")
     check(bc["test"]["n_sites"] == len(te) and bc["test"]["n_proteins"] == te.protein.nunique(), "BLiPS test: site/protein counts reproduced")

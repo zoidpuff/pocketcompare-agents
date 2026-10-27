@@ -168,6 +168,8 @@ def main():
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--panels", default=",".join(PANELS), help="per-panel timing runs")
+    ap.add_argument("--geom_dir", default="data/processed/docking/tough_m1",
+                    help="dir with pocket_geom.{npz,parquet} (tough_m1 or ppips)")
     a = ap.parse_args()
 
     torch.set_num_threads(a.threads)
@@ -187,8 +189,8 @@ def main():
     outdir = ROOT / a.out
     outdir.mkdir(parents=True, exist_ok=True)
 
-    geom = np.load(ROOT / "data/processed/docking/tough_m1/pocket_geom.npz", allow_pickle=False)
-    scal = pd.read_parquet(ROOT / "data/processed/docking/tough_m1/pocket_geom.parquet")
+    geom = np.load(ROOT / a.geom_dir / "pocket_geom.npz", allow_pickle=False)
+    scal = pd.read_parquet(ROOT / a.geom_dir / "pocket_geom.parquet")
     pid = geom["pocket_id"]
     sel = np.ones(len(pid), bool)
     if a.subset:

@@ -41,9 +41,12 @@ ROOT = Path(__file__).resolve().parents[1]
 BENCH = ROOT / "data" / "processed" / "benchmarks"
 CACHE = ROOT / "data" / "processed" / "cache" / "points"
 SEALED = {"prospeccts", "vertex"}
-SUPPORTED = {"tough_m1", "tough_c1", "prospeccts", "vertex"}
+SUPPORTED = {"tough_m1", "tough_c1", "prospeccts", "vertex", "blips", "blips_test_holo", "blips_test_af"}
 POCKET_COLS = ["pocket_id", "structure_path", "chain", "pocket_def_type", "pocket_def", "ligand_file",
-               "ligand_resname", "het_instances"]
+               "ligand_resname", "het_instances",
+               # BLiPS tables (scripts/data/prep_blips_pockets.py): explicit structure key + featurised chains,
+               # ligand heavy atoms given as flattened coordinates
+               "structure_key", "chains", "ligand_xyz", "alt_ligand_xyz"]
 
 
 def structure_keys(paths: list[str]) -> dict:
@@ -77,7 +80,8 @@ def run_structure(task: dict) -> tuple[list, dict]:
         try:
             fs = pk.Featurized.load(out)
             if (fs.meta.get("adapter_version") != pk.ADAPTER_VERSION or fs.meta.get("preset") != task["preset"]
-                    or fs.meta.get("ranker") != task["ranker"] or fs.meta.get("af_mode") != task["af_mode"]):
+                    or fs.meta.get("ranker") != task["ranker"] or fs.meta.get("af_mode") != task["af_mode"]
+                    or fs.meta.get("chains") != task["chains"]):
                 fs = None
             else:
                 tim["cached"] = True
@@ -197,14 +201,21 @@ def main(argv=None) -> int:
     tab = pd.read_parquet(BENCH / f"{a.dataset}_pockets.parquet")
     tab = tab[[c for c in POCKET_COLS if c in tab.columns]].sort_values("pocket_id", kind="stable")
     missing = tab.structure_path.isna()
-    paths = sorted(tab.loc[~missing, "structure_path"].unique().tolist())
-    keys = structure_keys(paths)
     out_dir = Path(a.cache_root) / a.dataset
     out_dir.mkdir(parents=True, exist_ok=True)
-    by = {p: g.to_dict("records") for p, g in tab[~missing].groupby("structure_path", sort=True)}
-    tasks = [{"key": keys[p], "structure_path": p, "chains": None, "rows": by[p],
-              "cache_file": str(out_dir / f"{keys[p]}.npz"), "overwrite": a.overwrite,
-              "preset": a.preset, "ranker": a.ranker, "af_mode": a.af_mode} for p in paths]
+    if "structure_key" in tab:   # explicit keys (one structure = one key + chain selection), e.g. BLiPS
+        by = {k: g.to_dict("records") for k, g in tab[~missing].groupby("structure_key", sort=True)}
+        tasks = [{"key": k, "structure_path": rs[0]["structure_path"],
+                  "chains": None if rs[0].get("chains") is None else [str(c) for c in rs[0]["chains"]],
+                  "rows": rs, "cache_file": str(out_dir / f"{k}.npz"), "overwrite": a.overwrite,
+                  "preset": a.preset, "ranker": a.ranker, "af_mode": a.af_mode} for k, rs in by.items()]
+    else:
+        paths = sorted(tab.loc[~missing, "structure_path"].unique().tolist())
+        keys = structure_keys(paths)
+        by = {p: g.to_dict("records") for p, g in tab[~missing].groupby("structure_path", sort=True)}
+        tasks = [{"key": keys[p], "structure_path": p, "chains": None, "rows": by[p],
+                  "cache_file": str(out_dir / f"{keys[p]}.npz"), "overwrite": a.overwrite,
+                  "preset": a.preset, "ranker": a.ranker, "af_mode": a.af_mode} for p in paths]
     tasks.sort(key=lambda t: t["key"])
     if a.limit:
         tasks = tasks[:a.limit]

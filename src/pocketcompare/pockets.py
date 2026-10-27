@@ -535,6 +535,18 @@ def resolve_pocket(fs: Featurized, row: dict, root: Path | None = None, cutoff: 
         xyz, _ = read_ligand_heavy_atoms(src)
         lp = lmode_from_ligand(fs, xyz, cutoff)
         rec["definition"] = f"ligand_file:{src.suffix.lstrip('.')}"
+    elif dtype == "ligand_xyz":
+        # BLiPS: ligand heavy-atom coordinates given directly (pooled/transferred instances, flattened x,y,z)
+        xyz = np.asarray(row["ligand_xyz"], np.float64).reshape(-1, 3)
+        lp = lmode_from_ligand(fs, xyz, cutoff)
+        rec["definition"] = "ligand_xyz"
+        alt = row.get("alt_ligand_xyz")
+        if alt is not None and len(alt):
+            ap_ = lmode_from_ligand(fs, np.asarray(alt, np.float64).reshape(-1, 3), cutoff)
+            a, b = set(lp.idx.tolist()), set(ap_.idx.tolist())
+            rec.update(alt_definition="label_ligand_only", alt_n_points=ap_.n_points, alt_volume_A3=ap_.volume_A3,
+                       alt_idx=ap_.idx, alt_jaccard=len(a & b) / len(a | b) if a | b else 0.0,
+                       alt_n_missing_residues=0, alt_chain_remapped=False)
     elif dtype == "ligand_residue":
         sel = []
         for tok in str(row["pocket_def"]).split(";"):
