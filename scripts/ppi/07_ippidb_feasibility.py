@@ -43,9 +43,10 @@ def fetch() -> list[dict]:
                 except Exception:  # noqa: BLE001  (server returns sporadic 502s)
                     if attempt == 4:
                         raise
-                    time.sleep(5 * (attempt + 1))
+                    time.sleep(30 * (attempt + 1))
             rows += d["results"]
             off += 200
+            time.sleep(1.0)   # be polite: the server rate-limits (503) under rapid paging
             if not d.get("next"):
                 break
         f.write_text(json.dumps(rows))
