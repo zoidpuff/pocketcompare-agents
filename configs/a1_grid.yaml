@@ -1,0 +1,29 @@
+# A1 typed volumetric fingerprint — pre-registered configuration grid (DESIGN §3 "A1", <= 20 configs).
+# Written 2026-10-27 before any label was available. Each entry overrides
+# pocketcompare.descriptors.a1.DEFAULT_CONFIG recursively (see a1.make_config); `resample: null` disables
+# resampling. Selection (DESIGN §4): mean cluster-balanced AUC over TOUGH-M1-dev and BLiPS-val; the simplest
+# config within one SE of the best wins. "Simplest" = fewest vector dimensions; ties go to the earlier entry.
+# Scoring of every config: z-score on the reference (train/dev) pool, then cosine; block-weighted cosine with
+# DEFAULT_CONFIG.score_weights (hist/pair/usr/glob 1, size 0.25) is evaluated as a scoring variant of `default` only.
+version: a1-grid-v1
+configs:
+  default: {}                       # soft typing 4.5 Å, 2 Å lattice, bur16 tertiles, 14 bins 2-20 Å σ 1, all blocks, Hellinger
+  # --- each block alone
+  hist_only:  {blocks: [hist]}
+  pair_only:  {blocks: [pair]}
+  usr_only:   {blocks: [usr]}       # typed USRCAT-like moments alone
+  glob_only:  {blocks: [glob]}
+  # --- transforms / typing / sampling
+  no_hellinger: {hellinger: false}
+  hard_typing:  {typing: {mode: hard}}            # VolSite argmax: type of the nearest atom within 4.5 Å
+  radius_4:     {typing: {radius: 4.0}}           # VolSite's original 4 Å typing radius (soft)
+  no_resample:  {resample: null}                  # raw BURROW points weighted by vol (1 dense, 27 coarse)
+  resample_3A:  {resample: {spacing: 3.0}}
+  # --- distance bins (default: 14 bins on 2-20 Å, σ 1.0)
+  dbins_coarse: {pairs: {n_bins: 10, sigma: 1.5}}
+  dbins_fine:   {pairs: {n_bins: 16, sigma: 0.75}}
+  dbins_short:  {pairs: {r_max: 14.0, n_bins: 12, sigma: 1.0}}
+  # --- buriedness split / typing value
+  no_bur:       {buriedness: {edges: []}}         # no buriedness split in the histogram block
+  untyped:      {blocks: [pair, usr, glob, size], pairs: {channels: [shape]}, usr: {channels: [shape]}}
+  no_usr:       {blocks: [hist, pair, glob, size]}
