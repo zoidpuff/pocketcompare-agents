@@ -145,11 +145,22 @@ def in_pdb_mirror(pdb_id: str) -> bool:
     return pdb_mirror_path(pdb_id).exists()
 
 
-def write_tables(name: str, pairs, pockets) -> tuple[Path, Path]:
+# Benchmarks whose pair labels are sealed in data/sealed/ (chmod 000). Their pair tables are never written to
+# data/processed/ by a rebuild; set POCKETCOMPARE_WRITE_SEALED_PAIRS=1 (PI only) to override.
+SEALED_PAIR_DATASETS = {"prospeccts", "tough_m1", "vertex"}
+
+
+def write_tables(name: str, pairs, pockets) -> tuple[Path | None, Path]:
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     pp = PROCESSED_DIR / f"{name}_pairs.parquet"
     kp = PROCESSED_DIR / f"{name}_pockets.parquet"
-    pairs.to_parquet(pp, index=False)
+    if pairs is not None and (name not in SEALED_PAIR_DATASETS
+                              or os.environ.get("POCKETCOMPARE_WRITE_SEALED_PAIRS") == "1"):
+        pairs.to_parquet(pp, index=False)
+    else:
+        pp = None
+        if pairs is not None:
+            print(f"[sealed] {name}: pair table NOT written (labels are sealed in data/sealed/)")
     pockets.to_parquet(kp, index=False)
     return pp, kp
 

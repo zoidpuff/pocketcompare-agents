@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 """Rebuild all processed benchmark tables from data/raw (run the fetch_*.py scripts first).
+Pair tables of sealed benchmarks (prospeccts, tough_m1, vertex) are NOT written (common.write_tables guard;
+TOUGH-M1 builds its pocket table only and never reads its sealed pair lists).
 Usage: python scripts/data/build_benchmarks.py && python scripts/data/check_benchmarks.py
 """
 import sys

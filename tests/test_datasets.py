@@ -75,3 +75,18 @@ def test_tough_c1_and_klifs():
     assert len(kl) > 10000 and kl.pocket_id.is_unique
     # KLIFS API snapshot 2026-10-27: 14,917 structures, 112 with pocket string != 85 chars
     assert (kl.pocket_def.str.len() == 85).mean() > 0.99
+
+
+@pytest.mark.skipif(not (PROCESSED_DIR / "tough_m1_pockets.parquet").exists(), reason="pocket table not built")
+def test_tough_m1_pocket_chain_matches_structure_file():
+    """pocket_def uses the chain letter of the structure file (was hard-coded 'A:' before 2026-10-27)."""
+    from pocketcompare.datasets.common import PROJECT_ROOT
+    k = pd.read_parquet(PROCESSED_DIR / "tough_m1_pockets.parquet")
+    assert len(k) == 7524 and (k.structure_chain != "A").sum() == 3191
+    assert (k.pocket_def.str.split(":").str[0] == k.structure_chain).all()
+    assert (k.structure_chain == k.name.str[4]).all()
+    for r in k.sample(50, random_state=0).itertuples():
+        res = {(l[21], l[22:27].strip()) for l in open(PROJECT_ROOT / r.structure_path) if l.startswith("ATOM")}
+        ch, nums = r.pocket_def.split(":")
+        assert all((ch, n) in res for n in nums.split(","))
+    assert not (PROCESSED_DIR / "tough_m1_pairs.parquet").exists(), "sealed pair table must not be rebuilt"

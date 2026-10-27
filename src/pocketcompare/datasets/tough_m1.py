@@ -13,6 +13,15 @@ Pocket definition used by the benchmark: the fpocket 2.0 pocket with index
 MCC given). We record its residue list (numbering of the TOUGH-M1 .pdb file,
 NOT of the original PDB entry) and the ligand file.
 Labels: positive.list -> 1, negative.list -> 0 (as distributed).
+
+Chain letters: the structure files are renumbered from 1 but keep the ORIGINAL chain letter (3,191 of
+7,524 are not 'A'); `pocket_def` therefore uses the chain read from the structure file (it hard-coded
+'A:' before 2026-10-27).
+
+Sealing: the pair lists and the shipped baseline score files are sealed (chmod 000; TOUGH-M1 pair labels
+live in data/sealed/). `build()` writes the POCKET table only and never reads the pair lists; the pair
+table is built once by `build_pairs()` (only the PI / sealed workflow may call it) and the dev/test pair
+tables come from scripts/data/make_tough_m1_split.py.
 """
 from __future__ import annotations
 
@@ -20,7 +29,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .common import PROCESSED_DIR, in_pdb_mirror, raw_dir, rel, write_tables
+from .common import PROCESSED_DIR, in_pdb_mirror, raw_dir, rel
 
 NAME = "tough_m1"
 DL = raw_dir(NAME) / "downloads"
@@ -49,7 +58,17 @@ def _fpocket_residues(path: Path) -> dict[int, list[str]]:
     return out
 
 
-def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _file_chain(path: Path) -> str | None:
+    """Chain id of the first ATOM record (TOUGH-M1 files are single-chain)."""
+    with open(path, errors="replace") as fh:
+        for line in fh:
+            if line.startswith("ATOM"):
+                return line[21].strip() or None
+    return None
+
+
+def build_pockets(write: bool = True) -> pd.DataFrame:
+    """Pocket table only (no labels). Writes data/processed/benchmarks/tough_m1_pockets.parquet."""
     pl = pd.read_csv(DL / "TOUGH-M1_pocket.list", sep=r"\s+", header=None,
                      names=["name", "pocket_index", "pocket_mcc"], dtype={"name": str})
     rows = []
@@ -59,12 +78,14 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
         res = _fpocket_residues(fp) if fp.exists() else {}
         resids = res.get(int(r.pocket_index))
         pdb_id = r.name[:4].lower()
+        fchain = _file_chain(prot) if prot.exists() else None
         rows.append({
             "pocket_id": f"{NAME}:{r.name}", "dataset": NAME, "subset": "TOUGH-M1",
             "name": r.name, "pdb_id": pdb_id, "chain": r.name[4] if len(r.name) > 4 else None,
             "structure_path": rel(prot) if prot.exists() else None,
             "pocket_def_type": "residue_list",
-            "pocket_def": ("A:" + ",".join(resids)) if resids else None,
+            "pocket_def": (f"{fchain}:" + ",".join(resids)) if (resids and fchain) else None,
+            "structure_chain": fchain,
             "pocket_file": rel(fp) if fp.exists() else None,
             "ligand_file": rel(lig) if lig.exists() else None,
             "ligand_resname": "LIG",
@@ -75,6 +96,19 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
             "file_missing": not (prot.exists() and lig.exists() and fp.exists()),
         })
     pockets = pd.DataFrame(rows)
+    if write:
+        PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+        pockets.to_parquet(PROCESSED_DIR / f"{NAME}_pockets.parquet", index=False)
+    return pockets
+
+
+def build(write: bool = True) -> tuple[None, pd.DataFrame]:
+    """Rebuild the pocket table only (pair labels are sealed; see module docstring)."""
+    return None, build_pockets(write=write)
+
+
+def build_pairs(pockets: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Pair table from the (sealed, chmod 000) raw lists. Returned in memory only, never written here."""
     pos = _read_pairs(DL / "TOUGH-M1_positive.list", 1)
     neg = _read_pairs(DL / "TOUGH-M1_negative.list", 0)
     pairs = pd.concat([pos, neg], ignore_index=True)
@@ -86,14 +120,17 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
     pairs.insert(0, "pair_id", [f"{NAME}:{i}" for i in range(len(pairs))])
     pairs = pairs[["pair_id", "pocket_a", "pocket_b", "label", "subset", "source_label",
                    "is_self", "seq_identity", "tm_score", "ligand_tc"]]
-    if write:
-        write_tables(NAME, pairs, pockets)
-    return pairs, pockets
+    return pairs
 
 
-def load() -> tuple[pd.DataFrame, pd.DataFrame]:
-    return (pd.read_parquet(PROCESSED_DIR / f"{NAME}_pairs.parquet"),
-            pd.read_parquet(PROCESSED_DIR / f"{NAME}_pockets.parquet"))
+def load_pockets() -> pd.DataFrame:
+    return pd.read_parquet(PROCESSED_DIR / f"{NAME}_pockets.parquet")
+
+
+def load() -> tuple[pd.DataFrame | None, pd.DataFrame]:
+    """(pairs, pockets); pairs is None unless an unsealed pair table exists (it should not)."""
+    pp = PROCESSED_DIR / f"{NAME}_pairs.parquet"
+    return (pd.read_parquet(pp) if pp.exists() else None), load_pockets()
 
 
 def counts(pairs: pd.DataFrame, pockets: pd.DataFrame) -> dict:
@@ -116,6 +153,6 @@ def counts(pairs: pd.DataFrame, pockets: pd.DataFrame) -> dict:
 
 
 if __name__ == "__main__":
-    p, k = build()
-    for kk, v in counts(p, k).items():
-        print(f"{kk:28s} {v}")
+    k = build_pockets()
+    print(f"pockets {len(k)}; chain != 'A': {(k.structure_chain != 'A').sum()}; "
+          f"no residues: {(k.n_pocket_residues == 0).sum()}; missing files: {k.file_missing.sum()}")

@@ -86,7 +86,7 @@ def file_fingerprint(path) -> dict:
 def _git(*args, cwd=ROOT) -> str | None:
     try:
         return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, check=True,
-                              timeout=30).stdout.strip()
+                              timeout=30).stdout.rstrip("\n")
     except (subprocess.SubprocessError, FileNotFoundError):
         return None
 

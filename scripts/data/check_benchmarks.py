@@ -17,7 +17,7 @@ out = {}
 pp, pk = prospeccts.load()
 out["prospeccts"] = prospeccts.counts(pp, pk).to_dict(orient="records")
 tp, tk = tough_m1.load()
-out["tough_m1"] = tough_m1.counts(tp, tk)
+out["tough_m1"] = tough_m1.counts(tp, tk) if tp is not None else {"n_pockets": len(tk), "pairs": "sealed"}
 out["tough_m1"]["pocket_mcc_lt_0.5"] = int((tk.pocket_mcc < 0.5).sum())
 out["tough_m1"]["pocket_mcc_median"] = float(tk.pocket_mcc.median())
 vp, vk = vertex.load()
