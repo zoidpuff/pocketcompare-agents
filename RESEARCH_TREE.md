@@ -94,5 +94,7 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [-] PPI-L gate failed (175 cross-group positives in the whole set; shared modulators stay within families)
   - [x] PPIPS: 1,991 dimers; P-ortho queries 1,088 / 95 / 229; P-sym pairs 2,088 / 366 / 440 (train/val/test)
   - [x] B6 PSI re-implemented from 108 descriptors (r = 0.96 vs API sample)
+- [x] P3 B4 ESM-2 pocket mean (L+D, 0.06 s/pocket) and B5 EPoCS (ESM-2 3B, L only, 0.3 s/pocket), all 7,524
+      TOUGH-M1 pockets — reports/baselines_b4_b5.md
 - [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md

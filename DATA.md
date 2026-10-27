@@ -22,3 +22,33 @@ Raw data lives in `data/raw/` (git-ignored); fetch scripts in `scripts/data/`. R
 |---|---|---|---|---|
 | MMseqs2 | github.com/soedinglab/MMseqs2 releases/latest mmseqs-linux-avx2.tar.gz (2026-10-27) | 8cc5ce367b5638c4306c2d7cfc652dd099a4643f | bd9b0234da5949ad528d5b5f9ea4cda9c1e23dce14b46c0791d4d919a76e61ce | MIT |
 | Foldseek | mmseqs.com/foldseek/foldseek-linux-avx2.tar.gz (2026-10-27) | 463739e0014a1549a527de589102cde98f802f37 | f886374e29ebbf03849cd9c4c8929be00904856dd271627d8c3043607e2af95a | GPL-3.0 |
+
+## External baselines
+| tool | source | version (commit) | licence | sha256 | notes |
+|---|---|---|---|---|---|
+| EPoCS (B5) | github.com/tugceoruc/epocs (cloned 2026-10-27 to `envs/epocs_src`) | bc9e15c89ef2078d8559b0f34a4d35bde40a44bb (2025-08-11) | Apache-2.0 | n/a (git) | separate venv `envs/epocs` (py3.10, torch 2.6+cu124, fair-esm 2.0.0, biopandas 0.5.2, pymol-open-source 3.2.0a0 from PyPI; libX11/GL from conda-forge via micromamba in `envs/x11`, appended to LD_LIBRARY_PATH — do NOT overwrite LD_LIBRARY_PATH, the cluster's CUDA libs live there). `tmap` (clustering/plot only) is not usable (PyPI `tmap` lacks `layout_from_edge_list`); we skip clustering and only use the pocket embeddings (`pocket_embeddings/*.pkl`). Run with `-sr false`, `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1` (torch 2.6 default weights_only breaks fair-esm checkpoint loading; checkpoint is the official Meta file). |
+| ESM-2 3B weights (for EPoCS) | https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t36_3B_UR50D.pt | esm2_t36_3B_UR50D | MIT (ESM) | 7de8b4082ba15891959ab368b77ce3886697af1efb16d3c9e9e7b0c5d3f07500 | `envs/esm_weights/` (5.7 GB); contact-regression file sha256 4da500eab246481dc9c8c95bc7b1d02f2803d761c380b0e95186d4a07d0fc84e |
+| ESM-2 650M (B4) | HuggingFace `facebook/esm2_t33_650M_UR50D` via transformers | HF cache `data/processed/hf` | MIT | (HF snapshot, see cache) | fp16 forward |
+
+## Docking panels (A2)
+Raw sources in `data/raw/panel_sources/` (git-ignored); prepared panels in `data/ref/panels/`
+(`<panel>_v1.{smi,csv,sdf}` + `panels_manifest.json`, ~0.8 MB, committable under the licences below).
+Built by `scripts/a2/build_panels.py` (`--stage pool` then `--stage pick`), deterministic (`SEEDS[0]`).
+Protonation: **dimorphite-dl 2.1.0**, pH 7.4 (`ph_min=ph_max=7.4, precision=0.0`, single dominant microstate),
+which is what ADock/meeko expects (explicit H, formal charges on the input mol).
+3D: RDKit ETKDGv3 (`randomSeed=SEEDS[0]`) + MMFF94 (UFF fallback), explicit H.
+
+| dataset | source URL | version / date fetched | sha256 (archive) | license | fetch/build script | notes |
+|---|---|---|---|---|---|---|
+| NCI Open Database, release 4 (fragment pool) | https://cactus.nci.nih.gov/download/nci/NCI-Open_2012-05-01.sdf.gz | release 2012-05-01, fetched 2026-10-27 | 64394fc0e07e49b0cfdbd79f4481d7b304662c8792df28f1a87a0f7e0279f45b | **public domain** (NCI/DTP Open Chemical Repository; NCI/CADD processing). Freely redistributable. | `scripts/a2/build_panels.py` | 265,242 records → 47,663 after the Ro3-like fragment filter |
+| PocketVec lead-like set `LLM.smi` (lead-like pool) | https://raw.githubusercontent.com/sbnb-irb/PocketVec/HEAD/data/libs/SMILES/LLM.smi | repo HEAD 2026-10-27 | 326a30bf1093d7a0c08cb8e1054e1d64a87b1195dd4c52c25047ea86dd147777 | **MIT** (`sbnb-irb/PocketVec`, LICENSE sha256 59c12b29a575d2c7…) | `scripts/a2/build_panels.py` | the published 1,000 lead-like molecules (MOE, MW 200–450) from which PocketVec drew its 128-molecule panel; 840 pass MW 200–450 + ≤ 6 rotatable bonds |
+| PocketVec published 128 (`TOP_128_rDock_LLM.smi`, reference only) | …/data/libs/SMILES/TOP_128_rDock_LLM.smi | repo HEAD 2026-10-27 | 66c2aa6aab8c9851a641fc0bf181ee412daac6ecff5bc0505bb345896bb53c5b | MIT | — | kept only to measure the overlap with our MaxMin pick (16/128) |
+| **A2 fragment panel** `data/ref/panels/fragments_v1.*` | derived | built 2026-10-27, seed 0 | sdf b5d94fa27a03315a…, csv 88650ce117a65cfe…, smi e75a3336fc424567… | public domain (NCI) | `scripts/a2/build_panels.py --stage pick` | 128 fragments; filters: neutral-source largest fragment, elements CHNOFPSClBrI, 8–17 heavy atoms, MW ≤ 300, ≥ 1 ring, ≤ 3 rotatable bonds, HBD ≤ 3, HBA ≤ 6, cLogP ≤ 3.5, PAINS-free. Stratified 6 pharmacophore classes (apolar/aromatic, donor-rich, acceptor-rich, mixed, cationic, anionic) × 3 heavy-atom bins (8–9: 24, 10–14: 80, 15–17: 24), MaxMin (Morgan r2/2048) within stratum |
+| **A2 lead-like panel** `data/ref/panels/leadlike_v1.*` | derived | built 2026-10-27, seed 0 | sdf c466c31947179779…, csv 471bee472560ed86…, smi 612f8108f6789f96… | MIT (PocketVec) | `scripts/a2/build_panels.py --stage pick` | 128 lead-like molecules, MW 200–450, ≤ 6 rotatable bonds, MaxMin over the 840-molecule pool |
+
+**Licence honesty.** The fragment panel is *not* a vendor fragment library. Enamine / Life Chemicals /
+Maybridge / DSi-Poised sets either carry no redistribution grant or are behind a click-through; ZINC's
+`files.docking.org` is blocked by the cluster proxy and `zinc.docking.org` subsets are captcha-gated from here.
+We therefore used the public-domain NCI Open Database and applied a Rule-of-3-like fragment filter ourselves;
+this is a fragment-*like* subset of a general screening collection, not a designed fragment library, and that
+difference should be stated in any comparison with published fragment-screening results.
