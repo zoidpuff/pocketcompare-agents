@@ -1,0 +1,59 @@
+{
+ "af_mode": false,
+ "alt_chain_remapped": 3191,
+ "alt_jaccard_p50": 0.39125233575441043,
+ "alt_missing_residues_any": 0,
+ "alt_n_failed": 0,
+ "alt_residue_def_points_p50": 672.0,
+ "dataset": "tough_m1",
+ "definition_counts": {
+  "ligand_file:sdf": 7524
+ },
+ "disk_bytes_npz": 6750106039,
+ "dmode_full_miss_rate": 0.17464114832535885,
+ "dmode_region_coverage_p50": 0.5055263800683928,
+ "dmode_region_miss_rate": 0.19351408825093036,
+ "dmode_region_missed_but_precision_ge_0.5": 0.13875598086124402,
+ "dmode_region_precision_p50": 0.9610584026751692,
+ "failure_reasons": {},
+ "limit": null,
+ "lmode_n_lining_res_p50": 28.0,
+ "lmode_points": {
+  "max": 1482.0,
+  "p50": 352.0,
+  "p90": 658.0,
+  "p99": 907.0
+ },
+ "lmode_volume_A3": {
+  "max": 2682.0,
+  "p50": 542.0,
+  "p90": 1091.0,
+  "p99": 1981.6199999999972
+ },
+ "n_merged_region_p50": 12.0,
+ "n_ok": 7524,
+ "n_pockets": 7524,
+ "n_region_pockets_p50": 12.0,
+ "n_structures": 7524,
+ "n_structures_cached": 0,
+ "npz_bytes_p50": 815056.5,
+ "preset": "default",
+ "ranker": "all",
+ "structure_points": {
+  "max": 25506.0,
+  "p50": 4983.5,
+  "p90": 9077.7,
+  "p99": 15760.02999999998
+ },
+ "success_rate": 1.0,
+ "throughput_structures_per_s": 66.47737822893791,
+ "time_featurize_s_p50": 0.2818017570534721,
+ "time_per_structure_s": {
+  "max": 2.9988474759738892,
+  "p50": 0.42031587450765073,
+  "p90": 0.7453894956270232,
+  "p99": 1.4047427277127267
+ },
+ "wall_s": 113.18135883891955,
+ "workers": 32
+}

@@ -13,6 +13,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D3 (19:45) D-mode match = coverage ≥ 0.3 OR precision ≥ 0.5 (detected pocket inside the site counts).
+- D4 (19:45) DESIGN v1 after round 1: TOUGH-M1 dev = BURROW-homologous groups (32 % of TOUGH-M1 is homologous
+  to BURROW training — leakage rule), test = BURROW-clean rest; BLiPS test = BURROW af_set; PPI-L from the
+  Pasteur pocketome; ESM-2 baseline B4; A1 + A4b main bets, A2 gated, A3/A4 stretch. See DESIGN §10.
 - DEV1 (19:40, protocol deviation, disclosed by the agent) The statistics reviewer read
   data/processed/benchmarks/tough_m1_pairs.parquet at 19:08–19:10, i.e. before sealing (D2, 19:12), and computed
   label-graph structure (top ligand cluster = 47 % of positives; negatives from 1,266 pockets) and a size-only B0
@@ -50,6 +54,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
 - [~] P2 DESIGN.md draft v0 (19:15) + review round 1 (PI, stats, data, algorithms, agent-failure, domain)
   - [x] R1 PI, algorithms, domain, statistics reviews in reviews/round1_*.md
   - [x] R1 agent-failure-modes review → reviews/round1_agent_failure_modes.md (sealing, eval-first, provenance)
-- [~] P3 Pocket adapter (L/D-mode) + point-feature cache on TOUGH-M1 (label-free)
+- [x] P3 Pocket adapter (L/D-mode) + point-feature cache on TOUGH-M1 (label-free) — reports/pocket_adapter.md
+  - [x] 7,524/7,524 pockets, 113 s on 32 workers, 6.4 GB; deterministic; 9 tests pass
+  - [x] L-mode median 352 pts / 542 Å3; residue-list pockets ~2× ligand-defined (Jaccard 0.39) → ligand file used
+  - [x] D-mode miss 19.4 % (coverage rule) → 5.5 % with coverage ≥ 0.3 OR precision ≥ 0.5 (D3)
+  - [ ] bug: tough_m1_pockets.parquet hardcodes chain `A:` (3,191 files differ); adapter maps it — fix loader
 - [ ] P3 Implement + evaluate candidate representations
 - [ ] P4 Final held-out evaluation, REPORT.md
