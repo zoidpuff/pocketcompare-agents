@@ -1,0 +1,57 @@
+{
+ "seq_or_tm>=0.5": {
+  "tough_m1": {
+   "excluded": 5779,
+   "test": 1014,
+   "dev": 731
+  },
+  "tough_m1_largest_component": 385,
+  "burrow_trainval_proteins": 7054,
+  "burrow_trainval_removed": 2637,
+  "af_set_largest_component_frac": 0.2808
+ },
+ "seq_or_tm>=0.6": {
+  "tough_m1": {
+   "excluded": 4811,
+   "test": 1608,
+   "dev": 1105
+  },
+  "tough_m1_largest_component": 324,
+  "burrow_trainval_proteins": 7054,
+  "burrow_trainval_removed": 1869,
+  "af_set_largest_component_frac": 0.2791
+ },
+ "seq_or_tm>=0.7": {
+  "tough_m1": {
+   "excluded": 3864,
+   "test": 2370,
+   "dev": 1290
+  },
+  "tough_m1_largest_component": 269,
+  "burrow_trainval_proteins": 7054,
+  "burrow_trainval_removed": 1222,
+  "af_set_largest_component_frac": 0.2791
+ },
+ "seq_or_tm>=0.8": {
+  "tough_m1": {
+   "test": 3146,
+   "excluded": 2939,
+   "dev": 1439
+  },
+  "tough_m1_largest_component": 264,
+  "burrow_trainval_proteins": 7054,
+  "burrow_trainval_removed": 734,
+  "af_set_largest_component_frac": 0.2788
+ },
+ "seq_only": {
+  "tough_m1": {
+   "test": 3589,
+   "excluded": 2392,
+   "dev": 1543
+  },
+  "tough_m1_largest_component": 263,
+  "burrow_trainval_proteins": 7054,
+  "burrow_trainval_removed": 536,
+  "af_set_largest_component_frac": 0.2788
+ }
+}

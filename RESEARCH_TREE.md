@@ -22,6 +22,13 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D8 (21:00) Keep the pre-registered TOUGH-M1 rule: dev 731 pockets (3,366 pos / 6,463 neg), test 1,014 pockets
+  (530 groups, 302 ligand clusters; 10,064 pos / 13,221 neg), 5,779 excluded (touch BURROW AND a sealed set).
+  Reason: rules are not changed after seeing counts; test has enough independent units. ADDED (before any test
+  evaluation): secondary literature-comparable evaluation "TOUGH-M1 full minus dev pockets" for NON-learned arms
+  only (BURROW's learned models play no role in L-mode with analytic features); learned arms are not reported there.
+- D9 (21:00) BLiPS-val (163 sites, 15 ligand clusters, one cluster = 59 % of positives) is too weak for selection →
+  re-split pooled BLiPS train+val (non-test) by homology component 80/20 (seeded) before any model fit.
 - D7 (20:50) **C3 gate failed** (recorded before any similarity score): PPI-L (Pasteur, 2,236 PLOC+PLONC modulator
   pockets, 93 homology groups) has only 175 cross-group positive pairs in total; test split has 3 pairs / 2
   groups / 1 ligand cluster. C3 → exploratory; Holm family = {C1a, C1b, C2}. PPI evaluation relies on PPIPS
@@ -100,5 +107,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] L 7,524 + D 6,068 pockets, 0 failures, 0.30 GPU-s/pocket/256 mols (≈13 pockets/s/node)
   - [x] seed r 0.988 (frag) / 0.972 (lead); ~¼ of best poses flip between seeds
   - [!] LE residualisation does not remove the size axis; IFP block least confounded (label-free observation)
+- [x] P3 Homology graph + splits — reports/splits.md, data/splits/SPLITS.md (verify_splits 66/66)
+  - [x] graph 65k chains; within-dataset largest comp: TOUGH 5.1 %, ProSPECCTs 6.6 %, BLiPS 9.6 %
+  - [!] 77 % of TOUGH-M1 excluded by the leakage rule (touches BURROW AND a sealed set) → D8
+  - [x] BLiPS train/val/test sites 2,699/163/3,606; val too weak → D9 re-split
 - [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md
