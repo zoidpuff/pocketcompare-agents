@@ -22,6 +22,9 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D5 (20:12) Design frozen at v2 after 2 review rounds; no round 3: round-2 changes were exact text, adopted
+  verbatim, and all build agents were re-briefed (splits, PPI, eval). Raw label lists chmod 000 (sealed_raw_SHA256SUMS).
+  TOUGH-M1 ships per-pair APoc/G-LoSA/SiteEngine scores → paired prior-art baselines B5-T.
 - D3 (19:45) D-mode match = coverage ≥ 0.3 OR precision ≥ 0.5 (detected pocket inside the site counts).
 - D4 (19:45) DESIGN v1 after round 1: TOUGH-M1 dev = BURROW-homologous groups (32 % of TOUGH-M1 is homologous
   to BURROW training — leakage rule), test = BURROW-clean rest; BLiPS test = BURROW af_set; PPI-L from the
@@ -68,7 +71,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] L-mode median 352 pts / 542 Å3; residue-list pockets ~2× ligand-defined (Jaccard 0.39) → ligand file used
   - [x] D-mode miss 19.4 % (coverage rule) → 5.5 % with coverage ≥ 0.3 OR precision ≥ 0.5 (D3)
   - [ ] bug: tough_m1_pockets.parquet hardcodes chain `A:` (3,191 files differ); adapter maps it — fix loader
-- [~] P2b Review round 2 (combined PI/stats/data panel) on DESIGN v1
+- [x] P2b Review round 2 (combined PI/stats/data panel) on DESIGN v1 → DESIGN v2 (20:10)
+  - [!] Round 2 caught: global homology graph would percolate (→ within-dataset components + direct-edge
+        exclusion); A4b augmentation source leaked into test; 1-D size strata vacuous; PPI-L ligand-free shortcut
 - [~] P3 Build (parallel, 19:50): evaluate.py + provenance (eval agent); homology graph + splits (split agent);
       PPI-L (Pasteur pocketome) + PPIPS (PPI agent, 3 h box); A1 + B0/B1 descriptors (A1 agent);
       B4 ESM-2 + B5 external (baseline agent, cuda:1); A2 docking panels on TOUGH-M1 (A2 agent, cuda:0,2)
