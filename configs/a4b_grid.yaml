@@ -1,0 +1,38 @@
+# A4b learned projection head — pre-registered grid (PREREG §1: <= 12 configs over the N1 and N2 inputs).
+# Written 2026-10-27 BEFORE any A4b fit (the split audit had not yet passed; no model had been trained).
+# Training / early stopping / masking: scripts/train_a4b.py docstring.  Each config is trained with SEEDS[:3]; the
+# model's score is the mean of the three seeds' cosines (ensemble), never a picked seed.  Selection among the
+# configs and against the non-learned candidates: BLiPS-val only, by scripts/eval_dev.py --dataset final_select
+# (objective BLiPS-val D-mode cluster-balanced AUC, one-SE rule, guards; PREREG §1).
+version: a4b-grid-v1
+common:
+  hidden: 512            # in -> 512 -> LayerNorm -> GELU -> dropout -> 128 (null = linear in -> 128)
+  out_dim: 128
+  dropout: 0.2
+  lr: 1.0e-3             # AdamW
+  weight_decay: 1.0e-4
+  tau: 0.1               # InfoNCE temperature
+  batch_pos: 256         # positive pairs per step (in-batch negatives)
+  batch_lab: 512         # labelled BLiPS-train pairs per step for the BCE term (balanced pos / neg)
+  lambda_bce: 1.0
+  graded: false          # BCE target = label (false) or max ligand Tc of the pair (true)
+  w_blips_pos: 0.5       # positive-pair source mixture: BLiPS-train labelled positives
+  w_ld: 0.25             #   L<->D same-site positives (D-matched BLiPS-train sites)
+  w_ppips: 0.25          #   PPIPS-train P-sym + P-ortho positives
+  p_d: 0.5               # probability of drawing a BLiPS endpoint in D mode (if D-matched)
+  steps_per_epoch: 50
+  max_epochs: 80
+  patience: 10           # epochs without ES improvement (ES = mean L/D ROC-AUC on the 10 % hold-out groups)
+configs:
+  n1_base:   {input: N1}
+  n1_graded: {input: N1, graded: true}
+  n1_reg:    {input: N1, dropout: 0.5, weight_decay: 1.0e-3}
+  n1_noppi:  {input: N1, w_ppips: 0.0}
+  n1_nce:    {input: N1, lambda_bce: 0.0}
+  n1_linear: {input: N1, hidden: null}
+  n2_base:   {input: N2}
+  n2_graded: {input: N2, graded: true}
+  n2_reg:    {input: N2, dropout: 0.5, weight_decay: 1.0e-3}
+  n2_noppi:  {input: N2, w_ppips: 0.0}
+  n2_nce:    {input: N2, lambda_bce: 0.0}
+  n2_linear: {input: N2, hidden: null}

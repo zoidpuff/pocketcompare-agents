@@ -15,6 +15,9 @@ DESIGN §2.2) are carried in the ids table so callers apply the DESIGN rule them
 Per-pocket descriptor time (``time_ms``: pocket assembly + typing + descriptor, one thread, excluding npz I/O)
 is recorded per row.
 
+--label-free-structures is required for prospeccts / vertex (sealed external sets): only their label-free point
+cache is read (DESIGN D2).
+
 Dataset adapters (index -> rows; the TOUGH-M1 path is unchanged):
   tough_m1, blips, blips_test_holo, blips_test_af, ppi_l   point-cache index.parquet as written by build_point_cache.py
   ppips   data/processed/ppi/ppips/pockets.parquet (merged BURROW region-rule pockets of the AF dimers, >= 10 points;
@@ -177,21 +180,147 @@ def load_index(dataset: str) -> pd.DataFrame:
                              d_missed=False, complex=P.complex, is_interface=P.is_interface, split=P.split))
 
 
+# ---------------------------------------------------------------------------------------------- arm a1r (N1/N2)
+A1R_SHAPERS = ("base", "sph8")
+
+
+def work_a1r(task):
+    """task = (dataset, rows) -> one dict per row with descriptors per (locator, shaper)."""
+    from pocketcompare import pockets as pk
+    from pocketcompare.descriptors import a1r as A1R
+    dataset, rows = task
+    cfg = A1.make_config()
+    feats = A1.needed_features(cfg)
+    out = []
+    for r in rows:
+        t0 = time.perf_counter()
+        fs = load_light(ROOT / r["cache_file"])
+        io_ms = 1e3 * (time.perf_counter() - t0)
+        t0 = time.perf_counter()
+        at = A1.atom_type_codes(fs.res_names[fs.atom_res], fs.atom_name, fs.atom_element)
+        rec = {"pocket_id": r["pocket_id"], "io_ms": io_ms, "t_type_ms": 1e3 * (time.perf_counter() - t0),
+               "u_member": -1, "u_coverage": np.nan, "sets": {}, "error": None}
+        mem = list(r["d_members"]) if r["d_members"] is not None else []
+        loc = {}
+        if dataset in D_ONLY:
+            if mem:
+                loc["D"] = _dmode_idx(fs, mem)
+        else:
+            L = np.asarray(r["lmode_idx"] if r["lmode_idx"] is not None else [], np.int64)
+            if len(L):
+                loc["L"] = L
+            if mem and len(L):
+                m, c = pk.best_member(fs, L, mem)
+                loc["U"] = fs.pk_indices[fs.pk_indptr[m]:fs.pk_indptr[m + 1]].astype(np.int64)
+                rec.update(u_member=int(m), u_coverage=float(c))
+        for ln, S in loc.items():
+            for sh in A1R_SHAPERS:
+                try:
+                    t0 = time.perf_counter()
+                    I = pk.shape_site(fs, S, sh)
+                    d = {"t_shape": 1e3 * (time.perf_counter() - t0), "n_points": len(I),
+                         "vol_A3": float(fs.vol[I].sum() * fs.spacing ** 3)}
+                    if len(I):
+                        t0 = time.perf_counter()
+                        pin = A1.pocket_input(fs, I, atom_types=at, features=feats)
+                        d["a1"], _ = A1.a1_descriptor(pin, cfg)
+                        d["t_a1"] = 1e3 * (time.perf_counter() - t0)
+                        t0 = time.perf_counter()
+                        d["env"] = A1R.env_descriptor(fs, I)
+                        d["t_env"] = 1e3 * (time.perf_counter() - t0)
+                    rec["sets"][(ln, sh)] = d
+                except Exception as e:  # noqa: BLE001
+                    rec["error"] = f"{ln}_{sh}: {e!r}"
+        out.append(rec)
+    return out
+
+
+def main_a1r(a, index, out_dir, t_start):
+    from pocketcompare.descriptors import a1r as A1R
+    out_dir = out_dir / "a1r"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    locs = ("D",) if a.dataset in D_ONLY else ("L", "U")
+    rows = index[["pocket_id", "cache_file", "lmode_idx", "d_members"]].to_dict("records")
+    tasks = [(a.dataset, rows[s:s + a.chunk]) for s in range(0, len(rows), a.chunk)]
+    print(f"[compute_descriptors] {a.dataset} arm=a1r locators={locs} shapers={A1R_SHAPERS} pockets={len(rows)} "
+          f"tasks={len(tasks)} workers={a.workers}", flush=True)
+    res = []
+    with get_context("spawn").Pool(a.workers) as pool:
+        for k, rr in enumerate(pool.imap(work_a1r, tasks)):
+            res += rr
+            if (k + 1) % max(1, len(tasks) // 10) == 0:
+                print(f"  {k + 1}/{len(tasks)} tasks  {time.time() - t_start:.0f}s", flush=True)
+    n = len(res)
+    cfg = A1.make_config()
+    d_a1 = A1.a1_layout(cfg)[-1].stop
+    d_env = A1R.env_layout()[-1]["stop"]
+    ids = pd.DataFrame({k: [r[k] for r in res] for k in ("pocket_id", "u_member", "u_coverage", "t_type_ms",
+                                                          "io_ms", "error")})
+    m = index.set_index("pocket_id").loc[ids.pocket_id]
+    if a.dataset in D_ONLY:
+        ids["complex"], ids["is_interface"], ids["split"] = m.complex.to_numpy(), m.is_interface.to_numpy(), \
+            m.split.to_numpy()
+    else:
+        ids["d_coverage"] = m.d_coverage.to_numpy(float)
+        ids["d_precision"] = m.d_precision.to_numpy(float)
+        ids["d_match"] = (ids.d_coverage >= 0.3) | (ids.d_precision >= 0.5)
+    summ, files = {}, []
+    for ln in locs:
+        ids[f"has_{ln}"] = [(ln, "base") in r["sets"] for r in res]
+        for sh in A1R_SHAPERS:
+            arr = {"a1": np.full((n, d_a1), np.nan, np.float32), "env": np.full((n, d_env), np.nan, np.float32)}
+            sc = {k: np.full(n, np.nan) for k in ("n_points", "vol_A3", "t_shape", "t_a1", "t_env")}
+            for i, r in enumerate(res):
+                d = r["sets"].get((ln, sh))
+                if d is None:
+                    continue
+                for k in arr:
+                    if k in d:
+                        arr[k][i] = d[k]
+                for k in sc:
+                    if k in d:
+                        sc[k][i] = d[k]
+            f = out_dir / f"{ln}_{sh}.npz"
+            np.savez(f, **arr, **sc)
+            files.append(f)
+            ok = np.isfinite(arr["a1"][:, 0])
+            summ[f"{ln}_{sh}"] = {"n_ok": int(ok.sum()), "n_missing": int(n - ok.sum()),
+                                  "vol_median": float(np.nanmedian(sc["vol_A3"])),
+                                  **{f"{k}_median_ms": float(np.nanmedian(sc[k])) for k in ("t_shape", "t_a1", "t_env")},
+                                  **{f"{k}_p90_ms": float(np.nanpercentile(sc[k], 90)) for k in ("t_shape", "t_a1")}}
+    summ["t_type_median_ms"] = float(ids.t_type_ms.median())
+    summ["n_errors"] = int(ids.error.notna().sum())
+    (out_dir / "env_layout.json").write_text(json.dumps(A1R.env_layout()))
+    (out_dir / "a1_layout.json").write_text(json.dumps(A1.layout_to_json(A1.a1_layout(cfg))))
+    from pocketcompare import provenance as prov
+    extra = {"arm": "a1r", "a1_version": A1.A1_VERSION, "a1r_version": A1R.A1R_VERSION, "locators": list(locs),
+             "shapers": list(A1R_SHAPERS), "files": {str(f): prov.sha256_file(f) for f in files}, "stats": summ}
+    prov.write_result(out_dir / "ids.parquet", ids, script=__file__, args=sys.argv, config=cfg,
+                      inputs=[_INDEX_PATH], seed=None, device="cpu", start_time=t_start, extra=extra)
+    (out_dir / "summary.json").write_text(json.dumps({"n": n, "wall_s": time.time() - t_start, **summ}, indent=1))
+    print(json.dumps(summ, indent=1), flush=True)
+    print(f"[compute_descriptors] a1r done in {time.time() - t_start:.0f}s", flush=True)
+    return summ
+
+
 def main(argv=None):
     global _INDEX_PATH, _DATASET
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dataset", default="tough_m1")
-    ap.add_argument("--arm", choices=("a1", "b0", "b1"), required=True)
+    ap.add_argument("--arm", choices=("a1", "a1r", "b0", "b1"), required=True)
     ap.add_argument("--config", default="all", help="config name, comma list, or 'all'")
     ap.add_argument("--mode", choices=("L", "D", "both"), default="both")
     ap.add_argument("--workers", type=int, default=12)
     ap.add_argument("--limit", type=int, default=None, help="first N pockets only (smoke tests)")
     ap.add_argument("--chunk", type=int, default=16)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--label-free-structures", action="store_true",
+                    help="permit the sealed external sets (prospeccts, vertex): reads only their point cache "
+                         "(built from pocket tables + structures), never a label or pair file")
     a = ap.parse_args(argv)
     t_start = time.time()
-    if a.dataset in ("prospeccts", "vertex") and os.environ.get("FINAL_EVAL") != "1":
-        raise SystemExit(f"{a.dataset} is sealed (FINAL_EVAL=1 required)")
+    if a.dataset in ("prospeccts", "vertex") and os.environ.get("FINAL_EVAL") != "1" and not a.label_free_structures:
+        raise SystemExit(f"{a.dataset} is sealed (pass --label-free-structures, or FINAL_EVAL=1)")
     _DATASET = a.dataset
     _INDEX_PATH = index_path(a.dataset)
     out_dir = Path(a.out) if a.out else ROOT / "data/processed/descriptors" / a.dataset
@@ -200,6 +329,8 @@ def main(argv=None):
     index = index[index.status == "ok"].reset_index(drop=True)
     if a.limit:
         index = index.iloc[:a.limit]
+    if a.arm == "a1r":
+        return main_a1r(a, index, out_dir, t_start)
     modes = ["L", "D"] if a.mode == "both" else [a.mode]
     if a.dataset in D_ONLY:
         if "L" in modes:

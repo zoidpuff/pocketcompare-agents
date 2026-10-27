@@ -168,7 +168,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [!] ligand imprint replicates (A1 L→D on same pairs −0.268 [−0.359, −0.175])
   - [x] PPIPS-val P-ortho MRR: B4 0.942 · B1 0.764 · A1 0.633 · B0 0.426 (interolog transfer; 13 units); P-sym ≥ 0.92 all
   - [-] PPI sub-hypothesis fragments > lead-like: not supported (IFP +0.074 MRR, Holm p ≥ 0.25; underpowered)
-- [~] P4 A4b learned metric (descriptors first; fit only after the audit passes) (after audit + BLiPS descriptors)
+- [~] P4 A4b learned metric (descriptors first; fit only after the audit passes)
+  - [x] N1/N2 inputs for BLiPS (train/val/test holo+AF), PPIPS, TOUGH-M1; 3.8–6.2 ms/pocket
+  - [!] non-learned BLiPS-val D cb-AUC: N1 0.686 (SE 0.041), N2+CSLS 0.701, B1 0.641, B4 0.655; N1 passes guards
+  - [x] a4b grid pre-declared (configs/a4b_grid.yaml, 12 configs); train script refuses without audit flag (after audit + BLiPS descriptors)
 - [~] P4 Final-eval infrastructure: final_eval.py + dev dry run; label-free caches for ProSPECCTs/Vertex; B0' TM tables
 - [~] P4 Human-proteome FAISS demo (cuda:2,3)
 - [ ] P4 AF robustness (C5) development on val; blind test

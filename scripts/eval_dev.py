@@ -81,6 +81,24 @@ PPIPS-val (``--dataset ppips``) — fixed BEFORE the first run
   variant, at least one block has Holm-adjusted (3 blocks) one-sided bootstrap p < 0.05 for Δ MRR and no block has
   Δ MRR with 95 % CI entirely < 0; otherwise NOT SUPPORTED.  Buriedness tertiles (``bur16_L`` of the query pocket,
   edges from the val queries) reported descriptively (lowest tertile = shallow).
+
+Final-method selection (``--dataset final_select``, PREREG §1) — fixed BEFORE the first run (2026-10-27, A4b agent)
+--------------------------------------------------------------------------------------------------------------
+* Candidates: N1 = A1(sph8)+env(sph8), N2 = A1(base)+A1(sph8)+env(sph8) (``pocketcompare.a4b``; L = ligand shell,
+  D = best-covering BURROW sub-pocket U; PPIPS: merged region pocket), equal-weight block cosine with z-statistics
+  of BLiPS-train v2 (L + U rows; the shipped scaling); ``--candidates all`` adds every A4b model of
+  configs/a4b_grid.yaml (seed-ensemble mean cosine).  Each raw and CSLS (k = 10, background = the evaluated split's
+  pocket pool of that mode; PPIPS: val pockets).  Sensitivity rows (not candidates): N1pool / N2pool = the same
+  descriptors z-scored on the evaluated pool (definition-robustness convention).  References: B1 default, B4 esm2
+  (z), computed exactly as in the per-dataset runs.
+* Pair sets / units / positive clusters / strata exactly as the BLiPS-val and TOUGH-M1-dev runs above.  Objective =
+  BLiPS-val D-mode cb-AUC (D-set); SE = homology-group vertex bootstrap (seed SEEDS[0]); one-SE rule, simplest =
+  non-learned < learned, then fewer stored dims (A4b: out_dim x 3 seeds), then no CSLS, then grid order.  Guards:
+  BLiPS-val L cb-AUC >= B1 default raw; TOUGH-M1-dev D cb-AUC >= B1 default raw (point estimates).  If the simplest
+  within one SE fails a guard: next simplest within one SE, then the rest by decreasing objective.  PPIPS-val P-ortho
+  MRR / P-sym percentile reported, no guard.  Paired Δ cb / strat (shared replicate weights) for N1, the best and the
+  chosen candidate vs B1, B4 and N1.  Trials already in results/trials.tsv (same arm, config hash, split) are not
+  appended again.
 """
 from __future__ import annotations
 
@@ -587,7 +605,9 @@ def run_generic(tasks, threads, log, fn=_generic_task):
 # ==================================================================================================== main
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--dataset", default="tough_m1", choices=sorted(DATASETS))
+    ap.add_argument("--dataset", default="tough_m1", choices=sorted(DATASETS) + [FS_TAG])
+    ap.add_argument("--candidates", default="nonlearned", choices=("nonlearned", "all"),
+                    help="final_select only: N1/N2 (+ pool-z sensitivity) or also every A4b model of configs/a4b_grid.yaml")
     ap.add_argument("--B", type=int, default=ev.DEFAULT_B)
     ap.add_argument("--seed", type=int, default=SEEDS[0])
     ap.add_argument("--threads", type=int, default=16)
@@ -597,6 +617,8 @@ def main():
                     help="ppips only: A1 config chosen under D11 (default: read results/dev/blips_val_details.json)")
     args = ap.parse_args()
     os.environ["POCKETCOMPARE_THREADS"] = str(args.threads)
+    if args.dataset == FS_TAG:
+        return main_final_select(args)
     if args.dataset == "blips":
         return main_blips(args)
     if args.dataset == "ppips":
@@ -1591,6 +1613,415 @@ def render_md(summary, lvd, csls_df, sel, gate, mde, details) -> str:
         L.append(f"- {k}: dev Δ {d['estimate']:+.4f} [{d['ci_low']:+.4f}, {d['ci_high']:+.4f}], SE {d['se']:.4f} → "
                  f"MDE test {c['mde_test']['mde']:.4f} (units {c['mde_test']['n_units_dev']}→"
                  f"{c['mde_test']['n_units_test']})")
+    return "\n".join(L) + "\n"
+
+
+# ================================================================================ final-method selection (PREREG §1)
+FS_TAG = "final_select"
+
+
+@dataclass
+class Cand:
+    name: str               # N1 | N2 | A4b:<config> | N1pool | N2pool
+    kind: str               # nonlearned | learned | sensitivity
+    inp: str                # N1 | N2
+    dims: int               # stored vector dims (A4b: out_dim x n_seeds)
+    order: int              # grid order (tie-break)
+    model_dir: str | None = None
+
+
+def fs_candidates(which: str) -> list:
+    from pocketcompare import a4b as A4
+    dims = {"N1": 627, "N2": 1141}
+    out = [Cand("N1", "nonlearned", "N1", dims["N1"], 0), Cand("N2", "nonlearned", "N2", dims["N2"], 1),
+           Cand("N1pool", "sensitivity", "N1", dims["N1"], 2), Cand("N2pool", "sensitivity", "N2", dims["N2"], 3)]
+    if which == "all":
+        import yaml
+        grid = yaml.safe_load((ROOT / "configs/a4b_grid.yaml").read_text())
+        for k, name in enumerate(grid["configs"]):
+            d = ROOT / "results/models/a4b" / name
+            if not (d / "config.json").exists():
+                raise FileNotFoundError(f"A4b model {name} missing ({d})")
+            cfg = json.loads((d / "config.json").read_text())
+            out.append(Cand(f"A4b:{name}", "learned", cfg["input"], cfg["out_dim"] * len(cfg["seeds"]), 10 + k,
+                            str(d)))
+    for c in out:
+        if c.kind != "learned" and c.inp not in A4.PARTS:
+            raise ValueError(c)
+    return out
+
+
+_FS_CACHE: dict = {}
+
+
+def fs_embed(c: Cand, dataset: str, mode: str, pocket_ids, avail_mode):
+    """(E, av): candidate embedding of ``pocket_ids`` in ``mode``; rows outside ``av`` are 0."""
+    from pocketcompare import a4b as A4
+    mats = A4.raw_parts(dataset, mode, pocket_ids, c.inp)
+    av = A4.available(mats) & np.asarray(avail_mode, bool)
+    if c.kind == "nonlearned":
+        key = ("scaler", c.inp)
+        if key not in _FS_CACHE:
+            _FS_CACHE[key] = A4.blips_train_scaler(c.inp)
+        E = A4.embed_nonlearned(mats, _FS_CACHE[key])
+    elif c.kind == "sensitivity":     # z-scored on the evaluated pool of the mode (defrob / eval_dev convention)
+        sc = A4.PartScaler.fit(c.inp, [[M[av] for M in mats]])
+        E = A4.embed_nonlearned(mats, sc)
+    else:
+        key = ("heads", c.model_dir)
+        if key not in _FS_CACHE:
+            _FS_CACHE[key] = A4.load_heads(c.model_dir)
+        heads, _, sc = _FS_CACHE[key]
+        E = A4.ensemble_embed(heads, A4.head_input(mats, sc), av)
+    E[~av] = 0.0
+    return E, av
+
+
+def fs_scores(E, av, ia, ib, bg=None):
+    """Raw inner-product scores and CSLS (k = 10, background = ``bg`` rows, default = ``av`` rows)."""
+    bg = np.where(av)[0] if bg is None else np.asarray(bg)
+    ok = av[ia] & av[ib]
+    raw = np.full(len(ia), np.nan)
+    raw[ok] = pair_scores(E, ia[ok], ib[ok])
+    rows = np.where(av)[0]
+    r = np.full(len(E), np.nan)
+    r[rows] = csls_r(E[rows], E[bg], CSLS_K, query_ids=rows, bg_ids=bg)
+    return raw, raw - 0.5 * (r[ia] + r[ib])
+
+
+class _PpipsTasks:
+    """P-ortho / P-sym long tables of PPIPS-val (same construction as ``main_ppips``)."""
+
+    def __init__(self, ds):
+        P = ds.pockets
+        pid = {p: i for i, p in enumerate(P.pocket_id)}
+        self.val_idx = np.where(ds.val)[0]
+        self.n_val = len(self.val_idx)
+        members = P.groupby("complex").indices
+        Q = ds.ortho.reset_index(drop=True)
+        oq, oc, ol = [], [], []
+        for k, r in enumerate(Q.itertuples()):
+            cand = members[r.partner_complex]
+            posset = set(r.positives)
+            oq += [k] * len(cand)
+            oc += list(cand)
+            ol += [P.pocket_id.iat[c] in posset for c in cand]
+        self.Q, self.oq, self.oc, self.ol = Q, np.asarray(oq), np.asarray(oc), np.asarray(ol)
+        q_pk = Q["query"].map(pid).to_numpy()
+        self.o_i = q_pk[self.oq]
+        self.q_unit = Q.query_complex.map(dict(zip(P.complex, P.group))).to_numpy()
+        S_ = ds.sym.reset_index(drop=True)
+        a_i, b_i = S_.pocket_a.map(pid).to_numpy(), S_.pocket_b.map(pid).to_numpy()
+        self.sq, self.sh = np.concatenate([a_i, b_i]), np.concatenate([b_i, a_i])
+        self.s_if = np.concatenate([S_.interface.to_numpy(bool)] * 2)
+        self.s_unit = np.concatenate([S_.complex.map(dict(zip(P.complex, P.group))).to_numpy()] * 2)
+        rep_q = np.repeat(np.arange(len(self.sq)), self.n_val)
+        rep_c = np.tile(self.val_idx, len(self.sq))
+        keep = rep_c != self.sq[rep_q]
+        self.rep_q, self.rep_c = rep_q[keep], rep_c[keep]
+        self.rep_l = self.rep_c == self.sh[self.rep_q]
+        self.s_i = self.sq[self.rep_q]
+        self.rep_col = np.searchsorted(self.val_idx, self.rep_c)
+
+    def evaluate(self, E, B, seed, csls: bool):
+        so = pair_scores(E, self.o_i, self.oc).astype(np.float64)
+        ss = (E[self.sq] @ E[self.val_idx].T).astype(np.float64)[self.rep_q, self.rep_col]
+        if csls:
+            v = self.val_idx
+            r = np.full(len(E), np.nan)
+            r[v] = csls_r(E[v], E[v], CSLS_K, query_ids=v, bg_ids=v)
+            so = so - 0.5 * (r[self.o_i] + r[self.oc])
+            ss = ss - 0.5 * (r[self.s_i] + r[self.rep_c])
+        ro = ev.retrieval_metrics(pd.DataFrame({"query": self.oq, "score": so, "label": self.ol}), ks=(1, 3))
+        rk = ro["per_query"].set_index("query").reindex(np.arange(len(self.Q)))["rank"].to_numpy(float)
+        rs = ev.retrieval_metrics(pd.DataFrame({"query": self.rep_q, "score": ss, "label": self.rep_l}), ks=(1,))
+        rks = rs["per_query"].set_index("query").reindex(np.arange(len(self.sq)))["rank"].to_numpy(float)
+        s_pct = 1.0 - (rks - 1) / (self.n_val - 2)
+        o = {"top1": (rk <= 1).astype(float), "top3": (rk <= 3).astype(float), "mrr": 1.0 / rk}
+        bo = _boot_means(o, self.q_unit, B, seed)
+        bs = _boot_means({"pct": s_pct}, self.s_unit, B, seed)
+        row = {}
+        for m_, x in o.items():
+            row.update({f"ortho_{m_}": float(x.mean()), f"ortho_{m_}_lo": bo[m_].ci_low if bo[m_] else np.nan,
+                        f"ortho_{m_}_hi": bo[m_].ci_high if bo[m_] else np.nan})
+        row.update(sym_pct=float(s_pct.mean()), sym_pct_lo=bs["pct"].ci_low if bs["pct"] else np.nan,
+                   sym_pct_hi=bs["pct"].ci_high if bs["pct"] else np.nan, sym_if_pct=float(s_pct[self.s_if].mean()))
+        return row
+
+
+def _logged_trials() -> set:
+    f = ROOT / "results/trials.tsv"
+    if not f.exists():
+        return set()
+    t = pd.read_csv(f, sep="\t", usecols=["arm", "config_sha256", "dataset_split"], dtype=str)
+    return set(zip(t.arm, t.config_sha256, t.dataset_split))
+
+
+def main_final_select(args):
+    """PREREG §1 final-method selection (see the module docstring section 'Final-method selection')."""
+    from pocketcompare import a4b as A4
+    from pocketcompare.provenance import config_sha256
+
+    t_start = time.time()
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    tag = f"{FS_TAG}_{args.candidates}"
+
+    def log(msg):
+        print(f"[{time.time() - t_start:7.1f}s] {msg}", flush=True)
+
+    cands = fs_candidates(args.candidates)
+    log(f"candidates: {[c.name for c in cands]}")
+    bl, tm, pp = BlipsVal().load(), ToughM1Dev().load(), PpipsVal().load()
+    sets = {}       # (dataset, mode) -> dict
+    for name, ds in (("blips", bl), ("tough_m1", tm)):
+        P = ds.pockets
+        y = ds.pairs.y.to_numpy().astype(bool)
+        dm = P.d_match.to_numpy()
+        units = {"hom": ds.unit_defs["hom"], "lig": ds.unit_defs["lig"]} if name == "blips" \
+            else {"u": P.unit.to_numpy()}
+        cov = ev.size_covariates(P.logv_L.to_numpy()[ds.ia], P.logv_L.to_numpy()[ds.ib])
+        for mode in ("L", "D"):
+            sets[(name, mode)] = {"ds": ds, "y": y, "avail": np.ones(len(P), bool) if mode == "L" else dm,
+                                  "pairmask": np.ones(len(y), bool) if mode == "L" else dm[ds.ia] & dm[ds.ib],
+                                  "units": units, "pc": ds.pos_cluster, "cov": cov}
+    ppt = _PpipsTasks(pp)
+    pp_ref = pp.train | pp.val
+    sel_unit = {"blips": "hom", "tough_m1": "u"}
+
+    # ---------------------------------------------------------------- score vectors
+    vecs = []      # dicts: cand, variant, dataset, mode, s, dims, kind
+    for (name, mode), S in sets.items():
+        ds = S["ds"]
+        for arm, cfg in (("b1", "default"), ("b4", "esm2")):
+            if arm == "b1":
+                M, _ = ds.descriptor("b1", cfg, mode)
+            else:
+                f = ROOT / "data/processed/descriptors" / ds.name / f"b4_esm2_{mode}.npy"
+                ds.inputs.append(f)
+                M = np.asarray(np.load(f, mmap_mode="r")[ds.pockets.desc_row.to_numpy()], np.float64)
+            raw, cs = cosine_vectors(M, S["avail"], ds.ia, ds.ib)
+            for var, s in (("raw", raw), ("csls", cs)):
+                vecs.append(dict(cand=arm.upper(), kind="reference", variant=var, dataset=name, mode=mode, s=s,
+                                 dims=M.shape[1]))
+        for c in cands:
+            E, av = fs_embed(c, name, mode, ds.pockets.pocket_id.to_numpy(), S["avail"])
+            n_miss = int((S["avail"] & ~av).sum())
+            raw, cs = fs_scores(E, av, ds.ia, ds.ib)
+            for var, s in (("raw", raw), ("csls", cs)):
+                vecs.append(dict(cand=c.name, kind=c.kind, variant=var, dataset=name, mode=mode, s=s, dims=c.dims,
+                                 n_missing_pockets=n_miss))
+        log(f"  vectors {name} {mode} done")
+    for v in vecs:
+        S = sets[(v["dataset"], v["mode"])]
+        m = S["pairmask"]
+        if np.isnan(v["s"][m]).any():
+            raise RuntimeError(f"{v['cand']} {v['variant']} {v['dataset']} {v['mode']}: NaN inside the pair set")
+
+    # ---------------------------------------------------------------- bootstraps (cb + strat), B = args.B
+    tasks = []
+    for k, v in enumerate(vecs):
+        S = sets[(v["dataset"], v["mode"])]
+        m = S["pairmask"]
+        ds = S["ds"]
+        for un, arr in S["units"].items():
+            tasks.append(((k, un), S["y"][m], v["s"][m], S["pc"][m], S["cov"][m], arr[ds.ia][m], arr[ds.ib][m],
+                          args.B, args.seed))
+    log(f"generic bootstrap: {len(tasks)} tasks, B={args.B}")
+    gen = run_generic(tasks, args.threads, log, fn=_safe_generic_task)
+    rows = []
+    for k, v in enumerate(vecs):
+        S = sets[(v["dataset"], v["mode"])]
+        m = S["pairmask"]
+        pm = point_metrics(S["y"][m], v["s"][m], S["pc"][m], S["cov"][m])
+        r = {k_: v[k_] for k_ in ("cand", "kind", "variant", "dataset", "mode", "dims")}
+        r.update(n_pairs=int(m.sum()), n_pos=pm["n_pos"], auc=pm["auc"], ap=pm["ap"], auc_cb=pm["auc_cb"],
+                 auc_strat=pm["auc_strat"], n_missing_pockets=v.get("n_missing_pockets", 0))
+        for un in S["units"]:
+            g = gen.get((k, un))
+            for met in ("auc_cb", "auc_strat"):
+                b = None if g is None else g[met]
+                r[f"{met}_se_{un}"] = b.se if b else np.nan
+                r[f"{met}_lo_{un}"] = b.ci_low if b else np.nan
+                r[f"{met}_hi_{un}"] = b.ci_high if b else np.nan
+        rows.append(r)
+    summary = pd.DataFrame(rows)
+    log("BLiPS / TOUGH-M1 metrics done")
+
+    # ---------------------------------------------------------------- PPIPS-val (P-ortho, P-sym)
+    pp_rows = []
+    for arm, cfg in (("b1", "default"), ("b4", "esm2")):
+        if arm == "b1":
+            M, _ = pp.descriptor("b1", cfg, "D")
+        else:
+            f = ROOT / "data/processed/descriptors/ppips/b4_esm2_D.npy"
+            pp.inputs.append(f)
+            M = np.load(f)
+        M = np.asarray(M, np.float64)
+        Er = embed(M[pp_ref], ZScorer.fit(M[pp.train]))
+        E = np.zeros((len(M), Er.shape[1]), np.float32)
+        E[pp_ref] = Er
+        for var in ("raw", "csls"):
+            pp_rows.append({"cand": arm.upper(), "kind": "reference", "variant": var, "dims": M.shape[1],
+                            **ppt.evaluate(E, args.B, args.seed, var == "csls")})
+    for c in cands:
+        E, av = fs_embed(c, "ppips", "D", pp.pockets.pocket_id.to_numpy(), pp_ref)
+        if (pp_ref & ~av).any():
+            raise RuntimeError(f"{c.name}: PPIPS pockets without descriptors")
+        for var in ("raw", "csls"):
+            pp_rows.append({"cand": c.name, "kind": c.kind, "variant": var, "dims": c.dims,
+                            **ppt.evaluate(E, args.B, args.seed, var == "csls")})
+    pp_df = pd.DataFrame(pp_rows)
+    log("PPIPS done")
+
+    # ---------------------------------------------------------------- candidate table + selection
+    def get(cand, var, dataset, mode, col):
+        q = summary[(summary.cand == cand) & (summary.variant == var) & (summary.dataset == dataset)
+                    & (summary["mode"] == mode)]
+        return float(q[col].iloc[0])
+
+    ctab = []
+    for c in [Cand("B1", "reference", "-", 45, -2), Cand("B4", "reference", "-", 0, -1)] + cands:
+        for var in ("raw", "csls"):
+            r = {"cand": c.name, "kind": c.kind, "variant": var, "input": c.inp, "order": c.order,
+                 "dims": int(get(c.name, var, "blips", "L", "dims"))}
+            for d_, mo in (("blips", "D"), ("blips", "L"), ("tough_m1", "D"), ("tough_m1", "L")):
+                pre = f"{'bl' if d_ == 'blips' else 'tm'}_{mo}"
+                r[f"{pre}_cb"] = get(c.name, var, d_, mo, "auc_cb")
+                r[f"{pre}_cb_se"] = get(c.name, var, d_, mo, f"auc_cb_se_{sel_unit[d_]}")
+                r[f"{pre}_cb_lo"] = get(c.name, var, d_, mo, f"auc_cb_lo_{sel_unit[d_]}")
+                r[f"{pre}_cb_hi"] = get(c.name, var, d_, mo, f"auc_cb_hi_{sel_unit[d_]}")
+                r[f"{pre}_auc"] = get(c.name, var, d_, mo, "auc")
+                r[f"{pre}_strat"] = get(c.name, var, d_, mo, "auc_strat")
+            q = pp_df[(pp_df.cand == c.name) & (pp_df.variant == var)].iloc[0]
+            r.update(pp_ortho_mrr=q.ortho_mrr, pp_ortho_top1=q.ortho_top1, pp_sym_pct=q.sym_pct)
+            ctab.append(r)
+    ctab = pd.DataFrame(ctab)
+    b1 = ctab[(ctab.cand == "B1") & (ctab.variant == "raw")].iloc[0]
+    guard_L, guard_TM = float(b1.bl_L_cb), float(b1.tm_D_cb)
+    C = ctab[ctab.kind.isin(["nonlearned", "learned"])].copy()
+    best = C.loc[C.bl_D_cb.idxmax()]
+    thr = float(best.bl_D_cb - best.bl_D_cb_se)
+    C["within_1se"] = C.bl_D_cb >= thr
+    C["guard_blips_L"] = C.bl_L_cb >= guard_L
+    C["guard_tm_D"] = C.tm_D_cb >= guard_TM
+    C["simplicity"] = list(zip((C.kind == "learned").astype(int), C.dims, (C.variant == "csls").astype(int), C.order))
+    within = C[C.within_1se].sort_values("simplicity")
+    rest = C[~C.within_1se].sort_values("bl_D_cb", ascending=False)
+    order = pd.concat([within, rest])
+    passing = order[order.guard_blips_L & order.guard_tm_D]
+    chosen = passing.iloc[0] if len(passing) else None
+    sel = {"rule": "PREREG §1: objective = BLiPS-val v2 D-mode cluster-balanced AUC; SE = homology-group vertex "
+                   "bootstrap (B as run); one-SE rule, simplest = non-learned < learned, then fewer stored dims, then "
+                   "no CSLS, then grid order; guards BLiPS-val L cb-AUC >= B1 (default, raw) and TOUGH-M1-dev D "
+                   "cb-AUC >= B1 (default, raw); if the simplest within one SE fails a guard, the next simplest "
+                   "within one SE, then the remaining candidates by decreasing objective",
+           "best": f"{best.cand}|{best.variant}", "best_bl_D_cb": float(best.bl_D_cb), "se_best": float(best.bl_D_cb_se),
+           "threshold": thr, "guard_blips_L_B1": guard_L, "guard_tm_D_B1": guard_TM,
+           "order": [f"{r.cand}|{r.variant}" for r in order.itertuples()],
+           "within_one_se": [f"{r.cand}|{r.variant}" for r in within.itertuples()],
+           "chosen": None if chosen is None else f"{chosen.cand}|{chosen.variant}", "B": args.B, "seed": args.seed}
+    log(f"selection: best {sel['best']} ({best.bl_D_cb:.4f}, SE {best.bl_D_cb_se:.4f}) -> chosen {sel['chosen']}")
+
+    # ---------------------------------------------------------------- paired deltas of cb (shared replicate weights)
+    key_of = {(v["cand"], v["variant"], v["dataset"], v["mode"]): k for k, v in enumerate(vecs)}
+    deltas = []
+    focus = [("N1", "raw")] + ([(chosen.cand, chosen.variant)] if chosen is not None else []) + \
+        [(best.cand, best.variant)]
+    for fc in dict.fromkeys(focus):
+        for ref in (("B1", "raw"), ("B4", "raw"), ("N1", "raw")):
+            if ref == fc:
+                continue
+            for (d_, mo), S in sets.items():
+                ka, kb = key_of[(*fc, d_, mo)], key_of[(*ref, d_, mo)]
+                un = sel_unit[d_]
+                ga, gb = gen.get((ka, un)), gen.get((kb, un))
+                if ga is None or gb is None:
+                    continue
+                for met in ("auc_cb", "auc_strat"):
+                    ra, rb = ga[met], gb[met]
+                    d = ev._summarise(met, ra.estimate - rb.estimate, ra.replicates - rb.replicates, alpha=0.05,
+                                      seed=args.seed, K=ra.n_clusters, diff=True)
+                    deltas.append({"a": "|".join(fc), "b": "|".join(ref), "dataset": d_, "mode": mo, "metric": met,
+                                   "delta": d.estimate, "lo": d.ci_low, "hi": d.ci_high, "se": d.se,
+                                   "p_one_sided": d.p_value, "units": un})
+    deltas = pd.DataFrame(deltas)
+
+    # ---------------------------------------------------------------- outputs
+    details = {"selection": sel, "candidates": [c.__dict__ for c in cands],
+               "n": {f"{d_}_{mo}": {"pairs": int(S["pairmask"].sum()), "pos": int((S["y"] & S["pairmask"]).sum())}
+                     for (d_, mo), S in sets.items()},
+               "candidate_table": C.drop(columns="simplicity").to_dict(orient="records"),
+               "deltas": deltas.to_dict(orient="records"), "ppips": pp_df.to_dict(orient="records")}
+    cfg = {"task": "final_select", "candidates": args.candidates, "B": args.B, "seed": args.seed, "csls_k": CSLS_K,
+           "scaling": "N1/N2/A4b inputs: BLiPS-train v2 statistics (L+U rows); B1/B4 references: pool z-score as "
+                      "eval_dev (PPIPS: train)", "selection_units": sel_unit}
+    inputs = sorted(set(map(str, bl.inputs + tm.inputs + pp.inputs)) | {str(ROOT / "src/pocketcompare/a4b.py")}
+                    | {str(A4.a1r_dir(d_) / "ids.parquet") for d_ in ("blips", "tough_m1", "ppips")})
+    common = dict(script=__file__, args=sys.argv[1:], config=cfg, inputs=inputs, seed=args.seed, device="cpu",
+                  start_time=t_start)
+    f_sum = out / f"{tag}_summary.parquet"
+    write_result(f_sum, summary, **common)
+    write_result(out / f"{tag}_candidates.parquet", ctab, **common)
+    write_result(out / f"{tag}_ppips.parquet", pp_df, **common)
+    write_result(out / f"{tag}_details.json", details, **common)
+    f_md = out / f"{tag}_summary.md"
+    f_md.write_text(render_md_final_select(ctab, C, sel, deltas, details))
+    if not args.no_trials:
+        seen = _logged_trials()
+        n_new = 0
+        for r in rows:
+            if r["kind"] == "reference":
+                continue
+            conf = {"candidate": r["cand"], "variant": r["variant"], "mode": r["mode"], "B": args.B,
+                    "seed": args.seed, "task": "final_select", "scaling": "blips_train" if r["kind"] != "sensitivity"
+                    else "pool"}
+            split = f"{r['dataset']}_{'val' if r['dataset'] == 'blips' else 'dev'}"
+            if (r["cand"].split(":")[0], config_sha256(conf), split) in seen:
+                continue
+            metrics = {k: r[k] for k in r if k.startswith(("auc", "n_", "ap"))}
+            append_trial(r["cand"].split(":")[0], conf, split, metrics, f_sum)
+            n_new += 1
+        for r in pp_rows:
+            if r["kind"] == "reference":
+                continue
+            conf = {"candidate": r["cand"], "variant": r["variant"], "mode": "D", "B": args.B, "seed": args.seed,
+                    "task": "final_select P-ortho + P-sym"}
+            if (r["cand"].split(":")[0], config_sha256(conf), "ppips_val") in seen:
+                continue
+            append_trial(r["cand"].split(":")[0], conf, "ppips_val",
+                         {k: r[k] for k in r if k.startswith(("ortho", "sym"))}, out / f"{tag}_ppips.parquet")
+            n_new += 1
+        log(f"{n_new} new trial rows")
+    log(f"done: {f_md}")
+
+
+def render_md_final_select(ctab, C, sel, deltas, details) -> str:
+    f = _f
+    L = ["# Final-method selection (PREREG §1) — auto-generated by scripts/eval_dev.py --dataset final_select", "",
+         f"B = {sel['B']}, seed {sel['seed']}. cb = cluster-balanced ROC-AUC; SE / CI: BLiPS homology-group units, "
+         "TOUGH-M1 ligand-cluster ∪ homology-group units. "
+         + " · ".join(f"{k}: {v['pairs']} pairs ({v['pos']} pos)" for k, v in details["n"].items()), "",
+         "| candidate | var | dims | **BLiPS D cb** [CI] (SE) | BLiPS L cb | TM-dev D cb | TM-dev L cb | BLiPS D strat"
+         " | PPIPS MRR | P-sym | 1-SE | guards |", "|" + "---|" * 12]
+    flags = C.set_index(["cand", "variant"])
+    for r in ctab.itertuples():
+        k = (r.cand, r.variant)
+        fl = flags.loc[k] if k in flags.index else None
+        g = "" if fl is None else ("✓" if fl.guard_blips_L and fl.guard_tm_D else
+                                   ("✗L" if not fl.guard_blips_L else "") + ("✗TM" if not fl.guard_tm_D else ""))
+        w = "" if fl is None else ("✓" if fl.within_1se else "")
+        L.append(f"| {r.cand} | {r.variant} | {r.dims} | {f(r.bl_D_cb)} [{f(r.bl_D_cb_lo)}, {f(r.bl_D_cb_hi)}] "
+                 f"({f(r.bl_D_cb_se)}) | {f(r.bl_L_cb)} | {f(r.tm_D_cb)} | {f(r.tm_L_cb)} | {f(r.bl_D_strat)} | "
+                 f"{f(r.pp_ortho_mrr)} | {f(r.pp_sym_pct)} | {w} | {g} |")
+    L += ["", f"Best {sel['best']} ({f(sel['best_bl_D_cb'])}, SE {f(sel['se_best'])}); threshold {f(sel['threshold'])}; "
+          f"guards: BLiPS L ≥ {f(sel['guard_blips_L_B1'])}, TM-dev D ≥ {f(sel['guard_tm_D_B1'])}. "
+          f"**Chosen: {sel['chosen']}**", ""]
+    if len(deltas):
+        L += ["| a − b | dataset | mode | metric | Δ [95 % CI] | p (one-sided) |", "|---|---|---|---|---|---|"]
+        for r in deltas.itertuples():
+            L.append(f"| {r.a} − {r.b} | {r.dataset} | {r.mode} | {r.metric} | {r.delta:+.3f} [{r.lo:+.3f}, "
+                     f"{r.hi:+.3f}] | {f(r.p_one_sided)} |")
     return "\n".join(L) + "\n"
 
 
