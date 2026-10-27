@@ -38,3 +38,10 @@ Metrics only via evaluate.py at sha256 f22d02967c08d706d8a6081865a8ba40f491340e8
 5 × 20 quantile bins (5 × 5 if < 500 positives). Missing pockets: common set primary + worst-case bound + miss rates.
 Final evaluation runs from a git worktree at the frozen commit via scripts/final_eval.py with FINAL_EVAL=1 and
 FREEZE.json; only the PI unseals; an agent that did not produce the numbers re-derives every headline.
+
+## Addendum A1 (2026-10-27 23:20, before any model fit or test use)
+One additional learned candidate is declared for the §1 selection: **L4 = point-cloud network** (EGNN/PointNet-style,
+≤ 6 pre-declared configs in configs/a4_grid.yaml) on the sph8 site points with BURROW analytic point features,
+trained under the same data rules as A4b (BLiPS-train v2 + PPIPS-train + L↔D same-site positives), seeds SEEDS[:3]
+ensemble, time box 3 h. Same objective, one-SE rule (L4 counts as "learned", more complex than A4b) and guards. No
+other candidates will be added.

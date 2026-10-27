@@ -34,6 +34,9 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D16 (23:20) PREREG addendum A1 (sha256 now a0d6ec8bbee31b76d1040f5e2afbe1e4d5f44f4ae4d76c25fd0242ea25c5cf45): one last candidate L4 (point-cloud network on sph8 points), ≤ 6
+  configs, 3 h box; no further candidates. Reason: GPUs idle, learned geometric models are the main literature
+  alternative (DeeplyTough/ProFSA) and must be tested for a "best method" claim.
 - D15 (23:05) Audit failed before any model fit (gate worked). Rebuild graph with mmseqs -a + exhaustive Foldseek,
   re-derive all splits with unchanged rules; re-audit; re-run dev evaluations on the new splits (dev numbers so far
   are provisional, expected shifts small: ~2 % of units move). PPIPS val/test: most complexes have a BURROW-train
