@@ -5,6 +5,15 @@ Started 2026-10-27 ~18:00 CET; 24 h budget (revisit ~2026-10-28 18:00).
 
 ## Status summary (latest first)
 
+### 2026-10-27 19:55 — M1 design v1 + build launched
+Literature, benchmarks, feasibility and PPI characterisation done; DESIGN v1 after six round-1 reviews. Key
+findings so far: TOUGH-M1 is the only large fold-independent benchmark (TM-score AUC 0.51); 32 % of TOUGH-M1 is
+homologous to BURROW training, so TOUGH-M1 dev = BURROW-homologous groups and test = BURROW-clean rest;
+fragment docking is cheap (0.8 ms/fragment×pocket) but tracks pocket size (ρ −0.74), so it is gated.
+Seven agents are building in parallel: evaluation module, splits, PPI datasets, A1/B0/B1, B4/B5, A2 docking.
+No method has been evaluated yet. One protocol deviation (DEV1: TOUGH-M1 labels read by a reviewer before
+sealing; B0 only). Next: round-2 review, commit splits, evaluate arms on dev.
+
 ### 2026-10-27 18:15 — M0 kickoff
 Scaffold, venv (BURROW importable via read-only .pth on ../pocket_detect/src), PROMPT.md saved. BURROW
 export smoke test passes (1a28: top pocket 0.626, 312 pts). Phase 1 launched in parallel: literature review,
@@ -59,5 +68,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] L-mode median 352 pts / 542 Å3; residue-list pockets ~2× ligand-defined (Jaccard 0.39) → ligand file used
   - [x] D-mode miss 19.4 % (coverage rule) → 5.5 % with coverage ≥ 0.3 OR precision ≥ 0.5 (D3)
   - [ ] bug: tough_m1_pockets.parquet hardcodes chain `A:` (3,191 files differ); adapter maps it — fix loader
-- [ ] P3 Implement + evaluate candidate representations
+- [~] P2b Review round 2 (combined PI/stats/data panel) on DESIGN v1
+- [~] P3 Build (parallel, 19:50): evaluate.py + provenance (eval agent); homology graph + splits (split agent);
+      PPI-L (Pasteur pocketome) + PPIPS (PPI agent, 3 h box); A1 + B0/B1 descriptors (A1 agent);
+      B4 ESM-2 + B5 external (baseline agent, cuda:1); A2 docking panels on TOUGH-M1 (A2 agent, cuda:0,2)
+- [ ] P3 Evaluate arms on dev (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [ ] P4 Final held-out evaluation, REPORT.md
