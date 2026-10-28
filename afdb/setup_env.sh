@@ -54,14 +54,22 @@ fi
 # ---- pocketcompare[search] (non-editable: the venv keeps working if the checkout changes)
 if [[ "$POCKETCOMPARE_SRC" == git+* ]]; then pc_spec="pocketcompare[search] @ $POCKETCOMPARE_SRC"; else
     pc_spec="pocketcompare[search] @ file://$POCKETCOMPARE_SRC"; fi
+# reinstall only when the package itself changed (src/, configs/, models/, pyproject.toml): commits to afdb/ do not
+# trigger a reinstall, so re-running this script never swaps files under running jobs for nothing. The stamp holds
+# a commit; it matches if that commit has the same package trees (src, configs, models, pyproject.toml).
+pkg_id() { (cd "$AFDB_DIR/.." && git rev-parse "$1:src" "$1:configs" "$1:models" "$1:pyproject.toml" 2>/dev/null) | sha1sum; }
 want_pc=$(cd "$AFDB_DIR/.." && git rev-parse HEAD 2>/dev/null || echo unknown)
 stamp="$ENV_DIR/.pocketcompare_installed_from"
-if ! "$ENV_DIR/bin/python" -c "import pocketcompare, faiss" 2>/dev/null || [[ "$(cat "$stamp" 2>/dev/null)" != "$want_pc" ]]; then
+have_pc=$(cat "$stamp" 2>/dev/null || true)
+if ! "$ENV_DIR/bin/python" -c "import pocketcompare, faiss" 2>/dev/null || [[ -z "$have_pc" ]] || \
+   [[ "$(pkg_id "$have_pc")" != "$(pkg_id HEAD)" ]]; then
     "${UVPIP[@]}" --reinstall-package pocketcompare "$pc_spec"
     echo "$want_pc" > "$stamp"
 fi
 # small helpers used by the AFDB tools (already dependencies, listed for clarity)
 "${UVPIP[@]}" --quiet "pyarrow==26.0.0" "pandas==3.1.0" "numpy==2.5.4"
+# tier 3 from Foldcomp: decompression (foldcomp) and the 214 M-entry work list (duckdb)
+"${UVPIP[@]}" --quiet "foldcomp==1.0.0" "duckdb==2.0.0"
 
 # ---- warm the Numba cache (shared; afdb.sbatch copies it to node-local $TMPDIR)
 export NUMBA_CACHE_DIR="$ENV_DIR/numba_cache"
@@ -101,7 +109,7 @@ EOF
 "$ENV_DIR/bin/python" - <<'EOF'
 import sys, importlib.metadata as m
 pk = ["pocketcompare", "burrow-pockets", "numpy", "scipy", "pandas", "pyarrow", "numba", "llvmlite", "gemmi",
-      "lightgbm", "faiss-cpu", "torch", "triton"]
+      "lightgbm", "faiss-cpu", "torch", "triton", "foldcomp", "duckdb"]
 print("[setup_env] python", sys.version.split()[0], sys.executable)
 print("[setup_env] " + "  ".join(f"{p}={m.version(p)}" for p in pk))
 import torch

@@ -20,7 +20,17 @@ export TORCH_INDEX="${TORCH_INDEX:-https://download.pytorch.org/whl/cu124}"
 export TORCH_VERSION="${TORCH_VERSION:-2.6.0}"
 export TRITON_VERSION="${TRITON_VERSION:-3.2.0}"
 
-# ---- tier 3 downloads (GCS). Anonymous downloads were denied (HTTP 403) on 2026-10-28 although listing worked:
+# ---- tier 3 source: foldcomp (default; the Foldcomp afdb_uniprot_v4 database = all ~214 M AFDB v4 models, fetched
+# once with fetch_foldcomp.sbatch, 1.1 TB) or gcs (the GCS v4 bucket: anonymous downloads denied on 2026-10-28)
+export TIER3_SOURCE="${TIER3_SOURCE:-foldcomp}"
+export FOLDCOMP_DIR="${FOLDCOMP_DIR:-$OUT_ROOT/foldcomp}"    # databases + uniprot_taxid*.parquet (≈ 1.1 TB)
+export FOLDCOMP_DB="${FOLDCOMP_DB:-afdb_uniprot_v4}"         # tier-3 database in $FOLDCOMP_DIR
+export TIER_REPS="${TIER_REPS:-0}"                     # 1: afdb_rep_v4 cluster representatives first in tier 3
+export FC_PROCS="${FC_PROCS:-4}"                       # processes reading + decompressing Foldcomp entries per node
+export FC_DUCKDB_MEM="${FC_DUCKDB_MEM:-48GB}"          # make_worklist.py DuckDB memory limit (spills to $TMPDIR)
+export FETCH_STREAMS="${FETCH_STREAMS:-16}"            # parallel ranged downloads in fetch_foldcomp.py
+
+# ---- tier 3 downloads (GCS, TIER3_SOURCE=gcs)." Anonymous downloads were denied (HTTP 403) on 2026-10-28 although listing worked:
 # set GCS_AUTH_CMD (e.g. 'gcloud auth print-access-token') and, for a requester-pays bucket, GCS_USER_PROJECT.
 export GCS_BASE_URL="${GCS_BASE_URL:-https://storage.googleapis.com/$GCS_BUCKET}"   # or a mirror
 export GCS_AUTH_CMD="${GCS_AUTH_CMD:-}"                # command printing an OAuth bearer token (empty = anonymous)

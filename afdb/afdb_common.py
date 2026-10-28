@@ -129,6 +129,95 @@ def cif_stats(gz: bytes) -> dict:
     return out
 
 
+def pdb_plddt_stats(pdb: str) -> dict:
+    """Residue count and pLDDT summary from the CA B-factors of a PDB text (Foldcomp keeps pLDDT to +-0.03)."""
+    v = np.array([float(ln[60:66]) for ln in pdb.splitlines() if ln.startswith("ATOM") and ln[12:16] == " CA "],
+                 np.float32)
+    if not len(v):
+        return {"n_res": 0, "plddt_mean": np.nan, "plddt_frac_lt70": np.nan, "plddt_frac_lt50": np.nan}
+    return {"n_res": int(len(v)), "plddt_mean": float(v.mean()), "plddt_frac_lt70": float((v < 70).mean()),
+            "plddt_frac_lt50": float((v < 50).mean())}
+
+
+_FC_FD: dict = {}
+
+
+def fc_extract_chunk(args):
+    """Process-pool task: read Foldcomp entries by (offset, length) with os.pread, decompress, write
+    ``<out_dir>/<stem>.pdb``. Returns [(stem, stats | None, n_bytes, error)]."""
+    db_path, out_dir, rows = args
+    import foldcomp
+    fd = _FC_FD.get(db_path)
+    if fd is None:
+        fd = _FC_FD[db_path] = os.open(db_path, os.O_RDONLY)
+    out = []
+    for off, ln, stem in rows:
+        try:
+            data = os.pread(fd, int(ln), int(off))
+            if len(data) != int(ln):
+                raise IOError(f"short read at {off}")
+            name, pdb = foldcomp.decompress(data)
+            if not str(name).startswith(stem):
+                raise ValueError(f"entry name {name} != {stem}")
+            Path(out_dir, f"{stem}.pdb").write_text(pdb)
+            out.append((stem, pdb_plddt_stats(pdb), len(data), None))
+        except Exception as e:  # noqa: BLE001
+            out.append((stem, None, 0, f"foldcomp: {type(e).__name__}: {e}"[:300]))
+    return out
+
+
+SOURCE_LABELS = {"afdb_uniprot_v4": "foldcomp:afdb_uniprot_v4", "afdb_rep_v4": "foldcomp:afdb_rep_v4",
+                 "afdb_swissprot_v4": "foldcomp:afdb_swissprot_v4"}
+
+
+def source_label(row: dict) -> str:
+    """The ``source`` column: afdb_v6_tar | afdb_swissprot_v6_tar | foldcomp:<db> | gcs_v4_tar."""
+    st = row["source_type"]
+    if st == "local_tar":
+        return "afdb_swissprot_v6_tar" if "swissprot" in str(row["source"]) else "afdb_v6_tar"
+    if st == "foldcomp":
+        return SOURCE_LABELS.get(row["source"], f"foldcomp:{row['source']}")
+    return "gcs_v4_tar"
+
+
+TIER_SOURCE_DEFAULT = {1: "afdb_v6_tar", 2: "afdb_swissprot_v6_tar"}
+
+
+def fill_source(table):
+    """Add / complete the ``source`` column of a pocket or structure table (pyarrow Table or pandas DataFrame).
+    Files written before the column existed (the first tier-1/2 run, commit 24d1c8f) lack it: tier 1 ->
+    afdb_v6_tar, tier 2 -> afdb_swissprot_v6_tar (the only sources those tiers have). Tier-3 rows always have it."""
+    import pandas as pd
+    if isinstance(table, pd.DataFrame):
+        derived = table["tier"].map(TIER_SOURCE_DEFAULT)
+        if "source" not in table:
+            return table.assign(source=derived)
+        return table.assign(source=table["source"].fillna(derived))
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    tier = table.column("tier").to_pandas().map(TIER_SOURCE_DEFAULT)
+    derived = pa.array(tier.where(tier.notna(), None), pa.string())
+    if "source" not in table.column_names:
+        return table.append_column("source", derived)
+    i = table.column_names.index("source")
+    return table.set_column(i, "source", pc.coalesce(table.column("source").cast(pa.string()), derived))
+
+
+def open_pockets(root, kind: str = "pockets"):
+    """pyarrow dataset over OUT_ROOT/<kind>/tier*/*.parquet with a schema unified across files, so files without
+    the ``source`` column (first tier-1/2 run) read as nulls instead of being dropped; apply fill_source() to the
+    tables you read from it."""
+    import pyarrow as pa
+    import pyarrow.dataset as ds
+    import pyarrow.parquet as pq
+    files = sorted(str(f) for f in Path(root, kind).glob("tier*/[0-9]*.parquet"))
+    firsts = {}
+    for f in files:                              # one schema per tier directory is enough
+        firsts.setdefault(Path(f).parent.name, f)
+    schema = pa.unify_schemas([pq.read_schema(f) for f in firsts.values()], promote_options="permissive")
+    return ds.dataset(files, schema=schema, format="parquet")
+
+
 def slurm_ids() -> dict:
     e = os.environ
     return {"host": socket.gethostname(), "pid": os.getpid(), "slurm_job_id": e.get("SLURM_JOB_ID"),

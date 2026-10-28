@@ -56,7 +56,8 @@ import pandas as pd  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from afdb_common import (DIM, atomic_write_json, atomic_write_parquet, cif_stats, env, gcs_base_url,  # noqa: E402
-                         out_root, parse_model_name, slurm_ids, tar_index_dir)
+                         fc_extract_chunk, out_root, parse_model_name, slurm_ids, source_label,
+                         tar_index_dir)
 
 HERE = Path(__file__).resolve().parent
 STOP_CLAIMING = threading.Event()
@@ -274,8 +275,11 @@ class RangeReader:
 
 
 class Extractor:
-    def __init__(self, a, root: Path, work: Path, skip: dict, bq: queue.Queue, fin: "Finaliser"):
+    def __init__(self, a, root: Path, work: Path, skip: dict, bq: queue.Queue, fin: "Finaliser", fc_pool=None):
         self.a, self.root, self.work, self.skip, self.bq, self.fin = a, root, work, skip, bq, fin
+        self.fc_pool = fc_pool
+        self._fc: dict = {}                              # entries file -> (ParquetFile, rg unit ranges, lock)
+        self._fc_taxa: dict = {}
         self._idx: dict[str, pd.DataFrame] = {}
         self._idx_lock = threading.Lock()
         self._token = (None, 0.0)
@@ -381,8 +385,83 @@ class Extractor:
         for n, t in large:
             yield from self._stream(n, u, t)
 
+    # ---- Foldcomp database
+    def fc_entries(self, u: Unit) -> pd.DataFrame:
+        import pyarrow.parquet as pq
+        f = str(self.root / u.row["sources"][0])
+        with self._idx_lock:
+            if f not in self._fc:
+                pf = pq.ParquetFile(f)
+                rg = []
+                for i in range(pf.num_row_groups):
+                    st = pf.metadata.row_group(i).column(0).statistics      # column 0 = fc_unit (sorted)
+                    rg.append((int(st.min), int(st.max)))
+                self._fc[f] = (pf, rg, threading.Lock())
+            pf, rg, lk = self._fc[f]
+        k = int(u.row["member_start"])
+        groups = [i for i, (lo, hi) in enumerate(rg) if lo <= k <= hi]
+        with lk:
+            t = pf.read_row_groups(groups)
+        df = t.to_pandas()
+        return df[df.fc_unit == k].sort_values("off").reset_index(drop=True)
+
+    def fc_taxa(self, db: str) -> dict:
+        with self._idx_lock:
+            if db not in self._fc_taxa:
+                p = self.root / f"fc_taxa_{db}.parquet"
+                t = pd.read_parquet(p, columns=["taxid", "tax_name"]) if p.exists() else pd.DataFrame(
+                    columns=["taxid", "tax_name"])
+                self._fc_taxa[db] = dict(zip(t.taxid.astype(int), t.tax_name, strict=True))
+            return self._fc_taxa[db]
+
+    def run_unit_fc(self, u: Unit):
+        """Foldcomp unit: entries -> process pool (pread + decompress + .pdb) -> batches."""
+        t0 = time.time()
+        db = u.row["source"]
+        db_path = str(Path(env("FOLDCOMP_DIR", str(self.root / "foldcomp"))) / db)
+        e = self.fc_entries(u)
+        taxa = self.fc_taxa(db)
+        u.ext["members_seen"] = len(e)
+        skip = np.array([self.skip.get(x, 99) < u.tier for x in e.accession], bool)
+        u.ext["skipped_earlier_tier"] = int(skip.sum())
+        e = e[~skip].reset_index(drop=True)
+        e["stem"] = [f"AF-{x}-F{f}-model_v{v}" for x, f, v in zip(e.accession, e.fragment, e.version, strict=True)]
+        bs, ck = self.a.batch_structures, 64
+        for k, s0 in enumerate(range(0, len(e), bs)):
+            b = Batch(u, k)
+            sub = e.iloc[s0:s0 + bs]
+            rows = list(zip(sub.off.tolist(), sub.len.tolist(), sub.stem.tolist(), strict=True))
+            tasks = [(db_path, str(b.dir), rows[i:i + ck]) for i in range(0, len(rows), ck)]
+            res = self.fc_pool.map(fc_extract_chunk, tasks, chunksize=1)
+            info = {r.stem: r for r in sub.itertuples(index=False)}
+            for chunk in res:
+                for stem, st, nb, err in chunk:
+                    r = info[stem]
+                    m = dict(accession=r.accession, fragment=int(r.fragment), model_version=int(r.version),
+                             taxid=int(r.taxid), organism=taxa.get(int(r.taxid), ""), source_file=db,
+                             **(st or {"n_res": -1, "plddt_mean": np.nan, "plddt_frac_lt70": np.nan,
+                                       "plddt_frac_lt50": np.nan}))
+                    if err:
+                        m["pre_error"] = err
+                    else:
+                        b.stems.append(stem)
+                        u.ext["extracted"] += 1
+                        u.ext["bytes"] += nb
+                    u.meta[stem] = m
+            if ABORT.is_set():
+                raise RuntimeError("aborted")
+            if u.failed:
+                raise RuntimeError(u.failed)
+            if b.stems:
+                self._put(b)
+            else:
+                shutil.rmtree(b.dir, ignore_errors=True)
+        u.ext["extract_s"] = time.time() - t0
+
     # ---- the extraction loop of one unit
     def run_unit(self, u: Unit):
+        if u.row["source_type"] == "foldcomp":
+            return self.run_unit_fc(u)
         t0 = time.time()
         members = self.local_members(u) if u.row["source_type"] == "local_tar" else self.gcs_members(u)
         b = Batch(u, 0)
@@ -408,7 +487,7 @@ class Extractor:
             st = cif_stats(data)
             u.meta[stem] = dict(accession=acc, fragment=frag, model_version=ver,
                                 taxid=st["cif_taxid"] if st["cif_taxid"] > 0 else taxid,
-                                organism=st["cif_organism"] or u.row.get("organism") or "", source=Path(source).name,
+                                organism=st["cif_organism"] or u.row.get("organism") or "", source_file=Path(source).name,
                                 n_res=st["n_res"], plddt_mean=st["plddt_mean"],
                                 plddt_frac_lt70=st["plddt_frac_lt70"], plddt_frac_lt50=st["plddt_frac_lt50"])
             u.ext["extracted"] += 1
@@ -549,7 +628,8 @@ class Finaliser:
                 self.q.task_done()
 
     def fail(self, u: Unit, why: str):
-        atomic_write_json(self.claims.fdir / f"{u.uid}.json", {"unit_id": u.uid, "tier": u.tier, "error": str(why)[:2000],
+        atomic_write_json(self.claims.fdir / f"{u.uid}.json", {"unit_id": u.uid, "tier": u.tier, "source_type": u.row["source_type"],
+                                                               "source": u.row["source"], "error": str(why)[:2000],
                                                                **slurm_ids(), "extract": u.ext})
         self.claims.release(u.uid)
         self.stats.add_failed(u.uid)
@@ -569,12 +649,21 @@ class Finaliser:
         V = np.vstack(Vs) if Vs else np.zeros((0, DIM), np.float32)
         st = pd.concat(sts, ignore_index=True) if sts else pd.DataFrame(columns=["structure", "status", "error"])
         # ---- per-structure table
-        st["stem"] = [Path(s).name.removesuffix(".cif.gz") for s in st.structure]
+        st["stem"] = [Path(s).name.removesuffix(".gz").removesuffix(".cif").removesuffix(".pdb") for s in st.structure]
         sm = pd.DataFrame.from_dict(u.meta, orient="index")
         sm.index.name = "stem"
         S = sm.join(st.drop(columns=["structure"]).set_index("stem"), how="left")
         S["status"] = S["status"].fillna("missing")
         S["error"] = S["error"].fillna("")
+        if "pre_error" in S:                              # Foldcomp entries that could not be decompressed
+            pe = S.pop("pre_error")
+            bad = pe.notna()
+            S.loc[bad, "status"] = "error"
+            S.loc[bad, "error"] = pe[bad]
+        src = source_label(u.row)
+        if "source_file" not in S:
+            S["source_file"] = pd.Series(dtype=str)
+        S.insert(S.columns.get_loc("source_file"), "source", src)
         # ---- pocket filters (applied in order; each pocket is counted under the first rule that drops it)
         n_all = len(meta)
         drops = {"min_points": f"applied inside describe_all (merged pockets with < {a.min_points} points are not "
@@ -615,7 +704,8 @@ class Finaliser:
                                  "accession": sm2["accession"].to_numpy(),
                                  "fragment": sm2["fragment"].to_numpy(np.int16),
                                  "model_version": sm2["model_version"].to_numpy(np.int8),
-                                 "taxid": sm2["taxid"].to_numpy(np.int32), "organism": sm2["organism"].to_numpy()})
+                                 "taxid": sm2["taxid"].to_numpy(np.int32), "organism": sm2["organism"].to_numpy(),
+                                 "source": src})
             P = pd.concat([lead, P], axis=1)
         t = pa.Table.from_pandas(P, preserve_index=False) if len(P) else pa.table({"unit_id": pa.array([], pa.int32())})
         H = np.ascontiguousarray(Vk, np.float16)
@@ -706,6 +796,8 @@ def main():
     ap.add_argument("--batch-structures", type=int, default=env("BATCH_STRUCTURES", 4000))
     ap.add_argument("--prefetch", type=int, default=env("PREFETCH_BATCHES", 4))
     ap.add_argument("--extract-threads", type=int, default=env("EXTRACT_THREADS", 4))
+    ap.add_argument("--fc-procs", type=int, default=env("FC_PROCS", 4),
+                    help="processes reading + decompressing Foldcomp entries (~2.4 ms each)")
     ap.add_argument("--gcs-fetch-threads", type=int, default=env("GCS_FETCH_THREADS", 32))
     ap.add_argument("--gcs-small-bytes", type=int, default=env("GCS_SMALL_BYTES", 16 * 1024 * 1024))
     ap.add_argument("--http-retries", type=int, default=env("HTTP_RETRIES", 8))
@@ -769,7 +861,11 @@ def main():
     fin = Finaliser(a, root, claims, stats)
     bq: queue.Queue = queue.Queue(maxsize=max(1, a.prefetch))
     src = UnitSource(wl, claims, a.retry_failed, a.max_units)
-    ex = Extractor(a, root, work, skip, bq, fin)
+    fc_pool = None
+    if (wl.source_type == "foldcomp").any():         # pread + decompress need processes (decompress holds the GIL)
+        import multiprocessing as mp
+        fc_pool = mp.get_context("spawn").Pool(a.fc_procs)
+    ex = Extractor(a, root, work, skip, bq, fin, fc_pool)
     busy = [0]
 
     def extract_loop():
@@ -835,6 +931,8 @@ def main():
     for s in slots:
         s.stop()
     ex.http.shutdown(wait=False)
+    if fc_pool is not None:
+        fc_pool.terminate()
     shutil.rmtree(work, ignore_errors=True)
     log("finished: " + stats.line(bq, 0))
     return 0

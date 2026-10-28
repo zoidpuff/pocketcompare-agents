@@ -10,7 +10,11 @@ Tiers (README.md "Tier design"):
   1  the 46 local AFDB v6 proteomes in species_order.tsv order (+ any extra local proteome at the end);
      each tar is split into units of ~UNIT_STRUCTURES models (member ranges of the .cif.gz members).
   2  local Swiss-Prot v6 minus the accessions of tier 1 (the worker skips them; ranges count kept models).
-  3  every other (taxid, shard) tar of the GCS v4 bucket (highest model version per (taxid, shard)), ordered by a
+  3  (TIER3_SOURCE=foldcomp, default) every other entry of the Foldcomp afdb_uniprot_v4 database (all AFDB v4
+     models; fetch_foldcomp.py), taxid from UniProt idmapping, ordered by the same tree round-robin over taxon
+     chunks of <= UNIT_STRUCTURES entries and packed into units (entry lists in OUT_ROOT/fc_entries_<db>.parquet);
+     TIER_REPS=1 puts the afdb_rep_v4 representatives first. Or (TIER3_SOURCE=gcs):
+     every other (taxid, shard) tar of the GCS v4 bucket (highest model version per (taxid, shard)), ordered by a
      tree round-robin over superkingdom -> phylum -> class -> order -> family -> genus -> taxon, leaves = tars by
      size descending; consecutive tars are packed into units of ~UNIT_STRUCTURES estimated models (most tars
      hold 1-10 models; one unit per tar would mean ~1 M units and ~3 M state/output files).
@@ -227,6 +231,8 @@ def load_lineage(root: Path, taxids) -> pd.DataFrame:
         r = rows.get(t) or rows.get(merged.get(t, -1))
         out.append(dict(taxid=t, **(r or dict(tax_name=f"taxid {t}", genus="", family="", order="", **{"class": ""},
                                                  phylum="", superkingdom="unclassified"))))
+    if not out:
+        return pd.DataFrame(columns=["taxid", "tax_name"] + LEVELS[::-1]).set_index("taxid")
     return pd.DataFrame(out).set_index("taxid")
 
 
@@ -307,6 +313,209 @@ def gcs_units(a, root: Path, skip: dict):
                        est_structures_after_skip=int(max(0, lst.est.sum() - n_skip)))
 
 
+# ============================================================================================ Foldcomp tier 3
+def fc_dir(root: Path) -> Path:
+    return Path(env("FOLDCOMP_DIR", str(root / "foldcomp")))
+
+
+def fc_units(a, root: Path, skip: dict, db: str, exclude_db: str | None = None):
+    """Tier-3 units from a Foldcomp database (``db`` = afdb_uniprot_v4 or afdb_rep_v4) with DuckDB.
+
+    Reads ``<db>.index`` (key, offset, length) and ``<db>.lookup`` (key, name), parses accession / fragment /
+    version from the names, drops accessions of tiers 1-2 (``skip``) and, with ``exclude_db``, the accessions of
+    that database (the representatives already run first), joins NCBI taxids from ``uniprot_taxid.parquet``
+    (accessions missing from the current UniProt -> taxid 0, "unclassified"), orders taxon chunks of at most
+    UNIT_STRUCTURES entries by the tree round-robin and packs them into units. The entries go to
+    ``OUT_ROOT/fc_entries_<db>.parquet`` (fc_unit, offset, length, key, accession, fragment, version, taxid),
+    sorted by (fc_unit, offset): one file, ~100 k-row row groups, so a worker reads 1-2 row groups per unit.
+    Memory: DuckDB with FC_DUCKDB_MEM (default 48 GB; spills to $TMPDIR); ~214 M entries take ~15-30 min on
+    16 threads (measured in README)."""
+    import duckdb
+    d = fc_dir(root)
+    idx, lkp = d / f"{db}.index", d / f"{db}.lookup"
+    tax = Path(env("UNIPROT_TAXID", str(d / "uniprot_taxid.parquet")))
+    for f in (idx, lkp, tax):
+        if not f.exists():
+            raise SystemExit(f"missing {f}: run afdb/fetch_foldcomp.py (or fetch_foldcomp.sbatch) first")
+    t0 = time.time()
+    con = duckdb.connect()
+    threads = int(os.environ.get("SLURM_CPUS_PER_TASK") or min(16, os.cpu_count() or 4))
+    tmpd = Path(os.environ.get("TMPDIR", "/tmp")) / f"duckdb_{os.getpid()}"
+    con.execute(f"SET threads={threads}; SET memory_limit='{env('FC_DUCKDB_MEM', '48GB')}'; "
+                f"SET temp_directory='{tmpd}'; SET preserve_insertion_order=false")
+    con.execute(f"""CREATE TABLE e AS
+        SELECT i.key, i.off, i.len, l.f AS tarno, struct_extract(l.r, 'acc') AS accession,
+               TRY_CAST(struct_extract(l.r, 'frag') AS SMALLINT) AS fragment,
+               TRY_CAST(struct_extract(l.r, 'ver') AS TINYINT) AS version
+        FROM read_csv('{idx}', delim='\t', header=false, columns={{'key': 'UBIGINT', 'off': 'UBIGINT',
+                                                                   'len': 'UINTEGER'}}) i
+        JOIN (SELECT key, f, regexp_extract(name, '^AF-(.+)-F([0-9]+)-model_v([0-9]+)', ['acc', 'frag', 'ver']) AS r
+              FROM read_csv('{lkp}', delim='\t', header=false, columns={{'key': 'UBIGINT', 'name': 'VARCHAR',
+                                                                         'f': 'INTEGER'}})) l USING (key)""")
+    n_all = con.execute("SELECT count(*) FROM e").fetchall()[0][0]
+    n_bad = con.execute("SELECT count(*) FROM e WHERE accession = '' OR fragment IS NULL").fetchall()[0][0]
+    log(f"{db}: {n_all:,} entries ({n_bad} unparsable names) read in {time.time() - t0:.0f} s")
+    sk = pd.DataFrame({"accession": list(skip.keys())})
+    con.register("skip_df", sk)
+    excl = ""
+    if exclude_db:
+        ex = fc_dir(root) / f"{exclude_db}.lookup"
+        con.execute(f"""CREATE TABLE ex AS SELECT DISTINCT regexp_extract(name, '^AF-(.+)-F[0-9]+-model', 1) AS accession
+                        FROM read_csv('{ex}', delim='\t', header=false, columns={{'key': 'UBIGINT', 'name': 'VARCHAR',
+                                                                                  'f': 'INTEGER'}})""")
+        excl = "AND accession NOT IN (SELECT accession FROM ex)"
+    # taxid: current UniProt idmapping; for accessions no longer in UniProt, the taxid shared by the other entries
+    # of the same source tar (the lookup's 3rd column numbers the 1,015,797 GCS v4 proteome tars the database was
+    # built from, one taxon per tar; checked by the agreement rate logged below)
+    tax21 = Path(env("UNIPROT_TAXID_2021", str(d / "uniprot2021_04_taxid.parquet")))
+    if tax21.exists():                 # UniProt 2021_04 (the AFDB v4 source release) for accessions removed since
+        t21 = f"(SELECT accession, min(taxid) AS taxid FROM read_parquet('{tax21}') GROUP BY accession)"
+    else:
+        log(f"note: {tax21} missing: accessions no longer in UniProt get their tar's taxid or none")
+        t21 = "(SELECT NULL::VARCHAR AS accession, NULL::INTEGER AS taxid WHERE false)"
+    con.execute(f"""CREATE TABLE k0 AS
+        SELECT e.*, coalesce(t.taxid, t21.taxid) AS utax, t.taxid IS NULL AND t21.taxid IS NOT NULL AS from21 FROM e
+        LEFT JOIN read_parquet('{tax}') t USING (accession)
+        LEFT JOIN {t21} t21 USING (accession)
+        WHERE accession <> '' AND fragment IS NOT NULL
+          AND accession NOT IN (SELECT accession FROM skip_df) {excl}""")
+    con.execute("DROP TABLE e")
+    con.execute("""CREATE TABLE ft AS SELECT tarno, mode(utax) AS ftax FROM k0 WHERE utax IS NOT NULL GROUP BY tarno""")
+    n_dis, n_map = con.execute("""SELECT count(*) FILTER (WHERE utax <> ftax), count(*) FROM k0 JOIN ft USING (tarno)
+                                  WHERE utax IS NOT NULL""").fetchall()[0]
+    n_21 = con.execute("SELECT count(*) FROM k0 WHERE from21").fetchall()[0][0]
+    n_files = con.execute("SELECT count(*) FROM ft").fetchall()[0][0]
+    use_tar = n_files > 1 and n_dis <= 0.01 * max(n_map, 1)    # only where the 3rd column really numbers source tars
+    if not use_tar:
+        log(f"{db}: lookup column 3 does not identify source tars ({n_files} values): no taxid fill from tars")
+        con.execute("DELETE FROM ft")
+    con.execute("""CREATE TABLE k AS SELECT k0.* EXCLUDE (utax, tarno, from21), coalesce(utax, ftax, 0) AS taxid,
+                   (utax IS NULL AND ftax IS NOT NULL) AS tax_from_tar FROM k0 LEFT JOIN ft USING (tarno)""")
+    con.execute("DROP TABLE k0")
+    n_keep = con.execute("SELECT count(*) FROM k").fetchall()[0][0]
+    n_unmapped = con.execute("SELECT count(*) FROM k WHERE taxid = 0").fetchall()[0][0]
+    n_fromtar = con.execute("SELECT count(*) FROM k WHERE tax_from_tar").fetchall()[0][0]
+    log(f"{db}: taxid from UniProt (current idmapping, else 2021_04: {n_21:,}) for {n_map:,} entries ({n_dis:,} = {100 * n_dis / max(n_map, 1):.2f} % "
+        f"differ from their tar's majority taxid); {n_fromtar:,} filled from the tar; {n_unmapped:,} unmapped")
+    per_tax = con.execute("SELECT taxid, count(*) AS n FROM k GROUP BY taxid").df()
+    log(f"{db}: {n_keep:,} entries kept ({n_all - n_keep:,} skipped as tier 1-2"
+        f"{' / ' + exclude_db if exclude_db else ''} or unparsable), {n_unmapped:,} without a UniProt taxid, "
+        f"{len(per_tax):,} taxa ({time.time() - t0:.0f} s)")
+    lin = load_lineage(root, per_tax.taxid[per_tax.taxid > 0].unique())
+    lin.loc[0] = dict(tax_name="unmapped accession (not in current UniProt)", genus="", family="", order="",
+                      **{"class": ""}, phylum="", superkingdom="unclassified")
+    leaf = a.unit_structures
+    rows = []
+    for t, n in zip(per_tax.taxid.to_numpy(), per_tax.n.to_numpy()):
+        for c in range((int(n) + leaf - 1) // leaf):
+            rows.append((int(t), c, int(min(leaf, n - c * leaf))))
+    lv = pd.DataFrame(rows, columns=["taxid", "chunk", "n"]).join(lin, on="taxid")
+    keys = list(zip(*[lv[c].tolist() for c in LEVELS], lv.taxid.tolist()))
+    lv = lv.iloc[round_robin(keys, lv["n"].tolist())].reset_index(drop=True)
+    units, cur, run = [], [], 0
+
+    def close():
+        if not cur:
+            return
+        f = cur[0]
+        ntax = len({r["taxid"] for r in cur})
+        units.append(dict(tier=3, source_type="foldcomp", source=db, sources=[f"fc_entries_{db}.parquet"],
+                          source_sizes=[int(sum(r["n"] for r in cur))], member_start=len(units),
+                          member_end=len(units) + 1, byte_start=0, byte_end=0, taxid=int(f["taxid"]),
+                          code=f"tax{f['taxid']}" + (f" (+{ntax - 1})" if ntax > 1 else ""),
+                          organism=f["tax_name"] + (f" and {ntax - 1} more taxa" if ntax > 1 else ""),
+                          model_version=4, est_structures=int(sum(r["n"] for r in cur)),
+                          source_taxids=sorted({int(r["taxid"]) for r in cur})[:50],
+                          lineage=";".join(str(f[c]) for c in LEVELS)))
+        for r in cur:
+            r["fc_unit"] = len(units) - 1
+        cur.clear()
+    recs = lv.to_dict("records")
+    for r in recs:
+        if cur and (run + r["n"] > a.unit_structures or len(cur) >= a.gcs_unit_max_tars):
+            close()
+            run = 0
+        cur.append(r)
+        run += r["n"]
+    close()
+    lm = pd.DataFrame({"taxid": [r["taxid"] for r in recs], "chunk": [r["chunk"] for r in recs],
+                       "fc_unit": np.array([r["fc_unit"] for r in recs], np.int32)})
+    con.register("leafmap", lm)
+    out = root / f"fc_entries_{db}.parquet"
+    tmp = Path(str(out) + ".tmp")
+    con.execute(f"""COPY (
+        SELECT m.fc_unit, k.off, k.len, k.key, k.accession, k.fragment, k.version, CAST(k.taxid AS INTEGER) AS taxid
+        FROM (SELECT *, CAST((row_number() OVER (PARTITION BY taxid ORDER BY key) - 1) // {leaf} AS INTEGER) AS chunk
+              FROM k) k
+        JOIN leafmap m USING (taxid, chunk)
+        ORDER BY m.fc_unit, k.off)
+        TO '{tmp}' (FORMAT parquet, COMPRESSION zstd, ROW_GROUP_SIZE 100000)""")
+    os.replace(tmp, out)
+    taxa = lin.reset_index().rename(columns={"index": "taxid"})
+    taxa = taxa[taxa.taxid.isin(per_tax.taxid)]
+    taxa.to_parquet(root / f"fc_taxa_{db}.parquet", index=False)
+    con.close()
+    log(f"{db}: {len(units):,} units -> {out.name} ({out.stat().st_size / 1e9:.2f} GB; {time.time() - t0:.0f} s)")
+    return units, {f"{db}_entries": int(n_all), f"{db}_kept": int(n_keep), f"{db}_unmapped_taxid": int(n_unmapped),
+                   f"{db}_taxid_idmapping": int(n_map), f"{db}_taxid_from_2021_04": int(n_21), f"{db}_taxid_from_tar": int(n_fromtar),
+                   f"{db}_taxid_idmapping_vs_tar_disagree": int(n_dis),
+                   f"{db}_taxa": int(len(per_tax)), f"{db}_units": len(units)}
+
+
+# ============================================================================================ previous work list
+KEY_COLS = ["unit_id", "tier", "source_type", "source", "member_start", "member_end", "est_structures"]
+
+
+def _key(df: pd.DataFrame) -> pd.DataFrame:
+    k = df[KEY_COLS].copy()
+    k["sources"] = [tuple(x) for x in df["sources"]]
+    return k.reset_index(drop=True)
+
+
+def check_previous(root: Path, wl: pd.DataFrame, force: bool):
+    """Before replacing an existing work list: every unit with a done marker must keep its definition (same
+    unit_id, tier, source(s), member range), so finished outputs stay valid. Typical case: tiers 1-2 were run,
+    tier 3 is added (or switched to another source) later. Failed markers of units that no longer exist or
+    changed are moved to state/superseded/ (so a new unit with the same id is not mistaken for failed); the old
+    work list is kept as worklist.<time>.parquet."""
+    old_p = root / "worklist.parquet"
+    if not old_p.exists():
+        return
+    old = pd.read_parquet(old_p)
+    new_k = _key(wl).set_index("unit_id")
+    old_k = _key(old).set_index("unit_id")
+    ddir, fdir = root / "state" / "done", root / "state" / "failed"
+    done = sorted(int(f.stem) for f in ddir.glob("*.json") if f.stem.isdigit()) if ddir.exists() else []
+    bad = [u for u in done if u not in new_k.index or u not in old_k.index or
+           not new_k.loc[u].equals(old_k.loc[u])]
+    if bad and not force:
+        raise SystemExit(f"refusing to replace {old_p}: {len(bad)} finished units would change definition "
+                         f"(e.g. unit_id {bad[:5]}); outputs of finished units would no longer match the work list. "
+                         "Use the same tier-1/2 options as before (or --force).")
+    for t in sorted(set(old.tier)):
+        o, n = old_k[old_k.tier == t], new_k[new_k.tier == t]
+        same = len(o) == len(n) and o.equals(n)
+        log(f"previous work list, tier {t}: {len(o)} units -> {len(n)} ({'identical' if same else 'CHANGED'})")
+    moved = 0
+    sup = root / "state" / "superseded" / time.strftime("%Y%m%dT%H%M%S")
+    for f in (sorted(fdir.glob("*.json")) if fdir.exists() else []):
+        u = int(f.stem) if f.stem.isdigit() else -1
+        try:
+            src = json.loads(f.read_text()).get("source")
+        except (OSError, ValueError):
+            src = None
+        if u not in new_k.index or u not in old_k.index or not new_k.loc[u].equals(old_k.loc[u]) or \
+                (src is not None and src != new_k.loc[u, "source"]):
+            sup.mkdir(parents=True, exist_ok=True)
+            f.replace(sup / f.name)
+            moved += 1
+    if moved:
+        log(f"moved {moved} failed markers of replaced units to {sup}")
+    backup = root / f"worklist.{time.strftime('%Y%m%dT%H%M%S')}.parquet"
+    old_p.replace(backup)
+    log(f"previous work list kept as {backup.name}")
+
+
 # ============================================================================================ main
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -319,11 +528,17 @@ def main():
     ap.add_argument("--gcs-max-pages", type=int, default=None, help="stop the GCS listing after N pages (testing)")
     ap.add_argument("--gcs-refresh", action="store_true", help="re-list the bucket even if a cached listing exists")
     ap.add_argument("--gcs-listing", default=None, help="use this listing (TSV: object name, size) instead")
+    ap.add_argument("--tier3-source", choices=["foldcomp", "gcs"], default=env("TIER3_SOURCE", "foldcomp"))
+    ap.add_argument("--foldcomp-db", default=env("FOLDCOMP_DB", "afdb_uniprot_v4"),
+                    help="Foldcomp database in $FOLDCOMP_DIR for tier 3 (afdb_uniprot_v4 = all AFDB v4)")
+    ap.add_argument("--tier-reps", type=int, default=env("TIER_REPS", 0),
+                    help="1: run the afdb_rep_v4 representatives first within tier 3 (Foldcomp only)")
     ap.add_argument("--tier1-codes", default=None, help="restrict tier 1 to these codes (testing), e.g. ECOLI,HUMAN")
     ap.add_argument("--no-swissprot", action="store_true", help="leave Swiss-Prot out (testing)")
     ap.add_argument("--limit-per-source", type=int, default=None, help="first N models of each local tar (testing)")
     ap.add_argument("--max-units-per-tier", type=int, default=None, help="keep the first N units per tier (testing)")
     ap.add_argument("--index-threads", type=int, default=8)
+    ap.add_argument("--force", action="store_true", help="replace a work list even if finished units change")
     ap.add_argument("--nodes", type=int, default=env("SLURM_NODES", 4))
     ap.add_argument("--rate", type=float, default=RATE, help="structures/s per node for the ETA")
     a = ap.parse_args()
@@ -333,9 +548,17 @@ def main():
     t0 = time.time()
     units, skip, _ = local_units(a, root, tiers)
     extra = {}
-    if 3 in tiers:
+    if 3 in tiers and a.tier3_source == "gcs":
         u3, extra = gcs_units(a, root, skip)
         units += u3
+    elif 3 in tiers:
+        if a.tier_reps:                  # Foldseek cluster representatives first (still tier 3)
+            ur, er = fc_units(a, root, skip, "afdb_rep_v4")
+            units += ur
+            extra.update(er)
+        u3, e3 = fc_units(a, root, skip, a.foldcomp_db, exclude_db="afdb_rep_v4" if a.tier_reps else None)
+        units += u3
+        extra.update(e3)
     wl = pd.DataFrame(units)
     if a.max_units_per_tier:
         wl = wl.groupby("tier", group_keys=False).head(a.max_units_per_tier)
@@ -357,6 +580,7 @@ def main():
             "byte_end", "taxid", "code", "organism", "lineage", "model_version", "est_structures", "source_taxids",
             "source_sizes"]
     wl = wl[cols]
+    check_previous(root, wl, a.force)
     wl.to_parquet(root / "worklist.parquet.tmp", index=False)
     os.replace(root / "worklist.parquet.tmp", root / "worklist.parquet")
     tsv = wl.drop(columns=["sources", "source_taxids", "source_sizes"]).assign(n_sources=wl.sources.map(len))
@@ -370,7 +594,7 @@ def main():
             **extra}
     for t, g in wl.groupby("tier"):
         n = int(g.est_structures.sum())
-        if t == 3 and extra:
+        if t == 3 and "est_structures_after_skip" in extra:
             n = int(extra["est_structures_after_skip"] * g.est_structures.sum() / max(1, extra["est_structures_before_skip"]))
         summ["tiers"][int(t)] = {"units": int(len(g)), "est_structures": n, "eta_hours": round(n / rate / 3600, 2)}
     summ["total_est_structures"] = sum(v["est_structures"] for v in summ["tiers"].values())

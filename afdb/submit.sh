@@ -32,14 +32,28 @@ touch "$OUT_ROOT/logs/.write_test" && rm -f "$OUT_ROOT/logs/.write_test" || die 
 import sys, json, os, urllib.request, urllib.parse
 import pandas as pd
 root, tiers = sys.argv[1], sys.argv[2]
-wl = pd.read_parquet(f"{root}/worklist.parquet", columns=["unit_id", "tier", "source_type", "sources", "est_structures"])
+wl = pd.read_parquet(f"{root}/worklist.parquet", columns=["unit_id", "tier", "source_type", "source", "sources",
+                                                          "est_structures"])
 if tiers:
     wl = wl[wl.tier.isin([int(t) for t in tiers.split(",")])]
 done = {int(f[:-5]) for f in os.listdir(f"{root}/state/done")} if os.path.isdir(f"{root}/state/done") else set()
 todo = wl[~wl.unit_id.isin(done)]
 print(f"submit.sh: {len(wl)} units in scope, {len(todo)} not done, ~{todo.est_structures.sum():,} structures")
+f = todo[todo.source_type == "foldcomp"]
+for db, sources in sorted({(r.source, r.sources[0]) for r in f.itertuples()}):
+    d = os.environ.get("FOLDCOMP_DIR") or f"{root}/foldcomp"
+    data, idx, ent = f"{d}/{db}", f"{d}/{db}.index", f"{root}/{sources}"
+    for p in (data, idx, ent):
+        if not os.path.exists(p):
+            sys.exit(f"submit.sh: {p} missing (run afdb/fetch_foldcomp.sbatch, then make_worklist.py)")
+    with open(idx, "rb") as fh:                            # entries are contiguous: the last one ends the file
+        fh.seek(max(0, os.path.getsize(idx) - 4096))
+        _, off, ln = fh.read().strip().split(b"\n")[-1].split(b"\t")
+    if int(off) + int(ln) != os.path.getsize(data):
+        sys.exit(f"submit.sh: {data} is incomplete ({os.path.getsize(data):,} B, index ends at {int(off) + int(ln):,})")
+    print(f"submit.sh: Foldcomp {db} complete ({os.path.getsize(data) / 1e12:.2f} TB)")
 g = todo[todo.source_type == "gcs_tar"]
-if len(g):
+if len(g) and os.environ.get("TIER3_SOURCE") == "gcs":
     base = os.environ.get("GCS_BASE_URL") or f"https://storage.googleapis.com/{os.environ.get('GCS_BUCKET')}"
     name = g.sources.iloc[0][0]
     url = f"{base}/{urllib.parse.quote(name)}"

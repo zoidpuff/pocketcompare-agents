@@ -12,7 +12,7 @@ unit vectors already: no normalisation is applied.
 
 Output directory (readable by ``pocketcompare search`` / ``pocketcompare.fpindex.Index``): ``index.faiss``,
 ``meta.parquet`` (row i = FAISS id i: tier, unit_id, row in the unit file, pocket_id, accession, taxid,
-burrow_score, plddt_mean; ``--compact-ids`` keeps only tier/unit_id/row), ``index.json``, and with
+burrow_score, plddt_mean, source (derived from the tier for files written before it existed); ``--compact-ids`` keeps only tier/unit_id/row), ``index.json``, and with
 ``--save-vectors`` ``vectors.f16.npy`` (fp16 copies for exact re-ranking, 768 B/pocket, written as a memmap).
 
 Memory (``ivfpq``, m = 64): ~ (64 + 8) B per pocket for codes + ids, plus nlist x 384 x 4 B of centroids and the
@@ -33,7 +33,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from afdb_common import DIM, out_root  # noqa: E402
+from afdb_common import DIM, fill_source, out_root  # noqa: E402
 
 META_COLS = ["pocket_id", "accession", "taxid", "burrow_score", "plddt_mean"]
 
@@ -133,7 +133,10 @@ def main():
         cols = ["tier", "unit_id", "fingerprint"] + ([] if a.compact_ids else META_COLS)
         if a.min_score is not None and "burrow_score" not in cols:
             cols.append("burrow_score")
-        t = pq.read_table(f, columns=cols)
+        have = set(pq.read_schema(f).names)
+        t = pq.read_table(f, columns=[c for c in cols + ["source"] if c in have])
+        if not a.compact_ids:
+            t = fill_source(t)                   # files of the first tier-1/2 run have no `source` column
         V = fp_matrix(t)
         nrm = np.linalg.norm(V, axis=1)
         keep = nrm > 0
@@ -152,6 +155,8 @@ def main():
         m = m.append_column("row", pa.array(sel.astype(np.int32)))
         if a.compact_ids:
             m = m.select(["tier", "unit_id", "row"])
+        elif "source" in m.column_names:
+            m = m.drop(["source"]).append_column("source", m.column("source"))   # same column order in every file
         if writer is None:
             writer = pq.ParquetWriter(str(out / "meta.parquet.tmp"), m.schema, compression="zstd")
         writer.write_table(m.cast(writer.schema))

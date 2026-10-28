@@ -28,10 +28,19 @@ against the files rather than trusting this document.
 |---|---|---|---|
 | 1 | 46 AFDB v6 reference proteomes (human, yeast, E. coli, mouse, rat, fly, worm, zebrafish, Arabidopsis, fission yeast, Dictyostelium, then a spread of pathogens and model species; `species_order.tsv`) | 555,846 | ≈ 2.3 M |
 | 2 | Swiss-Prot v6, minus accessions already in tier 1 | 436,886 | ≈ 1.8 M |
-| 3 | the rest of AFDB (Google Cloud bucket, model versions v4 and 11 tars of v3) in "tree round-robin" order | ≈ 214 M (estimated) | ≈ 0.8 B |
+| 3 | the rest of AFDB: AFDB **v4** models decompressed from the Foldcomp database `afdb_uniprot_v4` (`source = foldcomp:afdb_uniprot_v4`), in "tree round-robin" order | 213.7 M | ≈ 0.8 B |
 
 - **Each accession appears in one tier only**: tiers 2 and 3 skip accessions processed earlier
   (`skip_accessions.txt`).
+- **Tier 3 is not the original model files.** Foldcomp stores torsion angles, not coordinates; the decompressed
+  model differs slightly from the AFDB file and so do its pockets (§6, pitfall 10). Columns `source` and
+  `model_version` tell you which kind of model a row comes from. (The pipeline can also read tier 3 from the
+  Google Cloud bucket of original v4 files, `source = gcs_v4_tar`, but that was not the default.)
+- **Tier-3 taxa.** Foldcomp entries carry no taxonomy. `taxid` comes from the current UniProt idmapping, else from
+  UniProt 2021_04 (the release AFDB v4 was built from; many v4 accessions have since been removed from UniProt),
+  else from the other entries of the same AFDB source tar. Entries with none of these have `taxid = 0` and
+  organism "unmapped accession" and sit in an "unclassified" group of the round-robin; `worklist.json` reports
+  how many (`afdb_uniprot_v4_unmapped_taxid`).
 - **Tier 3 order.** Taxa are interleaved over superkingdom → phylum → class → order → family → genus, so that the
   first units cover the tree of life broadly (the first 1,000 units span ≈ 216 phyla). If the run stopped early,
   the data are a broad but **incomplete** sample: never treat "no pocket found" as "the organism has no such
@@ -46,7 +55,10 @@ $OUT_ROOT/
   pockets/tier<T>/<unit_id:06d>.parquet       one row per kept pocket (metadata + fingerprint)
   structures/tier<T>/<unit_id:06d>.parquet    one row per structure (including structures with no kept pocket)
   state/done/<unit_id>.json                   per-unit counts (pockets dropped per filter, errors, timing)
-  worklist.parquet                            the work units: tier, source tar(s), taxid, organism, lineage
+  worklist.parquet                            the work units: tier, source tar(s) or Foldcomp database, taxid,
+                                              organism, lineage
+  fc_entries_afdb_uniprot_v4.parquet          tier-3 entries per unit (offset/length in the Foldcomp DB, accession,
+                                              taxid); fc_taxa_*.parquet: taxid -> name + lineage
   skip_accessions.txt                         accession -> first tier it occurs in
   ncbi/                                       NCBI new_taxdump used for lineages (rankedlineage.dmp)
   index/                                      FAISS indices, if build_index.py was run
@@ -60,8 +72,9 @@ $OUT_ROOT/
 | `unit_id`, `tier` | int | work unit and tier |
 | `accession` | str | UniProt accession |
 | `fragment` | int16 | AFDB fragment number (1 for almost all; > 1 only for long human proteins split into fragments) |
-| `model_version` | int8 | 6 (tiers 1–2), 4 or 3 (tier 3) |
-| `taxid`, `organism` | int32, str | NCBI taxon id and organism name (from the model file; else from the tar) |
+| `model_version` | int8 | 6 (tiers 1–2), 4 (tier 3; 3 for 11 GCS tars if tier 3 came from GCS) |
+| `taxid`, `organism` | int32, str | NCBI taxon id and organism name. Tiers 1–2: from the model file. Tier 3: UniProt idmapping → UniProt 2021_04 → source tar; 0 = unknown ("unmapped accession") |
+| `source` | str | where the model came from: `afdb_v6_tar` (tier 1), `afdb_swissprot_v6_tar` (tier 2), `foldcomp:afdb_uniprot_v4` (tier 3; `foldcomp:afdb_rep_v4` with TIER_REPS=1), `gcs_v4_tar` (tier 3 from GCS) |
 | `merged_index`, `burrow_index`, `burrow_rank`, `members` | | BURROW bookkeeping: merged-pocket index in the model, index/rank of its best member pocket, member ranks |
 | `burrow_score` | float | BURROW's pocket score (0–1, probability-like, comparable across proteins; ≥ 0.03 here) |
 | `n_points`, `volume_A3` | int, float | size of the detected pocket (grid points; Å³) |
@@ -81,8 +94,9 @@ model file's `_struct_ref_seq` before mapping to UniProt (AFDB long-protein frag
 
 ### Structure table (`structures/tier*/…parquet`)
 
-`structure_stem`, `accession`, `fragment`, `model_version`, `taxid`, `organism`, `source` (tar), `n_res`,
-`plddt_mean`, `plddt_frac_lt70`, `plddt_frac_lt50`, `n_pockets_all` (before filters), `n_pockets_kept`, `status`
+`structure_stem`, `accession`, `fragment`, `model_version`, `taxid`, `organism`, `source` (as in the pocket
+table), `source_file` (tar or Foldcomp database name), `n_res`, `plddt_mean`, `plddt_frac_lt70`, `plddt_frac_lt50`
+(tiers 1–2: from the mmCIF `_ma_qa_metric_local`; tier 3: from the CA B-factors of the decompressed PDB, ±0.03), `n_pockets_all` (before filters), `n_pockets_kept`, `status`
 (`ok` / `error` / `missing`), `error`, timings. Use it for denominators ("pockets per protein", "fraction of
 proteins with a pocket") and to exclude failed structures.
 
@@ -93,11 +107,13 @@ memory. **Tier 3 (≈ 0.8 B pockets, ≈ 0.6 TB of fingerprints) does not**: wor
 per-file streaming, or a FAISS index.
 
 ```python
-import pyarrow.dataset as ds, pyarrow.compute as pc, numpy as np
+import sys, pyarrow.compute as pc, numpy as np
+sys.path.insert(0, "<repo>/afdb")
+from afdb_common import open_pockets, fill_source
 
-pockets = ds.dataset(f"{OUT_ROOT}/pockets", format="parquet")          # all tiers; partitioned by directory
-meta = pockets.to_table(columns=["pocket_id", "accession", "taxid", "burrow_score", "volume_A3"],
-                        filter=pc.field("tier") <= 2).to_pandas()          # metadata only: cheap
+pockets = open_pockets(OUT_ROOT)              # all tiers; schema unified across files (see the note on `source`)
+meta = fill_source(pockets.to_table(columns=["pocket_id", "tier", "accession", "taxid", "burrow_score", "source"],
+                                    filter=pc.field("tier") <= 2)).to_pandas()     # metadata only: cheap
 
 t = pockets.to_table(columns=["pocket_id", "fingerprint"], filter=pc.field("taxid") == 9606)
 V = np.asarray(t["fingerprint"].combine_chunks().flatten()).reshape(-1, 384).astype(np.float32)
@@ -105,7 +121,20 @@ S = V @ V[:5].T                                                         # simila
 ```
 
 `pocketcompare.fpindex.read_table(path)` returns `(metadata DataFrame, float32 vectors, method record)` for one file. DuckDB also reads the files
-directly (`SELECT … FROM 'pockets/tier1/*.parquet'`) and is convenient for metadata aggregation.
+directly (`SELECT … FROM read_parquet('pockets/*/*.parquet', union_by_name = true)`) and is convenient for metadata
+aggregation.
+
+**The `source` column is missing from the first tier-1/2 files.** Tiers 1 and 2 were run with an earlier version
+of the pipeline (commit 24d1c8f), whose pocket and structure tables have no `source` column. Tier 3 files always
+have it. Derive it from the tier: tier 1 → `afdb_v6_tar`, tier 2 → `afdb_swissprot_v6_tar`; these are the only
+sources those tiers have.
+- `afdb_common.fill_source(table_or_df)` does that.
+- `afdb_common.open_pockets(OUT_ROOT[, "structures"])` opens all files with a unified schema, so the column
+  reads as null instead of disappearing.
+- A plain `pyarrow.dataset.dataset(...)` takes the schema of the first file (a tier-1 file) and silently drops
+  `source` everywhere. In DuckDB use `union_by_name = true` and `coalesce(source, …)`.
+
+`build_index.py` derives `source` in `meta.parquet` the same way.
 
 **Search.** For anything larger than a few million pockets use an index:
 `python afdb/build_index.py --tiers 1,2 --kind flat -o $OUT_ROOT/index/t12_flat` (exact) or `--kind ivfpq`
@@ -143,8 +172,9 @@ for a known site).
 2. **Taxonomic sampling is uneven.** The AFDB over-represents bacteria and some well-sequenced clades. Many tier-3
    taxa contribute a single protein, and part of tier 3 is unclassified or metagenomic. Normalise per taxon,
    subsample evenly across clades, or weight by inverse clade size.
-3. **Model versions differ.** Tiers 1–2 are v6 models, tier 3 v4 (a few v3). The same accession never appears
-   twice, but version is a covariate when comparing, for example, human (v6) with other primates (v4).
+3. **Model versions differ.** Tiers 1–2 are v6 models, tier 3 v4 (Foldcomp-decompressed). The same accession
+   never appears twice, but version and source are covariates when comparing, for example, human (v6) with other
+   primates (v4).
 4. **Filters shape what is present.** Pockets with BURROW score < 0.03 or mean lining pLDDT < 70 were dropped,
    and AF mode prunes pLDDT < 50 regions before detection. Disordered, flexible and low-confidence proteins,
    shallow surface pockets and the cores of predicted interfaces are therefore under-represented.
@@ -163,6 +193,20 @@ for a known site).
    size when claiming that two groups of pockets differ.
 9. **Pocket scores are for ranking.** `burrow_score` is comparable across proteins but is not a calibrated
    probability of ligand binding.
+10. **Tier 3 = Foldcomp-decompressed models.** Measured on 300 local v6 models (compress → decompress →
+    describe):
+    - Heavy-atom RMSD to the original: median 0.12 Å (atoms matched by residue and name; worst atoms 0.8–1.9 Å).
+      pLDDT survives to ±0.03.
+    - Pockets: 1,404 → 1,380 (kept after filters: 1,097 → 1,080). Only 60 % of the original pockets have a
+      counterpart with residue Jaccard ≥ 0.5.
+    - Matched fingerprints: cosine median 0.95 (5th percentile 0.76). For 75 % of the original pockets, the
+      nearest Foldcomp pocket from the same protein in a 300-protein pool is its counterpart.
+
+    So the Foldcomp perturbation is small next to cross-protein differences, but **do not compare pockets of the
+    same protein across sources** (a stored tier-3 row against a pocket re-described from the original v4 or a
+    v6 model of that protein) and expect identity. For close
+    inspection of a tier-3 pocket, re-describe the original model, `https://alphafold.ebi.ac.uk/files/AF-<acc>-F1-model_v4.cif`
+    (`pocketcompare describe … --af-mode`), and match pockets by residue overlap rather than by `pocket_id`.
 
 ## 7. Analyses the data support well
 
@@ -183,8 +227,10 @@ for a known site).
   schema metadata. The pipeline is in `afdb/` (README there). The research record, including how the method was
   validated, is in github.com/zoidpuff/pocketcompare-agents.
 - Recompute any pocket's fingerprint with `pocketcompare describe <model> --af-mode` from the same AFDB model
-  file. Fingerprints are deterministic: CPU and GPU backends give identical results, and the stored float16 copy
+  file. For tier 3 the "same model file" is the Foldcomp-decompressed PDB (`foldcomp.decompress` of the entry in
+  `afdb_uniprot_v4`), which reproduces the stored fingerprint; the original v4 mmCIF gives a slightly different one. Fingerprints are deterministic: CPU and GPU backends give identical results, and the stored float16 copy
   differs by ≤ 6 × 10⁻⁵.
-- Data: AlphaFold DB (CC BY 4.0; cite Varadi et al. and Jumper et al.); NCBI Taxonomy for lineages.
+- Data: AlphaFold DB (CC BY 4.0; cite Varadi et al. and Jumper et al.); tier 3 through Foldcomp (Kim, Mirdita,
+  Steinegger, *Bioinformatics* 39:btad153, 2023); UniProt for tier-3 taxids; NCBI Taxonomy for lineages.
 - Scratch storage is purged after 15 days on Euler: if `$OUT_ROOT` is on scratch, check that the files you need
   still exist and copy them to permanent storage.
