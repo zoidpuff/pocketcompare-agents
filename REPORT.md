@@ -29,6 +29,10 @@ Arms: **FINAL** = A4b:n1_linear, raw cosine (the frozen method). **N1** = its no
 - **Against published methods.** We scored their shipped scores on our TOUGH-M1-test partition. G-LoSA / SiteEngine / APoc reach raw ROC 0.712 <!-- src: results/final/final_summary.parquet#auc[set=tough_m1_test,subset=all,arm=B5T,config=glosa_ga,mode=native] --> / 0.692 / 0.60–0.63 and stratified 0.658 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=B5T,config=glosa_ga,mode=native] --> / 0.613 / 0.55–0.60. FINAL reaches 0.698 / 0.719: level on raw ROC and ahead after stratification, with no paired CI. FINAL scores a pair with one dot product.
 - **Runtime.** After BURROW a pocket takes ≈ 3.5 <!-- src: results/dev/final_method_runtime.json#D_ms_per_pocket_median --> ms, and a structure 0.13–0.42 s end to end. A pair costs 0.1–0.7 µs, and storage is 1,536 B per pocket (94 B as PQ). The 116 k-pocket human AFDB set took ≈ 3 min on one node, and the exact all-vs-all top-50 search takes 0.41 <!-- src: results/release/human_afdb_v6.json#exact.all_vs_all_top50_gpu_s --> s on one GPU. Extrapolated to 200 M AFDB structures: ≈ 7,150 CPU-core-h + 223 <!-- src: results/proteome/summary.json#extrapolation_200M.gpu_hours --> GPU-h.
 - **Negatives.** Fragment docking failed its gate. The ligand-grounded PPI test (PPI-L) was infeasible, with 3 test positives. PPI pockets are judged only by ortholog transfer (PPIPS), where ESM-2 wins (MRR 0.954 vs FINAL 0.683).
+- **Temporal replication (PREREG2, fresh data).** On 987 ligand sites from PDB entries released after 2025-11-12
+  (after every training source; 316 homology groups), FINAL scores D-mode ROC 0.752 <!-- src: results/pdbt/claims.json --> vs B1 0.671: Δ +0.081
+  [+0.028, +0.132], Holm p 0.003 (R1, replicates). The exploratory fusion (+0.010, p 0.34) and L4 (−0.022) do
+  **not** beat FINAL (R2/R3), vindicating the pre-registered choice of the simpler linear head. <!-- src: results/pdbt/report.md -->
 - **Not best everywhere.** L4 wins on BLiPS, PPIPS and ProSPECCTs P3/P4. Sequence and fold win on homology-driven sets (Vertex, P1/P2).
 
 ---
@@ -363,6 +367,27 @@ ProSPECCTs results with self-pairs exist in `results/final/` but are not shown h
 
 ---
 
+### 4.11 Temporal replication on fresh data (PREREG2; confirmatory for R1–R3)
+After the PREREG test sets were spent, PREREG2.md (committed before the set existed) defined **PDB-T**: ligand
+sites in PDB entries released after 2025-11-12 (the BioLiP2 snapshot behind every training set), X-ray/EM ≤ 3 Å,
+ligands ≥ 10 heavy atoms (additives excluded); every protein with a sequence or structure edge to any training
+source removed (9,082 of 13,036 chains); pairs as in BLiPS; a feasibility gate (≥ 300 positives, ≥ 30 groups,
+≥ 10 ligand clusters) recorded before any score. An independent audit passed; 9 boundary sites (min-TM 0.50–0.56)
+were excluded before scoring (D25). Frozen artefacts only; no retraining. <!-- src: reports/pdbt_build.md, reports/audit_splits.md -->
+
+| claim (D-mode common set, 6,171 pairs / 1,060 pos) | AUC a | AUC b | Δ [95 % CI] | Holm p | |
+|---|---|---|---|---|---|
+| R1 FINAL − B1 | 0.752 | 0.671 | +0.081 [+0.028, +0.132] | 0.003 | **replicates** |
+| R2 FUSION − FINAL | 0.762 | 0.752 | +0.010 [−0.010, +0.032] | 0.34 | not supported |
+| R3 L4 (CSLS) − FINAL | 0.730 | 0.752 | −0.022 [−0.061, +0.018] | 0.86 | not supported |
+<!-- src: results/pdbt/report.md, results/pdbt/claims.json -->
+
+- L-mode: FINAL 0.774 vs B1 0.760 (Δ +0.014 [−0.029, +0.057]) — on fresh data the gain over B1 is a D-mode gain,
+  consistent with the ligand-imprint finding (L-mode flatters BURROW's own descriptors too).
+- Size-stratified D-mode AUC: FINAL 0.752; cluster-balanced 0.699. 83 % of positives involve a ligand chemotype seen
+  in BLiPS-train: the proteins are new, most chemotypes are not.
+- Two aborted starts are disclosed (DEV7: pairs referencing the excluded sites; no score had been computed).
+
 ## 5. Development: how the method was chosen (dev/val only, rebuilt splits)
 
 **Selection rule (PREREG §1).**
@@ -467,8 +492,8 @@ identical. <!-- src: reports/proteome_demo.md, reports/tooling.md -->
 - *Cost.* 8.9 ms per pocket with a GPU (55 ms on CPU) and 3,072 B per pocket.
 - *Reading.* The gains sit on the sets that motivated the analysis. Fusion does not help the cleanest endpoint
   (TOUGH-M1 D).
-- *Decision.* FINAL is unchanged. Fusion can be offered as an optional "accuracy" mode, and any claim for it needs a
-  fresh held-out set.
+- *Decision.* FINAL is unchanged. The pre-registered replication on fresh data (§4.11, R2) found no fusion gain
+  (+0.010, p 0.34), so the exploratory gains here were selection effects or set-specific.
 
 **PPI-R: ligand-grounded PPI retrieval (train+val only; `reports/exploratory_ppi.md`).** 1,806 PPI-modulator
 pockets (67 homology groups) vs 1,272 non-PPI ligand pockets matched on volume and buriedness; queries rank pockets of
@@ -580,7 +605,8 @@ because the frozen tag holds the evaluated code.
    - Train A4b/L4 on PDB-wide BioLiP sites under the same leakage rules, auditing every training source (DEV4).
    - Use graded ligand-similarity targets to help unseen chemotypes.
    - Pre-register a fresh held-out set before any claim.
-4. **Offer L4 / fusion as an optional accuracy mode.** It needs a GPU and 2× the storage. Validate it on new
+4. **Do not ship L4 / fusion as default.** On fresh data (§4.11) neither beats FINAL; L4 remains a research lead
+   (decoy sensitivity on ProSPECCTs P3/P4). Re-validate any variant on new
    held-out data.
 5. **PPI pockets need PPI-specific training signal.** The exploratory PPI-R test (§8) is negative; train with
    interface-pocket positives grounded in modulator data (across families where they exist) and evaluate PPI-R on a
