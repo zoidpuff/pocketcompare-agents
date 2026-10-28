@@ -1,0 +1,44 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/tooling/describe_runtime.json",
+  "result_sha256": "af615e4f0a2b3c194555e8f89ac36040f97854cff11861454ebab1166d5b881e",
+  "n_rows": null,
+  "git_commit": "a2a1013cacf76b21f0c0b8b96531a04478313133",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "README.md",
+    "pyproject.toml",
+    "results/trials.tsv",
+    "src/pocketcompare.egg-info/SOURCES.txt",
+    "src/pocketcompare/method.py",
+    "src/pocketcompare/pockets_fast.py"
+  ],
+  "git_untracked": 27,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/tooling/bench_describe.py",
+  "script_sha256": "bd7af3cb14a649035128fedbebb85fcaef3eec3c941dd7de888f789b9519abad",
+  "args": {
+    "n": 2000,
+    "n_latency": 50,
+    "workers": 22,
+    "device": "cuda:0",
+    "workdir": "/tmp/claude-548918/-cluster-project-beltrao-gmagnus-pocket-compare/6040d382-46cf-4eb9-aabc-b618c60a25da/scratchpad/bench2000"
+  },
+  "config": null,
+  "config_sha256": null,
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/proteome_human/members.parquet",
+      "size": 803250,
+      "sha256": "bca7c27a18ca1801a0f5aceb663ebc0f48f33eb0a1acd3aa34eb7ef031d259ce",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cuda:0",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T04:29:50+00:00",
+  "end_time": "2026-10-28T04:34:14+00:00",
+  "wall_seconds": 264.204,
+  "extra": null
+}

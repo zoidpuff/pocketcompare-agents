@@ -45,6 +45,9 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D23 (06:45) Post-freeze API fix: method.describe(site, locate="burrow") now locates D sites exactly as evaluated
+  (old rule kept as "burrow_flat"; differed on 4/765 TOUGH-dev and 2/523 BLiPS-val sites); regression test matches stored
+  evaluation embeddings to ≤ 1.1e-7. Evaluated numbers unaffected (frozen tag holds the evaluated code).
 - D22 (06:00) M3 retrospective adopted (reviews/milestone_M3_retrospective.md): LESSONS pruned to 12; headline = D-mode
   (C1-D); C1a/C1b reported as borderline and Monte-Carlo-fragile; P6.2 ≡ P6 disclosed (DEV5: BURROW strips HETATM, so
   the C2 macro double-weights P6); exploratory fusion capped at one pre-declared protocol and one labelled test look;
@@ -261,7 +264,11 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] detection recall 0.615 on val AF models; partner retrieval (84 pairs) final hit@10 0.155 vs B1 0.107, AUC
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44
   - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
-- [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
+- [-] P4 Exploratory PPI-R task — not run (cut for time; listed as follow-up)
+- [x] P6 Tooling (post-test) — reports/tooling.md, docs/FINGERPRINTS.md
+  - [x] CLI pocketcompare describe/compare/index/search (10 tests); full suite 122 passed
+  - [x] per structure 0.42 s ref CPU / 0.21 s fast CPU / 0.13 s GPU; 22 workers ≈ 55 structures/s
+  - [x] release human_afdb_v6: 116,246 pockets, final head; PQ recall@10 0.886, +re-rank 0.987 (0.77 ms/query) (TOUGH-M1-dev, BLiPS-val, PPI val)
 - [x] P5 Freeze (D21) + final evaluation (results/final/) + independent verification (reports/verification_final.md)
   - [!] C1a TOUGH-M1-test L: final 0.698 vs B1 0.568, Δ +0.129 [+0.015, +0.208], Holm p 0.0495 — rejects, FRAGILE
         (B = 20,000: p 0.0164 vs Holm threshold 0.0167; 30–50 % of B = 2000 reruns would not reject)

@@ -38,22 +38,45 @@ Rebuilding the splits also needs MMseqs2 and Foldseek, whose binaries are in `to
 Dataset sources, versions, checksums and licences are listed in `DATA.md`. ProSPECCTs must never be
 redistributed.
 
+## Command line
+
+`pip install -e .` installs the console script `pocketcompare` (also `python -m pocketcompare`).
+Handover notes for downstream users are in `docs/FINGERPRINTS.md`.
+
+```bash
+pocketcompare describe structures/ --af-mode --workers 22 -o pockets.parquet   # every pocket of every structure
+pocketcompare describe structures/ --af-mode --device cuda:0 --workers 22 -o pockets.parquet   # BURROW on the GPU
+pocketcompare describe 1abc.cif.gz --ligand lig.sdf -o site.parquet           # one ligand-defined site (L mode)
+pocketcompare describe 1abc.cif.gz --residues A:719,A:725 --locate burrow -o d.parquet   # BURROW pocket at a site
+pocketcompare compare site.parquet pockets.parquet --top 5 -o pairs.tsv       # or two structures; --matrix S.npy
+pocketcompare index pockets.parquet -o idx_flat/                              # exact (IndexFlatIP)
+pocketcompare index pockets.parquet -o idx_pq/ --kind ivfpq                   # OPQ64 + IVF + PQ64 + fp16 re-rank vectors
+pocketcompare search site.parquet idx_pq/ -k 10 --rerank 100 -o hits.parquet
+```
+
+- `describe` writes one row per pocket: `pocket_id`, `burrow_rank`, `burrow_score`, `members`, `residues`,
+  `center_{x,y,z}`, `volume_A3`, `site_volume_A3`, `plddt_{mean,min,frac_lt70}` (with `--af-mode`), `ok` and
+  the 384-d `fingerprint`. A sidecar `<out>.structures.parquet` has the status and timings of each structure.
+- The backends `--backend ref` (default), `--backend fast` and `--device cuda:N` give identical fingerprints.
+- Read a table in Python with `pocketcompare.fpindex.read_table(path)`, which returns (metadata, (n, 384) array,
+  method record).
+
 ## Quickstart (Python API)
 
-There is no command-line wrapper. The API lives in `src/pocketcompare/method.py`.
+The API lives in `src/pocketcompare/method.py`.
 
 ```python
 from pocketcompare import method
 
-# 1. Every BURROW pocket of a structure (deployment / "D" mode): one row per region-rule pocket
-V, info = method.describe("1abc.cif.gz", return_info=True)        # V: (n, 384) float32; info: burrow_rank, volume_A3, ok, time_ms
-W = method.describe("AF-P00918-F1-model_v6.cif.gz", af_mode=True)  # AlphaFold model (BURROW AF mode)
+# 1. Every pocket of a structure (deployment): merged BURROW region-rule pockets with >= 10 points
+V, info = method.describe_all("1abc.cif.gz")                       # V: (n, 384) float32; info: burrow_rank, residues, center_*, ...
+W, _ = method.describe_all("AF-P00918-F1-model_v6.cif.gz", af_mode=True)   # AlphaFold model (BURROW AF mode)
 
 # 2. A known site
 v = method.describe("1abc.cif.gz", site="ligand.sdf")              # ligand file (.sdf/.mol V2000 or .pdb HETATM)
 v = method.describe("1abc.cif.gz", site=xyz)                       # (n, 3) ligand heavy-atom coordinates
 v = method.describe("1abc.cif.gz", site=["A:719", "A:725"])        # residue list "chain:num"
-v = method.describe("1abc.cif.gz", site="ligand.sdf", locate="burrow")  # describe the BURROW pocket that covers the ligand
+v = method.describe("1abc.cif.gz", site="ligand.sdf", locate="burrow")  # the BURROW pocket at the ligand (D mode)
 
 # 3. Compare
 s = method.similarity(v[0], W[0])     # float, cosine (higher = more similar)
@@ -61,14 +84,27 @@ S = method.similarity(v, V)           # (1, n) matrix
 ```
 
 Notes:
+- **Which pockets `describe_all` describes.** BURROW region-rule pockets are merged (touch ≤ 1.5 Å or
+  residue Jaccard ≥ 0.3). Merged pockets with fewer than 10 points are dropped. Each remaining merged pocket is
+  described by sph8 around its bur16⁴ centroid. This is the unit of the proteome release and the blind test.
+  - `unit="member"` describes every region sub-pocket instead. This equals `describe(structure)` with no site,
+    which keeps the older behaviour.
+- **`locate="burrow"` matches the evaluation's D mode.** The site picks the merged region pocket that covers it
+  best. Then the member of that pocket that covers it best is described. `tests/test_method_eval_consistency.py`
+  checks that this reproduces the evaluated L and D vectors (max |Δ| ≈ 1e-7).
+  - `locate="burrow_flat"` is the pre-2026-10-28 rule: the best-covering region pocket, without the merge step.
 - `describe` accepts a path, a loaded gemmi `Structure` or a pre-featurised `pockets.Featurized`.
 - Dimers are passed as ordinary two-chain files. Use `chains=` to restrict the chains.
-- `pockets="region" | "v2" | "full"` selects BURROW's pocket list; the default is `region`.
+- `pockets="region" | "v2" | "full"` selects BURROW's pocket list for `describe(site=None)`; the default is
+  `region`.
 - Rows with `info.ok == False` are zero vectors (no buried points).
 - The first call pays for imports and Numba compilation, ~15 s on our nodes. Later calls cost BURROW time plus
 a few ms per pocket.
 
 ## Build a FAISS index over a directory
+
+Use `pocketcompare describe` → `index` → `search` (see "Command line"); the library behind it is
+`pocketcompare.fpindex`. By hand:
 
 ```python
 import glob, numpy as np, pandas as pd, faiss
@@ -76,30 +112,39 @@ from pocketcompare import method
 
 vecs, meta = [], []
 for f in sorted(glob.glob("structures/*.cif.gz")):
-  V, info = method.describe(f, af_mode=True, return_info=True)   # af_mode=True for AlphaFold models
+  V, info = method.describe_all(f, af_mode=True)                 # af_mode=True for AlphaFold models
   info["structure"] = f
   keep = info["ok"].to_numpy()
   vecs.append(V[keep]); meta.append(info[keep])
 X = np.vstack(vecs).astype(np.float32)
 meta = pd.concat(meta, ignore_index=True)
 
-index = faiss.IndexFlatIP(X.shape[1])         # exact cosine (vectors are unit-norm)
+index = faiss.IndexFlatIP(X.shape[1])         # exact: the vectors are unit-norm, score = inner product
 index.add(X)
-faiss.write_index(index, "pockets.faiss"); meta.to_parquet("pockets_meta.parquet")
-
 q = method.describe("query.pdb", site="ligand.sdf").astype(np.float32)
 D, I = index.search(q, 10)                    # top-10 similar pockets
-print(meta.iloc[I[0]][["structure", "burrow_rank", "volume_A3"]].assign(score=D[0]))
+print(meta.iloc[I[0]][["structure", "burrow_rank", "residues"]].assign(score=D[0]))
 ```
 
-For millions of pockets, use a compressed index with exact re-ranking:
-- e.g. `faiss.index_factory(384, "OPQ64,IVF4096,PQ64", faiss.METRIC_INNER_PRODUCT)`;
-- train it on ~100 k vectors;
-- search with `nprobe` 16–64, then re-rank the top-100 against fp16 copies of the vectors.
+For millions of pockets, use `pocketcompare index --kind ivfpq`. It builds `OPQ64_384,IVF{nlist},PQ64` (64-byte
+codes) and keeps fp16 copies of the vectors, so `search` can re-rank the top-100 exactly. Recall on the human
+release is given in the next section.
 
-On the human proteome demo (627-d N1 vectors), 64-byte codes alone gave recall@10 0.81–0.85, and re-ranking gave
-0.995. This has not yet been re-measured for the 384-d final vectors. The proteome pipeline itself is in
-`scripts/proteome/`.
+## Release: human AFDB v6 fingerprints
+
+`data/processed/release/human_afdb_v6/` holds 116,246 final-method fingerprints in 19,084 UniProt entries. They are
+the merged region-rule pockets (≥ 10 points) of all AFDB v6 human models.
+- **Contents:** `fingerprints.parquet` (metadata + 384-d vector) and FAISS indices: `index_flat/` (exact) and
+  `index_opq_ivfpq/` (OPQ64 + IVF1024 + PQ64, with fp16 vectors for exact re-ranking). Checksums are in `SHA256SUMS`.
+- **How they were made:** the frozen head was applied to the proteome demo's stored N1 descriptors; BURROW was not
+  re-run.
+- **Cross-check:** `method.describe_all` re-run on 40 random models reproduces the released vectors to 1.2e-7.
+- **Search quality:** PQ alone gives recall@10 0.886 at nprobe 64. Exact re-ranking of the PQ top-100 gives
+  **0.987** at 0.8 ms per query (1 thread). The flat index needs 7.3 ms.
+- **Hubness:** raw top-10 in-degree skewness is 1.62. CSLS with database radii brings it to 0.55.
+
+More details are in the folder's `README.md`, `results/release/human_afdb_v6.json` and `docs/FINGERPRINTS.md`
+(the handover note for downstream teams).
 
 ## Reproduce
 
@@ -162,7 +207,11 @@ Run everything from the project root with `.venv` active and `NUMBA_CACHE_DIR` s
   - `python scripts/proteome/sanity_family.py`
   - `python scripts/proteome/summarize.py`
   - `python scripts/proteome/write_sidecars.py`
-14. **Final evaluation** (PI only)
+14. **Tooling and release**
+  - `pytest tests/test_method_eval_consistency.py tests/test_cli.py`
+  - `python scripts/tooling/bench_describe.py --n 2000 --workers 22 --device cuda:0`
+  - `CUDA_VISIBLE_DEVICES=1 python scripts/proteome/release_final_head.py --threads 16`
+15. **Final evaluation** (PI only)
   - `python scripts/final_eval.py --dryrun-dev`
   - commit, then `python scripts/final_eval.py --write-freeze`
   - commit FREEZE.json
@@ -170,6 +219,6 @@ Run everything from the project root with `.venv` active and `NUMBA_CACHE_DIR` s
   - `FINAL_EVAL=1 python scripts/final_eval.py --threads 16`
   - optionally `FINAL_EVAL=1 python scripts/eval_af_robustness.py --set test --pairs <...>` and
     `scripts/eval_blind.py --set test --pairs <...>`
-15. **Report check**: `python scripts/check_report.py REPORT.md`
+16. **Report check**: `python scripts/check_report.py REPORT.md`
 
 Every result file has a `.prov.json` sidecar recording commit, inputs, seeds and the evaluate.py hash. The seeds

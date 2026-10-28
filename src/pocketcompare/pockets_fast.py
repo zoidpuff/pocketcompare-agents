@@ -32,12 +32,13 @@ def fast_model(ranker: str = "all", preset: str = "default"):
     return FastModel.load(str(model_path(ranker, preset)))
 
 
-def load_protein_af(path, key: str, af_mode: bool = True):
-    """(Protein, weights|None, residue pLDDT dict {res_id: pLDDT} of the FULL model, n_res_pruned)."""
+def load_protein_af(path, key: str, af_mode: bool = True, chains=None):
+    """(Protein, weights|None, residue pLDDT dict {res_id: pLDDT} of the FULL model, n_res_pruned).
+    ``chains``: author chain ids to keep (None = all protein chains of the first model)."""
     from pocketdetect.burrow.af import af_protein, residue_plddt
     from pocketdetect.burrow.prep import protein_from_structure
     from pocketdetect.structure import load_structure
-    s = load_structure(str(path), structure_id=key)
+    s = load_structure(str(path), structure_id=key, chains=list(chains) if chains is not None else None)
     sp = s.select(s.protein_heavy_mask())
     pl = residue_plddt(sp).astype(np.float32)
     pld = dict(zip(sp.residue_ids.tolist(), pl.tolist()))
@@ -47,12 +48,12 @@ def load_protein_af(path, key: str, af_mode: bool = True):
     return protein_from_structure(s), None, pld, 0
 
 
-def load_and_prep(path, key: str, af_mode: bool = True, fm=None):
+def load_and_prep(path, key: str, af_mode: bool = True, fm=None, chains=None):
     """CPU-side parse + AF pruning + GPU-batch preparation (``fast.gpu.prep``).  Returns (Prepped, info)."""
     from pocketdetect.burrow.fast.gpu import prep
     fm = fm or fast_model()
     t0 = time.perf_counter()
-    P, w, pld, npr = load_protein_af(path, key, af_mode)
+    P, w, pld, npr = load_protein_af(path, key, af_mode, chains)
     t1 = time.perf_counter()
     it = prep(P, fm.cfg, w)
     t2 = time.perf_counter()
@@ -127,11 +128,11 @@ def featurized_from_points(P, ps, score, fm, key: str, af_mode: bool = True, ext
         desc_names=list(fn), pk_in_v2=in_v2, pk_in_region=in_reg, meta=meta)
 
 
-def featurize_fast_cpu(path, key: str, af_mode: bool = True, fm=None) -> Featurized:
+def featurize_fast_cpu(path, key: str, af_mode: bool = True, fm=None, chains=None) -> Featurized:
     """One structure through the fast Numba CPU path (no GPU)."""
     from pocketdetect.burrow.fast.pipeline import featurize
     fm = fm or fast_model()
-    P, w, pld, npr = load_protein_af(path, key, af_mode)
+    P, w, pld, npr = load_protein_af(path, key, af_mode, chains)
     ps = featurize(P, fm.cfg, w)
     fs = featurized_from_points(P, ps, None, fm, key, af_mode)
     fs.meta["n_res_pruned"] = npr

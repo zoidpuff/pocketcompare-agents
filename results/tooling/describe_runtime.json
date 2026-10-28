@@ -1,0 +1,159 @@
+{
+  "cpu_count": 128,
+  "device": "cuda:0",
+  "equivalence_vs_ref": {
+    "fast": {
+      "max_abs_diff": 0.0,
+      "same_pocket_ids": true
+    },
+    "gpu": {
+      "max_abs_diff": 0.0,
+      "same_pocket_ids": true
+    }
+  },
+  "host": "eu-g6-048",
+  "loadavg_end": [
+    80.7685546875,
+    45.0673828125,
+    30.63037109375
+  ],
+  "loadavg_start": [
+    22.91650390625,
+    22.8935546875,
+    22.34521484375
+  ],
+  "n": 2000,
+  "n_latency": 50,
+  "runs": {
+    "latency_fast_cpu1": {
+      "cli_wall_s": 15.4,
+      "n_errors": 0,
+      "n_pockets": 275,
+      "n_structures": 50,
+      "per_structure_total_s": {
+        "mean": 0.30125090638175606,
+        "median": 0.21062923897989094,
+        "p90": 0.700640352885239
+      },
+      "pockets_per_s": 17.857142857142858,
+      "process_wall_s": 16.14073787815869,
+      "s_per_structure_wall": 0.308,
+      "stage_mean_s": {
+        "burrow_s": 0.2279287467058748,
+        "describe_s": 0.037825048393569885,
+        "parse_s": 0.03545036453288049
+      },
+      "startup_s": 0.7407378781586882,
+      "structures_per_s": 3.2467532467532467
+    },
+    "latency_gpu_inprocess": {
+      "cli_wall_s": 11.3,
+      "n_errors": 0,
+      "n_pockets": 275,
+      "n_structures": 50,
+      "per_structure_total_s": {
+        "mean": 0.2096513532428071,
+        "median": 0.12656536314170808,
+        "p90": 0.28263460497837517
+      },
+      "pockets_per_s": 24.336283185840706,
+      "process_wall_s": 12.427433445118368,
+      "s_per_structure_wall": 0.226,
+      "stage_mean_s": {
+        "burrow_s": 0.06213299482129514,
+        "describe_s": 0.040243355580605565,
+        "gpu_s": 0.06743998990394175,
+        "parse_s": 0.03982282656710595
+      },
+      "startup_s": 1.127433445118367,
+      "structures_per_s": 4.424778761061947
+    },
+    "latency_ref_cpu1": {
+      "cli_wall_s": 29.2,
+      "n_errors": 0,
+      "n_pockets": 275,
+      "n_structures": 50,
+      "per_structure_total_s": {
+        "mean": 0.5782977169658988,
+        "median": 0.4202983599388972,
+        "p90": 1.3590271028922873
+      },
+      "pockets_per_s": 9.417808219178083,
+      "process_wall_s": 30.055614257929847,
+      "s_per_structure_wall": 0.584,
+      "stage_mean_s": {
+        "burrow_s": 0.5192293094983325,
+        "describe_s": 0.03791424079798162,
+        "parse_s": 0.02110577975399792
+      },
+      "startup_s": 0.8556142579298474,
+      "structures_per_s": 1.7123287671232876
+    },
+    "throughput_fast_cpu22": {
+      "cli_wall_s": 36.4,
+      "n_errors": 0,
+      "n_pockets": 11039,
+      "n_structures": 2000,
+      "per_structure_total_s": {
+        "mean": 0.36138292698562147,
+        "median": 0.2539736450416967,
+        "p90": 0.8440135441953317
+      },
+      "pockets_per_s": 303.2692307692308,
+      "process_wall_s": 37.71739623812027,
+      "s_per_structure_wall": 0.0182,
+      "stage_mean_s": {
+        "burrow_s": 0.2459751389157027,
+        "describe_s": 0.07913880404550583,
+        "parse_s": 0.03620960041321814
+      },
+      "startup_s": 1.3173962381202742,
+      "structures_per_s": 54.94505494505495
+    },
+    "throughput_gpu_22workers": {
+      "cli_wall_s": 35.9,
+      "n_errors": 0,
+      "n_pockets": 11039,
+      "n_structures": 2000,
+      "per_structure_total_s": {
+        "mean": 0.1730072957741795,
+        "median": 0.12568111810833216,
+        "p90": 0.37714652770664586
+      },
+      "pockets_per_s": 307.4930362116992,
+      "process_wall_s": 37.58224725397304,
+      "s_per_structure_wall": 0.01795,
+      "stage_mean_s": {
+        "burrow_s": 0.051019955552299504,
+        "describe_s": 0.07434989743761253,
+        "gpu_s": 0.010342062206706032,
+        "parse_s": 0.037281937235733496
+      },
+      "startup_s": 1.6822472539730384,
+      "structures_per_s": 55.71030640668524
+    },
+    "throughput_ref_cpu22": {
+      "cli_wall_s": 58.5,
+      "n_errors": 6,
+      "n_pockets": 11039,
+      "n_structures": 2000,
+      "per_structure_total_s": {
+        "mean": 0.6030020764958834,
+        "median": 0.43321044056210667,
+        "p90": 1.434814553335309
+      },
+      "pockets_per_s": 188.7008547008547,
+      "process_wall_s": 60.0791882770136,
+      "s_per_structure_wall": 0.02925,
+      "stage_mean_s": {
+        "burrow_s": 0.5299864737044903,
+        "describe_s": 0.0532671628974578,
+        "parse_s": 0.01969392956332598
+      },
+      "startup_s": 1.5791882770135999,
+      "structures_per_s": 34.18803418803419
+    }
+  },
+  "structures": "random AFDB v6 human models (members.parquet sample, seed 0), AF mode, describe_all",
+  "workers": 22
+}

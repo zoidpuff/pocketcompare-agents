@@ -1,0 +1,283 @@
+{
+  "crosscheck_describe_all": {
+    "all_release_pockets_reproduced": true,
+    "api_extra_empty_sph8": 0,
+    "api_extra_other(fragment_dedup)": 4,
+    "max_abs_diff": 1.2293457984924316e-07,
+    "median_max_abs_diff": 5.960464477539063e-08,
+    "n_api_pockets": 213,
+    "n_matched": 209,
+    "n_models": 40,
+    "n_release_pockets": 209
+  },
+  "embed": {
+    "input": "stored raw A1(sph8) + env(sph8) (float32) of the proteome demo; no BURROW re-run",
+    "n": 116246,
+    "n_zero": 0,
+    "wall_s": 1.3429141300730407
+  },
+  "exact": {
+    "all_vs_all_top50_gpu_s": 0.4104822720400989,
+    "single_query_cpu_1thread": {
+      "median_ms": 7.277534925378859,
+      "n": 300,
+      "p90_ms": 7.810993934981525
+    },
+    "top10_sim_median": 0.7602342367172241,
+    "top1_sim_median": 0.8173056840896606,
+    "top1_sim_percentiles": {
+      "p10": 0.7544125914573669,
+      "p50": 0.8173056840896606,
+      "p90": 0.9097682237625122
+    },
+    "top50_sim_median": 0.7163775563240051
+  },
+  "faiss_version": "1.14.1",
+  "files": {
+    "fingerprints.parquet": 175476737,
+    "index_flat/csls_r_db.npy": 465112,
+    "index_flat/index.faiss": 178553901,
+    "index_flat/index.json": 985,
+    "index_flat/knn_top10_D.npy": 2325048,
+    "index_flat/knn_top10_I.npy": 4649968,
+    "index_flat/meta.parquet": 12209504,
+    "index_opq_ivfpq/index.faiss": 10934059,
+    "index_opq_ivfpq/index.json": 1107,
+    "index_opq_ivfpq/meta.parquet": 12209504,
+    "index_opq_ivfpq/vectors.f16.npy": 89277056
+  },
+  "hubness": {
+    "csls_db": {
+      "frac_zero": 0.0007656177416857354,
+      "k": 10,
+      "max": 37,
+      "median": 10.0,
+      "overlap_with_raw_top10": 0.7346678595392531,
+      "p99": 21.0,
+      "skewness": 0.5481900113724046,
+      "top1pct_share": 0.023085525523458873
+    },
+    "n1_demo_for_reference": {
+      "csls_db": {
+        "frac_zero": 0.0009548715654732206,
+        "max": 37,
+        "p99": 22.0,
+        "skewness": 0.6205429267470015,
+        "top1pct_share": 0.024238253359255373
+      },
+      "raw": {
+        "frac_zero": 0.044698312199989675,
+        "max": 109,
+        "p99": 41.0,
+        "skewness": 1.8235038966624044,
+        "top1pct_share": 0.05048173700600451
+      }
+    },
+    "raw": {
+      "frac_zero": 0.032525850351840066,
+      "k": 10,
+      "max": 93,
+      "median": 8.0,
+      "p99": 38.0,
+      "skewness": 1.6174362467345402,
+      "top1pct_share": 0.04519037214183714
+    },
+    "raw_hub_profile": {
+      "r_db_median_all": 0.7796445071697236,
+      "r_db_median_hubs": 0.9158622413873672,
+      "site_volume_median_all": 376.0,
+      "site_volume_median_hubs": 303.0
+    }
+  },
+  "index_flat": {
+    "build_s": 0.02529552299529314,
+    "bytes": {
+      "csls_r_db.npy": 465112,
+      "index.faiss": 178553901,
+      "knn_top10_D.npy": 2325048,
+      "knn_top10_I.npy": 4649968,
+      "meta.parquet": 12209504
+    },
+    "dims": 384,
+    "factory": "Flat",
+    "faiss_version": "1.14.1",
+    "index_bytes_per_pocket": 1536.0003871100942,
+    "kind": "flat",
+    "method": {
+      "af_mode": true,
+      "backend": "fast GPU (identical to ref)",
+      "config": "configs/final_method.yaml",
+      "config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+      "dims": 384,
+      "method": "pocketcompare-final:A4b:n1_linear|raw",
+      "metric": "inner_product",
+      "residues": "UniProt numbering",
+      "source": "AFDB v6 human proteome (UP000005640_9606_HUMAN_v6.tar), AF mode",
+      "unit": "merged region-rule pockets >= 10 points (method.describe_all)"
+    },
+    "metric": "inner_product",
+    "n": 116246,
+    "n_dropped_zero": 0,
+    "normalisation": "none applied: final-method fingerprints are unit-norm embeddings; score = inner product"
+  },
+  "index_opq_ivfpq": {
+    "build_s": 550.8093426518608,
+    "bytes": {
+      "index.faiss": 10934059,
+      "meta.parquet": 12209504,
+      "vectors.f16.npy": 89277056
+    },
+    "code_bytes": 64,
+    "default_nprobe": 64,
+    "dims": 384,
+    "factory": "OPQ64_384,IVF1024,PQ64",
+    "faiss_version": "1.14.1",
+    "index_bytes_per_pocket": 94.05965796672574,
+    "kind": "ivfpq",
+    "method": {
+      "af_mode": true,
+      "backend": "fast GPU (identical to ref)",
+      "config": "configs/final_method.yaml",
+      "config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+      "dims": 384,
+      "method": "pocketcompare-final:A4b:n1_linear|raw",
+      "metric": "inner_product",
+      "residues": "UniProt numbering",
+      "source": "AFDB v6 human proteome (UP000005640_9606_HUMAN_v6.tar), AF mode",
+      "unit": "merged region-rule pockets >= 10 points (method.describe_all)"
+    },
+    "metric": "inner_product",
+    "n": 116246,
+    "n_dropped_zero": 0,
+    "n_train": 100000,
+    "nlist": 1024,
+    "normalisation": "none applied: final-method fingerprints are unit-norm embeddings; score = inner product",
+    "opq": true,
+    "pq_bits": 8,
+    "pq_m": 64,
+    "seed": 0,
+    "train_s": 547.3102720738389
+  },
+  "method": {
+    "config": "configs/final_method.yaml",
+    "config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+    "dims": 384,
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "metric": "inner_product"
+  },
+  "neighbour_overlap_with_n1_demo_top10": 0.20083,
+  "opq_ivfpq_recall": {
+    "n_queries": 10000,
+    "self_excluded": true,
+    "sweep": {
+      "1": {
+        "recall_at_10": 0.3022,
+        "recall_at_10_rerank_top100": 0.30457,
+        "single_query_1thread_pq": {
+          "median_ms": 0.22489449474960566,
+          "n": 200,
+          "p90_ms": 0.228715012781322
+        },
+        "single_query_1thread_rerank100": {
+          "median_ms": 0.34808460623025894,
+          "n": 200,
+          "p90_ms": 0.35598911345005035
+        },
+        "top1_agree": 0.3581,
+        "top1_agree_rerank": 0.387
+      },
+      "4": {
+        "recall_at_10": 0.5883299999999999,
+        "recall_at_10_rerank_top100": 0.6039199999999999,
+        "single_query_1thread_pq": {
+          "median_ms": 0.24412490893155336,
+          "n": 200,
+          "p90_ms": 0.2558841370046139
+        },
+        "single_query_1thread_rerank100": {
+          "median_ms": 0.37486955989152193,
+          "n": 200,
+          "p90_ms": 0.3926020348444581
+        },
+        "top1_agree": 0.6135,
+        "top1_agree_rerank": 0.6922
+      },
+      "16": {
+        "recall_at_10": 0.81511,
+        "recall_at_10_rerank_top100": 0.87577,
+        "single_query_1thread_pq": {
+          "median_ms": 0.32223446760326624,
+          "n": 200,
+          "p90_ms": 0.3545180428773165
+        },
+        "single_query_1thread_rerank100": {
+          "median_ms": 0.45986450277268887,
+          "n": 200,
+          "p90_ms": 0.49308002926409245
+        },
+        "top1_agree": 0.7825,
+        "top1_agree_rerank": 0.9228
+      },
+      "32": {
+        "recall_at_10": 0.8658,
+        "recall_at_10_rerank_top100": 0.9519400000000001,
+        "single_query_1thread_pq": {
+          "median_ms": 0.42423501145094633,
+          "n": 200,
+          "p90_ms": 0.477330107241869
+        },
+        "single_query_1thread_rerank100": {
+          "median_ms": 0.5656599532812834,
+          "n": 200,
+          "p90_ms": 0.6214770721271634
+        },
+        "top1_agree": 0.8186,
+        "top1_agree_rerank": 0.9744
+      },
+      "64": {
+        "recall_at_10": 0.8855900000000001,
+        "recall_at_10_rerank_top100": 0.9874400000000001,
+        "single_query_1thread_pq": {
+          "median_ms": 0.6293145706877112,
+          "n": 200,
+          "p90_ms": 0.7045958889648318
+        },
+        "single_query_1thread_rerank100": {
+          "median_ms": 0.7722689770162106,
+          "n": 200,
+          "p90_ms": 0.8470899658277631
+        },
+        "top1_agree": 0.8304,
+        "top1_agree_rerank": 0.9934
+      }
+    },
+    "truth": "exact inner product top-10"
+  },
+  "random_pair_similarity": {
+    "different_proteins": true,
+    "n_pairs": 1999399,
+    "p1": -0.4191819429397583,
+    "p10": -0.19269947707653046,
+    "p50": 0.11479835212230682,
+    "p90": 0.4074493646621704,
+    "p99": 0.6209051012992859,
+    "p99.9": 0.7655677199363708
+  },
+  "release_counts": {
+    "fingerprints_parquet_bytes": 175476737,
+    "n_empty_sph8_dropped": 1,
+    "n_models": 21707,
+    "n_models_error": 0,
+    "n_models_processed": 23586,
+    "n_pockets": 116246,
+    "n_uniprot": 19084
+  },
+  "same_protein_top1_frac": 0.0331194191628099,
+  "storage_bytes_per_pocket": {
+    "fingerprint_float32": 1536,
+    "fingerprint_fp16": 768,
+    "fingerprints_parquet_incl_metadata": 1509.5292483182218,
+    "flat_index": 1536.0003871100942,
+    "opq_ivfpq_index": 94.05965796672574
+  }
+}

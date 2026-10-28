@@ -9,10 +9,18 @@
 
 Pipeline (all parameters in configs/final_method.yaml, with sha256 of every data file it needs):
 1. BURROW on the protein (``pocketcompare.pockets.featurize_structure``; ``af_mode`` = BURROW AF mode).
-2. Site location: ``site=None`` -> each BURROW pocket of the region-rule output (``pockets="region"``; "v2" or
-   "full" also accepted) is a site; a ligand (file, or (n, 3) heavy-atom coordinates) -> the 4 Å ligand shell;
-   a residue list ("chain:num") -> the residue shell (4 Å, bur10 >= 0.5).  ``locate="burrow"`` replaces a given
-   site by the single region-rule BURROW pocket that best covers it (the evaluation's D-mode locator).
+2. Site location: a ligand (file, or (n, 3) heavy-atom coordinates) -> the 4 Å ligand shell; a residue list
+   ("chain:num") -> the residue shell (4 Å, bur10 >= 0.5).  With ``locate="burrow"`` the given site only *locates*
+   a BURROW pocket, exactly as the evaluation's D mode did (``scripts/build_point_cache.py`` +
+   ``scripts/compute_descriptors.py --arm a1r``): (a) the region-rule pockets are merged
+   (``pockets.merge_pockets``: touch <= 1.5 Å or residue Jaccard >= 0.3); (b) the merged pocket with the highest
+   coverage of the site points is matched (``pockets.dmode_match``; ties -> higher score, better rank); (c) its
+   single member (sub-pocket) with the highest coverage is the located set (``pockets.best_member``; ties ->
+   better rank).  ``locate="burrow_flat"`` is the pre-2026-10-28 API behaviour: step (c) over *all* region-rule
+   pockets, skipping (a)-(b) (differs from the evaluation for 4/765 TOUGH-M1-dev and 2/523 BLiPS-val sites).
+   No site: ``describe_all`` (the deployment unit of the proteome demo and the blind test: merged region-rule
+   pockets with >= 10 points, base = the merged pocket); ``describe(site=None)`` keeps the older unit, every
+   region-rule sub-pocket separately (``pockets="region"``; "v2" or "full" also accepted).
 3. Description: ``base`` = the located points, ``sph8`` = buried points (bur10 >= 0.5) within 8 Å of the
    bur16^4-weighted centroid of ``base`` (``base`` itself if that set is empty); parts = A1 default (514) and env (113) blocks of these sets
    (N1: A1(sph8) + env(sph8); N2: + A1(base)).
@@ -40,6 +48,7 @@ from .descriptors import a1r as A1R
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "configs/final_method.yaml"
+MIN_POINTS = 10      # describe_all: merged pockets with fewer points are dropped (proteome demo, blind test)
 
 
 def _sha256(path) -> str:
@@ -105,15 +114,30 @@ class Method:
         info = {"mode": "L", "definition": L.definition, "n_site_points": int(L.n_points)}
         if len(L.idx) == 0:
             raise ValueError("the site contains no BURROW points")
-        if locate == "burrow":
+        if locate == "burrow":           # == the evaluation's D-mode locator (matched merged pocket -> best member)
+            merged = pk.merge_pockets(fs, "region")
+            dm = pk.dmode_match(fs, L.idx, merged=merged)
+            if dm.pocket is None:
+                raise ValueError("BURROW found no region-rule pocket")
+            m, cov = pk.best_member(fs, L.idx, dm.pocket.members)
+            prec = pk.coverage(fs, dm.pocket.idx, L.idx)
+            return [(np.asarray(fs.pocket_idx(m), np.int64), {
+                **info, "mode": "D", "locate": "burrow", "burrow_index": int(m), "burrow_rank": int(m) + 1,
+                "burrow_score": float(fs.pk_score[m]), "coverage": cov,
+                "merged_members": " ".join(str(int(x) + 1) for x in dm.pocket.members),
+                "merged_coverage": dm.coverage, "merged_precision": prec,
+                "d_match": bool(dm.coverage >= pk.MIN_COVERAGE or prec >= 0.5)})]
+        if locate == "burrow_flat":      # legacy API locator: best single region pocket, no merge step
             mem = np.flatnonzero(fs.pk_in_region)
             if len(mem) == 0:
                 raise ValueError("BURROW found no region-rule pocket")
             m, cov = pk.best_member(fs, L.idx, mem)
-            return [(np.asarray(fs.pocket_idx(m), np.int64), {**info, "mode": "D", "burrow_index": int(m),
-                                                              "burrow_rank": int(m) + 1, "coverage": cov})]
+            return [(np.asarray(fs.pocket_idx(m), np.int64), {**info, "mode": "D", "locate": "burrow_flat",
+                                                              "burrow_index": int(m), "burrow_rank": int(m) + 1,
+                                                              "burrow_score": float(fs.pk_score[m]),
+                                                              "coverage": cov})]
         if locate != "shell":
-            raise ValueError(locate)
+            raise ValueError(f"locate must be 'shell', 'burrow' or 'burrow_flat', not {locate!r}")
         return [(np.asarray(L.idx, np.int64), info)]
 
     # ------------------------------------------------------------------------------------------ description
@@ -152,8 +176,11 @@ class Method:
     def describe(self, structure, site=None, af_mode: bool = False, chains=None, pockets: str = "region",
                  locate: str = "shell", return_info: bool = False):
         """Vectors of the site(s) of one structure (path, loaded ``Structure`` or a ``pockets.Featurized``).
-        Returns (n, dim) float32 (n = 1 for a given site; one row per BURROW pocket for ``site=None``), and
-        with ``return_info`` a pandas DataFrame (site info, n_points, ok, time_ms)."""
+        Returns (n, dim) float32 (n = 1 for a given site; one row per region-rule sub-pocket for ``site=None``),
+        and with ``return_info`` a pandas DataFrame (site info, n_points, ok, time_ms).
+        ``locate``: ``"shell"`` (L mode: the site itself), ``"burrow"`` (D mode, the evaluation's locator: matched
+        merged region pocket -> its best-covering member) or ``"burrow_flat"`` (legacy: best-covering region
+        pocket, no merge step).  For all pockets of a structure prefer ``describe_all``."""
         import pandas as pd
         t0 = time.perf_counter()
         fs = self._featurize(structure, af_mode, chains)
@@ -177,6 +204,65 @@ class Method:
         if len(info):
             info["ok"] = np.linalg.norm(E, axis=1) > 0
         info.attrs["burrow_s"] = t_burrow
+        return E, info
+
+    def describe_all(self, structure, af_mode: bool = False, chains=None, unit: str = "merged",
+                     min_points: int = MIN_POINTS, return_info: bool = True):
+        """Every pocket of a structure, without a site (deployment).
+
+        ``unit="merged"`` (default; the unit of the proteome demo, ``scripts/proteome/proteome_lib.py``, and of the
+        blind test, ``scripts/eval_blind.py``): BURROW region-rule pockets merged by ``pockets.merge_pockets``
+        (touch <= 1.5 Å or residue Jaccard >= 0.3), merged pockets with fewer than ``min_points`` (10) points
+        dropped (this removes the single-point metal candidates); base = the merged pocket (union of its members),
+        described by sph8 around its bur16^4 centroid.  Rows in merged order (= best member's BURROW rank).
+        ``unit="member"``: every region-rule sub-pocket separately (= ``describe(site=None)``; the D-mode unit
+        of the evaluation, which, however, only described the member that covers a known ligand).
+        Empty sph8 sets fall back to the base set (SPH_FALLBACK; the proteome demo instead dropped those pockets).
+
+        Returns (n, dim) float32 and, with ``return_info``, a DataFrame with one row per pocket: merged_index,
+        burrow_index / burrow_rank (best member), members (1-based ranks), burrow_score (max member score),
+        n_points, volume_A3 (base), center_{x,y,z} (sph8 centre), site_n_points, site_volume_A3 (sph8 set),
+        residues (BURROW output residues of the members, author numbering), ok, time_ms."""
+        import pandas as pd
+        t0 = time.perf_counter()
+        fs = self._featurize(structure, af_mode, chains)
+        t_burrow = time.perf_counter() - t0
+        at = A1.atom_type_codes(fs.res_names[fs.atom_res], fs.atom_name, fs.atom_element)
+        if unit == "merged":
+            units = [(k, mp.members, mp.idx, mp.score, mp.residues)
+                     for k, mp in enumerate(pk.merge_pockets(fs, "region")) if len(mp.idx) >= min_points]
+        elif unit == "member":
+            units = [(k, [int(i)], np.asarray(fs.pocket_idx(i), np.int64), float(fs.pk_score[i]),
+                      fs.pocket_residue_set(i)) for k, i in enumerate(np.flatnonzero(fs.pk_in_region))]
+        else:
+            raise ValueError(f"unit must be 'merged' or 'member', not {unit!r}")
+        rows, infos = [], []
+        for k, members, base, score, res in units:
+            t1 = time.perf_counter()
+            base = np.asarray(base, np.int64)
+            c = pk.buried_centroid(fs, base)
+            site = pk.shape_site(fs, base, "sph8")
+            rows.append(self.raw_parts(fs, base, at))
+            infos.append({"merged_index" if unit == "merged" else "member_index": int(k),
+                          "burrow_index": int(members[0]), "burrow_rank": int(members[0]) + 1,
+                          "members": " ".join(str(int(m) + 1) for m in members), "burrow_score": float(score),
+                          "n_points": int(len(base)), "volume_A3": fs.volume(base),
+                          "center_x": float(c[0]), "center_y": float(c[1]), "center_z": float(c[2]),
+                          "site_n_points": int(len(site)), "site_volume_A3": fs.volume(site),
+                          "sph8_fallback": bool(len(site) == 0),
+                          "residues": " ".join(pk.sort_residues(list(res))),
+                          "time_ms": 1e3 * (time.perf_counter() - t1)})
+        if rows:
+            E = self.embed([np.vstack([r[j] for r in rows]) for j in range(len(self.parts))])
+        else:
+            E = np.zeros((0, self.dim), np.float32)
+        if not return_info:
+            return E
+        info = pd.DataFrame(infos)
+        if len(info):
+            info["ok"] = np.linalg.norm(E, axis=1) > 0
+        info.attrs["burrow_s"] = t_burrow
+        info.attrs["unit"] = unit
         return E, info
 
     # ------------------------------------------------------------------------------------------ similarity
@@ -206,9 +292,14 @@ def describe(structure, site=None, af_mode: bool = False, **kw):
     return default().describe(structure, site=site, af_mode=af_mode, **kw)
 
 
+def describe_all(structure, af_mode: bool = False, **kw):
+    """``Method().describe_all`` with configs/final_method.yaml (see ``Method.describe_all``)."""
+    return default().describe_all(structure, af_mode=af_mode, **kw)
+
+
 def similarity(a, b, background=None):
     """``Method().similarity`` with configs/final_method.yaml."""
     return default().similarity(a, b, background=background)
 
 
-__all__ = ["Method", "CONFIG", "default", "describe", "similarity"]
+__all__ = ["Method", "CONFIG", "MIN_POINTS", "default", "describe", "describe_all", "similarity"]

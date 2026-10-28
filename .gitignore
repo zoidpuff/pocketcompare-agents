@@ -18,3 +18,4 @@ results/models/l4/**/emb_*.npy
 results/a2/*.npz
 results/audit/*.tsv
 results/audit/*.fasta
+*.egg-info/
