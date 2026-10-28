@@ -521,6 +521,8 @@ because the frozen tag holds the evaluated code.
 - **DEV4.** 66 TOUGH-M1-test pockets are homologous to PPIPS-train chains. The audit covered the primary training
   sets but not PPIPS. Excluding them does not change Δ (§4.2).
 - **DEV5.** P6 ≡ P6.2 after cofactor stripping, so C2 double-weights P6.
+- **DEV6.** final_eval skipped FINAL's paired C5 Δ (method name contains `|`) and omitted the blind test and the
+  PPIPS BURROW strata; all three computed post hoc with the frozen functions (§4.10).
 - The C5 bug (§4.6) is a further, post-hoc-discovered gap.
 
 **Re-freezes (D21).**
