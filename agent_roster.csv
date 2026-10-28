@@ -1,0 +1,49 @@
+n,launched_CET,phase,description,agent_type,model,agent_id,rebriefs,subagent_tokens,tool_uses,minutes,prompt_chars,log
+1,27 Oct 18:28,"1 kickoff: literature, data, feasibility",Literature review on pocket similarity,general-purpose,opus,aae488eafe7f4dd7e,0,205076,64,36.6,4644,agent_logs/readable/subagents/agent-aae488eafe7f4dd7e.md
+2,27 Oct 18:28,"1 kickoff: literature, data, feasibility",Acquire public pocket benchmarks,general-purpose,opus,ab643093b6faf2f26,0,213505,110,30.5,3418,agent_logs/readable/subagents/agent-ab643093b6faf2f26.md
+3,27 Oct 18:28,"1 kickoff: literature, data, feasibility",Fragment docking feasibility study,general-purpose,opus,abade5279bb242770,0,189711,57,19.3,3651,agent_logs/readable/subagents/agent-abade5279bb242770.md
+4,27 Oct 18:28,"1 kickoff: literature, data, feasibility",Characterize PPI/dimer pockets,general-purpose,opus,ad9f58374dd89cdf4,0,195560,100,52.9,3445,agent_logs/readable/subagents/agent-ad9f58374dd89cdf4.md
+5,27 Oct 19:08,2 design review,Review R1: external PI,general-purpose,opus,a4faff5da8a867ac4,0,94399,11,2.6,1379,agent_logs/readable/subagents/agent-a4faff5da8a867ac4.md
+6,27 Oct 19:08,2 design review,Review R1: statistics,general-purpose,opus,aa0258e06c7a05e80,0,79932,12,5.8,1358,agent_logs/readable/subagents/agent-aa0258e06c7a05e80.md
+7,27 Oct 19:08,2 design review,Review R1: data and leakage,general-purpose,opus,aa023f1826e3f3fc0,0,115607,35,12.8,1945,agent_logs/readable/subagents/agent-aa023f1826e3f3fc0.md
+8,27 Oct 19:08,2 design review,Review R1: algorithms and compute,general-purpose,opus,a0fc1a976a5931553,0,93506,14,3.9,1820,agent_logs/readable/subagents/agent-a0fc1a976a5931553.md
+9,27 Oct 19:08,2 design review,Review R1: AI-agent failure modes,general-purpose,sonnet,ae1e7555fb62d6e3c,0,46606,4,0.8,1447,agent_logs/readable/subagents/agent-ae1e7555fb62d6e3c.md
+10,27 Oct 19:08,2 design review,"Review R1: prior work, FBDD, PPI",general-purpose,opus,a841a17af60206a86,0,99666,22,4.8,1716,agent_logs/readable/subagents/agent-a841a17af60206a86.md
+11,27 Oct 19:10,2 design review,Build pocket adapter and feature cache,general-purpose,opus,ad54e577ad3a06607,0,166719,55,12.8,4273,agent_logs/readable/subagents/agent-ad54e577ad3a06607.md
+12,27 Oct 19:24,"3 build: evaluation, splits, descriptors","Review R2: PI, stats, data combined",general-purpose,opus,a696d3cc84766e39f,0,99880,8,3.5,1589,agent_logs/readable/subagents/agent-a696d3cc84766e39f.md
+13,27 Oct 19:24,"3 build: evaluation, splits, descriptors",Build evaluate.py and provenance,general-purpose,opus,a4c0fc551c4933c1f,1,133167,30,13.3,4094,agent_logs/readable/subagents/agent-a4c0fc551c4933c1f.md
+14,27 Oct 19:24,"3 build: evaluation, splits, descriptors",Build homology graph and splits,general-purpose,opus,aff9ef0c7c4d58e5f,2,501108,251,319.5,5438,agent_logs/readable/subagents/agent-aff9ef0c7c4d58e5f.md
+15,27 Oct 19:24,"3 build: evaluation, splits, descriptors",Build PPI-L and PPIPS datasets,general-purpose,opus,a98f51b5251fb956c,1,223101,90,26.0,4370,agent_logs/readable/subagents/agent-a98f51b5251fb956c.md
+16,27 Oct 19:25,"3 build: evaluation, splits, descriptors",Implement A1 fingerprint and B0/B1,general-purpose,opus,a2f5287499281ebb2,0,188823,42,19.5,3958,agent_logs/readable/subagents/agent-a2f5287499281ebb2.md
+17,27 Oct 19:25,"3 build: evaluation, splits, descriptors",B4 ESM-2 and B5 external baseline,general-purpose,sonnet,aaafc449e19c15f6d,0,102433,65,47.4,2915,agent_logs/readable/subagents/agent-aaafc449e19c15f6d.md
+18,27 Oct 19:25,"3 build: evaluation, splits, descriptors",A2 docking-profile descriptors,general-purpose,opus,ac323a8914b808924,1,269869,158,113.2,3678,agent_logs/readable/subagents/agent-ac323a8914b808924.md
+19,27 Oct 21:35,4 development and selection,Dev evaluation of all arms TOUGH-M1,general-purpose,opus,a29aa7cc44aba1f32,0,251519,39,27.7,4230,agent_logs/readable/subagents/agent-a29aa7cc44aba1f32.md
+20,27 Oct 21:35,4 development and selection,BLiPS/PPIPS caches and descriptors,general-purpose,opus,a0eeb8701f6c17b2a,0,245970,95,63.3,3867,agent_logs/readable/subagents/agent-a0eeb8701f6c17b2a.md
+21,27 Oct 21:35,4 development and selection,Independent audit of splits,general-purpose,opus,abdc6041a058ba9c0,2,225528,118,172.5,2695,agent_logs/readable/subagents/agent-abdc6041a058ba9c0.md
+22,27 Oct 22:04,4 development and selection,Pocket-definition robustness exploration,general-purpose,opus,a3fdf5a2c159749c4,0,217843,52,20.2,3904,agent_logs/readable/subagents/agent-a3fdf5a2c159749c4.md
+23,27 Oct 22:20,4 development and selection,Dev eval on BLiPS-val and PPIPS-val,general-purpose,opus,ab59df594c7565549,1,282214,66,31.8,3126,agent_logs/readable/subagents/agent-ab59df594c7565549.md
+24,27 Oct 22:25,4 development and selection,Human proteome FAISS scale demo,general-purpose,opus,a5705699e459a4c7e,0,261773,115,69.8,3274,agent_logs/readable/subagents/agent-a5705699e459a4c7e.md
+25,27 Oct 22:25,4 development and selection,Milestone retrospective on process,general-purpose,sonnet,a47f9ff56ae3c2859,0,57287,5,0.7,1018,agent_logs/readable/subagents/agent-a47f9ff56ae3c2859.md
+26,27 Oct 22:41,4 development and selection,A4b learned metric and final selection,general-purpose,opus,aa71bd27191e8b666,1,284054,72,23.2,3494,agent_logs/readable/subagents/agent-aa71bd27191e8b666.md
+27,27 Oct 22:42,4 development and selection,Final-eval infrastructure and dry run,general-purpose,opus,a0ddebaf58a58f440,1,484877,169,101.0,3716,agent_logs/readable/subagents/agent-a0ddebaf58a58f440.md
+28,27 Oct 23:36,4 development and selection,L4 point-cloud network candidate,general-purpose,opus,ac4fef05ced9217dc,1,217583,76,68.3,2751,agent_logs/readable/subagents/agent-ac4fef05ced9217dc.md
+29,27 Oct 23:36,4 development and selection,AF-vs-holo robustness on val,general-purpose,sonnet,a62309c72f14ec90c,0,169132,36,9.3,2448,agent_logs/readable/subagents/agent-a62309c72f14ec90c.md
+30,27 Oct 23:57,4 development and selection,Blind deployment test + PPI-L descriptors,general-purpose,sonnet,aeab083946f86ac8c,0,161270,46,27.3,2353,agent_logs/readable/subagents/agent-aeab083946f86ac8c.md
+31,28 Oct 03:15,4 development and selection,Draft REPORT.md and README,general-purpose,opus,a9b988f152cf8334b,0,268614,50,13.4,3364,agent_logs/readable/subagents/agent-a9b988f152cf8334b.md
+32,28 Oct 04:56,"5 freeze, final evaluation, verification",Independent verification of final results,general-purpose,opus,a6125af1ffd03e22b,2,232753,70,25.8,2995,agent_logs/readable/subagents/agent-a6125af1ffd03e22b.md
+33,28 Oct 05:13,"5 freeze, final evaluation, verification",Exploratory A4b+L4 fusion,general-purpose,opus,afe7c552d3adddecb,0,216342,54,45.5,2202,agent_logs/readable/subagents/agent-afe7c552d3adddecb.md
+34,28 Oct 05:14,"5 freeze, final evaluation, verification","API fix, CLI and proteome fingerprints",general-purpose,opus,a654260dc7a86f1ce,0,263350,91,43.3,3093,agent_logs/readable/subagents/agent-a654260dc7a86f1ce.md
+35,28 Oct 05:14,"5 freeze, final evaluation, verification",Milestone M3 retrospective,general-purpose,sonnet,a03a9a27fe68708c2,0,48932,6,0.7,920,agent_logs/readable/subagents/agent-a03a9a27fe68708c2.md
+36,28 Oct 06:00,"6 post-test: exploration, report, replication",Write final REPORT.md,general-purpose,opus,a0ff1b9b25fc4bdf0,0,305456,49,15.9,3586,agent_logs/readable/subagents/agent-a0ff1b9b25fc4bdf0.md
+37,28 Oct 06:02,"6 post-test: exploration, report, replication",PPI-R and dimer interface atlas demo,general-purpose,opus,a294a40f896afe4f7,0,209893,59,24.9,2961,agent_logs/readable/subagents/agent-a294a40f896afe4f7.md
+38,28 Oct 06:16,"6 post-test: exploration, report, replication",Complete missing pre-registered reported items,general-purpose,opus,a62b84efc846841f4,0,198585,61,21.5,2701,agent_logs/readable/subagents/agent-a62b84efc846841f4.md
+39,28 Oct 06:40,"6 post-test: exploration, report, replication",Build PDB-T temporal held-out set,general-purpose,opus,a2f33dfa97599af26,1,244458,87,51.6,3579,agent_logs/readable/subagents/agent-a2f33dfa97599af26.md
+40,28 Oct 06:40,"6 post-test: exploration, report, replication",Write eval_pdbt.py with dev dry run,general-purpose,opus,a9103d42773189aba,0,211547,40,10.2,2578,agent_logs/readable/subagents/agent-a9103d42773189aba.md
+41,28 Oct 08:05,"6 post-test: exploration, report, replication",Reproduction script with smoke mode,general-purpose,sonnet,a1885f0c3a0405bf0,0,53183,9,4.7,1646,agent_logs/readable/subagents/agent-a1885f0c3a0405bf0.md
+42,28 Oct 08:05,"6 post-test: exploration, report, replication",Final milestone retrospective,general-purpose,sonnet,a85291632d13e5fcc,0,46813,5,0.5,888,agent_logs/readable/subagents/agent-a85291632d13e5fcc.md
+43,28 Oct 10:48,"7 dissemination: cost, briefing, repositories",Build standalone MVP GitHub repository,general-purpose,opus,a08e6e7760727f86a,0,399138,101,32.8,5920,agent_logs/readable/subagents/agent-a08e6e7760727f86a.md
+44,28 Oct 10:48,"7 dissemination: cost, briefing, repositories",Make briefing figures,general-purpose,opus,a6af3a05bfcc87c94,0,373063,89,16.5,5504,agent_logs/readable/subagents/agent-a6af3a05bfcc87c94.md
+45,28 Oct 10:49,"7 dissemination: cost, briefing, repositories",Draft research briefing text,general-purpose,opus,a8672441ef51af3c7,0,276542,60,9.9,5501,agent_logs/readable/subagents/agent-a8672441ef51af3c7.md
+1.1,27 Oct 18:30,"1 kickoff: literature, data, feasibility",Pocket benchmark datasets research (launched by agent #1),general-purpose,inherit,a2c5863e4a2f6dc9c,0,,,,,agent_logs/readable/subagents/agent-a2c5863e4a2f6dc9c.md
+1.2,27 Oct 18:30,"1 kickoff: literature, data, feasibility","PPI pockets, docking descriptors, leakage (launched by agent #1)",general-purpose,inherit,a76f3eff41e587d07,0,,,,,agent_logs/readable/subagents/agent-a76f3eff41e587d07.md
+1.3,27 Oct 18:30,"1 kickoff: literature, data, feasibility",Pocket comparison methods catalog (launched by agent #1),general-purpose,inherit,ae2f32721ac9ffb42,0,,,,,agent_logs/readable/subagents/agent-ae2f32721ac9ffb42.md
