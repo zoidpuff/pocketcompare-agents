@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Human proteome FAISS scale demo",
+ "toolUseId": "toolu_01MxGbr7DYAkBdJCDA5KaWri",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

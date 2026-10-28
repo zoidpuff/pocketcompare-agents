@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Blind deployment test + PPI-L descriptors",
+ "toolUseId": "toolu_01CoNGMmytMDEdoVf9khxi4x",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "sonnet",
+ "finished": true
+}

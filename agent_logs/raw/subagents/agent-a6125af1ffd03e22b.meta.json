@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Independent verification of final results",
+ "toolUseId": "toolu_01P9LVofbqutkU8ABNa9Da35",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

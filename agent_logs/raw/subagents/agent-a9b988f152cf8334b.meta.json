@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Draft REPORT.md and README",
+ "toolUseId": "toolu_01MXgxsmjyTAQyzZetrNGirD",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

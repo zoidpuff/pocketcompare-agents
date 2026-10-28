@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Build evaluate.py and provenance",
+ "toolUseId": "toolu_01Xfc2c7uyJnL9PmXt1EyMb2",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

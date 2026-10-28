@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Characterize PPI/dimer pockets",
+ "toolUseId": "toolu_01PnDkfzr42D7btaedwan1H1",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

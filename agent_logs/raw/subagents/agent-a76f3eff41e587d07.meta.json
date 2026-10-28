@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "PPI pockets, docking descriptors, leakage",
+ "toolUseId": "toolu_014U7r3ZyanhW68DiqF9HoSu",
+ "parentAgentId": "aae488eafe7f4dd7e",
+ "spawnDepth": 2,
+ "requestShape": "foreground",
+ "requestNonInteractive": true,
+ "finished": true
+}

@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Pocket comparison methods catalog",
+ "toolUseId": "toolu_014my7LLE1cpNsX2YhqGYWmg",
+ "parentAgentId": "aae488eafe7f4dd7e",
+ "spawnDepth": 2,
+ "requestShape": "foreground",
+ "requestNonInteractive": true,
+ "finished": true
+}

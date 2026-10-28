@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "AF-vs-holo robustness on val",
+ "toolUseId": "toolu_016y4CkQN2GZzKmRN2dfZXAg",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "sonnet",
+ "finished": true
+}

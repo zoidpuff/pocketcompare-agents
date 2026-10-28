@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Implement A1 fingerprint and B0/B1",
+ "toolUseId": "toolu_01LqgBybf7UtYeoSxchPDUS7",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

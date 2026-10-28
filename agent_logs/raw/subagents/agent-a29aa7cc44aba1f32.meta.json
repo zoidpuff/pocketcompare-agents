@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Dev evaluation of all arms TOUGH-M1",
+ "toolUseId": "toolu_01MQRW4vHACJmpfRAQFacbDE",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

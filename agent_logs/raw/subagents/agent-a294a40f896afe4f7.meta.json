@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "PPI-R and dimer interface atlas demo",
+ "toolUseId": "toolu_012WQTwWVKJn4JV45rf1M4RF",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

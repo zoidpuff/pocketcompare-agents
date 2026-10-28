@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Build PPI-L and PPIPS datasets",
+ "toolUseId": "toolu_01RcDM2ngcuxYWAjXu1HXd93",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

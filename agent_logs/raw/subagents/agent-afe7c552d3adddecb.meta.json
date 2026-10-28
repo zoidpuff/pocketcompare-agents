@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Exploratory A4b+L4 fusion",
+ "toolUseId": "toolu_01V3Rh56kSQnoTzjuAvj1Kx8",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

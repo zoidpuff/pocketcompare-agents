@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Write eval_pdbt.py with dev dry run",
+ "toolUseId": "toolu_01AZMn6JXr82SMC7aiSQBGVY",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

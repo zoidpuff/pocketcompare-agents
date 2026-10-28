@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Review R1: AI-agent failure modes",
+ "toolUseId": "toolu_01UyW2DRn32aWACatFBJ5zRt",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "sonnet",
+ "finished": true
+}

@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Pocket benchmark datasets research",
+ "toolUseId": "toolu_01Mm53naekL8GQ2ccunizKZm",
+ "parentAgentId": "aae488eafe7f4dd7e",
+ "spawnDepth": 2,
+ "requestShape": "foreground",
+ "requestNonInteractive": true,
+ "finished": true
+}

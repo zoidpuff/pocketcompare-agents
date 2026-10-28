@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "L4 point-cloud network candidate",
+ "toolUseId": "toolu_01NnNrVDAkUGJ5tskEbuAv2G",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

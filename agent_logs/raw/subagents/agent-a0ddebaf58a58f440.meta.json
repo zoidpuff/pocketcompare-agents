@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Final-eval infrastructure and dry run",
+ "toolUseId": "toolu_01VhpJU7KRwU7MnNVuNu5Bf3",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

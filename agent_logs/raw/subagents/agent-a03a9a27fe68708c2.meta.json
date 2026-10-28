@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Milestone M3 retrospective",
+ "toolUseId": "toolu_01JnLJnDLePyRLFNHWE4KP4r",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "sonnet",
+ "finished": true
+}

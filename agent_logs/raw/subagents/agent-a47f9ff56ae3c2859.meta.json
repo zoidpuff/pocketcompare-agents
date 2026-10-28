@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Milestone retrospective on process",
+ "toolUseId": "toolu_01TmuvF7Zs6v5vYZfWXYX3me",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "sonnet",
+ "finished": true
+}

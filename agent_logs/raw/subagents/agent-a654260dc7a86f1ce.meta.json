@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "API fix, CLI and proteome fingerprints",
+ "toolUseId": "toolu_01SY1XWb331oyDmtHKJcm1NL",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "B4 ESM-2 and B5 external baseline",
+ "toolUseId": "toolu_01KEaJ9T2tJhzeBuFe5nYYMx",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "sonnet",
+ "finished": true
+}

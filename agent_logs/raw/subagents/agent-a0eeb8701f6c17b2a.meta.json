@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "BLiPS/PPIPS caches and descriptors",
+ "toolUseId": "toolu_01Dbeqh66h6QCpNacnbjd6Rj",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}

@@ -1,0 +1,11 @@
+{
+ "agentType": "general-purpose",
+ "isBuiltIn": true,
+ "description": "Dev eval on BLiPS-val and PPIPS-val",
+ "toolUseId": "toolu_01742oMKJ2qfi7o4FbpKMVur",
+ "spawnDepth": 1,
+ "requestShape": "background",
+ "requestNonInteractive": true,
+ "model": "opus",
+ "finished": true
+}
