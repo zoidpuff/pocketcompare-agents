@@ -1,0 +1,46 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_v2splits_summary.md",
+  "result_sha256": "86ee37b25215cbeff83a85da3af47515b2d7c7768362838ee3878ca190d3615b",
+  "git_commit": "d9016d6a8b0794fef93edc56f446b3bb1c2fd6ba",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/audit/checks_4_5.json",
+    "results/audit/mmseqs_checks.json",
+    "results/audit/mmseqs_examples.tsv",
+    "results/audit/useq_map.tsv",
+    "results/ppi/ppips_counts.json",
+    "scripts/write_final_method.py"
+  ],
+  "git_untracked": 84,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+  "script_sha256": "61a117fc6697cf2051529f775b7470d9b21c475eb94249edddef8456e19c2c57",
+  "args": [
+    "--dataset",
+    "blips",
+    "--threads",
+    "16",
+    "--out-suffix",
+    "_v2splits",
+    "--trial-tag",
+    "splits_v2"
+  ],
+  "config": {
+    "dataset": "blips",
+    "split": "val_v2",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "n_folds": 5,
+    "strata": "(5,20) if n_pos >= 500 else (5,5)",
+    "a1_grid": "configs/a1_grid.yaml",
+    "units": "wider CI of {homology group, Butina ligand cluster}",
+    "pos_cluster": "pair_cluster"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_v2splits_summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_v2splits_details.json"
+  ],
+  "seed": 0,
+  "wall_seconds": 264.1
+}

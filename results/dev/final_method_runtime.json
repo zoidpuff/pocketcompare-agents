@@ -1,0 +1,17 @@
+{
+  "D_ms_per_pocket_mean_weighted": 3.802878726574202,
+  "D_ms_per_pocket_median": 3.540210664383025,
+  "D_ms_per_pocket_p90": 4.565917224199934,
+  "D_pockets_per_structure_median": 13.0,
+  "L_ms_per_site_median": 6.1093890108168125,
+  "L_ms_per_site_p90": 10.500765894539654,
+  "bytes_per_pocket_float32": 1536,
+  "dims": 384,
+  "embed_us_per_pocket": 63.56750901322812,
+  "method": "pocketcompare-final:A4b:n1_base|raw",
+  "n_structures": 200,
+  "note": "BURROW featurisation excluded (descriptor + embedding only); cached BLiPS-val structures",
+  "pair_us_batched_1M": 0.09952644095756114,
+  "pair_us_single_call": 2.840879885479808,
+  "threads": 1
+}

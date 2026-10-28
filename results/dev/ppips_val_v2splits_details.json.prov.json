@@ -1,0 +1,147 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/ppips_val_v2splits_details.json",
+  "result_sha256": "e07fbe0daadfc38b35d0b80baaea4335217154dd54213bf19a44e31339721ef7",
+  "n_rows": null,
+  "git_commit": "d9016d6a8b0794fef93edc56f446b3bb1c2fd6ba",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/audit/checks_4_5.json",
+    "results/audit/mmseqs_checks.json",
+    "results/audit/mmseqs_examples.tsv",
+    "results/audit/useq_map.tsv",
+    "results/ppi/ppips_counts.json",
+    "results/trials.tsv",
+    "scripts/write_final_method.py"
+  ],
+  "git_untracked": 87,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+  "script_sha256": "61a117fc6697cf2051529f775b7470d9b21c475eb94249edddef8456e19c2c57",
+  "args": [
+    "--dataset",
+    "ppips",
+    "--threads",
+    "16",
+    "--out-suffix",
+    "_v2splits",
+    "--trial-tag",
+    "splits_v2"
+  ],
+  "config": {
+    "dataset": "ppips",
+    "split": "val",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "reference": "PPIPS-train pockets (z-score, A2 fit)",
+    "units": "complex homology group of the query",
+    "a1_chosen": "untyped"
+  },
+  "config_sha256": "f91c136e1879a2d05fe8d806da4e16f99dc2efdb4b74d7b1958b9fc404cefb47",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_default_D.ids.parquet",
+      "size": 777836,
+      "sha256": "08fb892a341edff0dab823c9e047bbed8cd3a5b70084401dde3c2347b063fabd",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_default_D.npy",
+      "size": 42141960,
+      "sha256": "2ac1b93acafabb5087b72cc5cee1245d26783a54b752d834861a22927935c37a",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_untyped_D.npy",
+      "size": 3033684,
+      "sha256": "1ec73258ac09fd000c6b50552c1a04188ddfce8ce6d8bc3ac512dcb94fe931ef",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b1_default_D.npy",
+      "size": 3689588,
+      "sha256": "66284006ec70b8e9ac2102381e6f09453b04c4a196e0016f745bafbcc3399a11",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b1_learned_D.npy",
+      "size": 4099528,
+      "sha256": "5a0b0db5b055bd03037eac2278fc0f54c342748168b84ece7366e936513ae755",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b4_esm2_D.npy",
+      "size": 104944768,
+      "sha256": "c941ed4306484cbe745da615e2035e1f0b174c3e33455338ca4b69e0fa5085ca",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/docking/ppips/fragments.parquet",
+      "size": 59207180,
+      "sha256": "54a0cac0d1226f763aa1a3633f6a237bca11b91618f6b85b6e4fdc99054ac14d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/docking/ppips/leadlike.parquet",
+      "size": 60930170,
+      "sha256": "6417979f6a0e25800f539bd818ec217dade98c06a7339e16d771216b5784db96",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/docking/ppips/pocket_geom.parquet",
+      "size": 907744,
+      "sha256": "8dc172eaa6c02ba1742632839a29e25fb083065a0909fcef0de0f850453e4a13",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/ppi/ppips/pockets.parquet",
+      "size": 1613748,
+      "sha256": "9ce26313958631c48c11ab9c19d7ae11b13881ff039dc74ff66f2b902129173e",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/ppips_complex_splits.parquet",
+      "size": 24739,
+      "sha256": "1322bfd9891890ed5b0a7fd124818498783cebef46cf0492cbb4b4e6d74fb12d",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/ppips_ortho_queries_val.parquet",
+      "size": 18665,
+      "sha256": "62da4155dcf2921fe6b00cc2cf1c066d3629d883584bd34ca73fcfeb0d9fb55b",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/ppips_sym_pairs_val.parquet",
+      "size": 11623,
+      "sha256": "481be730343e8c70f4d0926a56a62de26e13077013e2939de28c71a499defbc6",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/blips_val_v2splits_details.json",
+      "size": 134712,
+      "sha256": "8ace666fee21fff5da3b41c86aef30089a03ff9d9bc314fb1e7b6d90f6d8377e",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/src/pocketcompare/descriptors/a2.py",
+      "size": 14902,
+      "sha256": "5050cd4ea3cc21ca86e517e6d37f09ef9625630c97464f89a052d5533c88e0c7",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/src/pocketcompare/similarity.py",
+      "size": 6224,
+      "sha256": "92496f81a2bc54b7a91b254947444a4e614d2a92776567d6fccb4583865884f5",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T01:34:29+00:00",
+  "end_time": "2026-10-28T01:34:50+00:00",
+  "wall_seconds": 21.565,
+  "extra": null
+}

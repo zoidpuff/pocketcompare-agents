@@ -1,0 +1,53 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/tough_m1_dev_v2splits_summary.md",
+  "result_sha256": "90ac8a721e984c00fdd735213f7cb5a2efe3ebba604fef7f8dd2fd81b816b5ec",
+  "git_commit": "1ce80fb50833b34ce66d0a1a8ac1dc5c89706dba",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/audit/useq_map.tsv",
+    "results/dev/final_select_nonlearned_candidates.parquet",
+    "results/dev/final_select_nonlearned_candidates.parquet.prov.json",
+    "results/dev/final_select_nonlearned_details.json",
+    "results/dev/final_select_nonlearned_details.json.prov.json",
+    "results/dev/final_select_nonlearned_ppips.parquet",
+    "results/dev/final_select_nonlearned_ppips.parquet.prov.json",
+    "results/dev/final_select_nonlearned_summary.md",
+    "results/dev/final_select_nonlearned_summary.parquet",
+    "results/dev/final_select_nonlearned_summary.parquet.prov.json",
+    "results/ppi/ppips_counts.json",
+    "results/trials.tsv",
+    "scripts/eval_dev.py",
+    "scripts/write_final_method.py",
+    "src/pocketcompare/a4b.py",
+    "src/pocketcompare/method.py"
+  ],
+  "git_untracked": 86,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_dev.py",
+  "script_sha256": "61a117fc6697cf2051529f775b7470d9b21c475eb94249edddef8456e19c2c57",
+  "args": [
+    "--dataset",
+    "tough_m1",
+    "--threads",
+    "16",
+    "--out-suffix",
+    "_v2splits",
+    "--trial-tag",
+    "splits_v2"
+  ],
+  "config": {
+    "dataset": "tough_m1",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "n_folds": 5,
+    "strata": "(5,20) if n_pos >= 500 else (5,5)",
+    "a1_grid": "configs/a1_grid.yaml"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/tough_m1_dev_v2splits_summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/tough_m1_dev_v2splits_details.json"
+  ],
+  "seed": 0,
+  "wall_seconds": 191.5
+}

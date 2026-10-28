@@ -189,6 +189,11 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [!] ligand imprint replicates (A1 L→D on same pairs −0.268 [−0.359, −0.175])
   - [x] PPIPS-val P-ortho MRR: B4 0.942 · B1 0.764 · A1 0.633 · B0 0.426 (interolog transfer; 13 units); P-sym ≥ 0.92 all
   - [-] PPI sub-hypothesis fragments > lead-like: not supported (IFP +0.074 MRR, Holm p ≥ 0.25; underpowered)
+- [x] P3 Dev tables re-run on rebuilt splits — reports/dev_eval_v2splits.md (250 trials, tag splits_v2)
+  - [x] unchanged: A2 gate FAIL (−0.009 [−0.066, +0.023]); ligand imprint (A1 L→D −0.244 TOUGH, −0.161 BLiPS);
+        CSLS negligible; fragment sub-hypothesis not supported (reversed to −0.06/−0.005/−0.04 MRR)
+  - [!] changed: A1−B1 on BLiPS L no longer significant (+0.045 [−0.005, +0.098]); A1 config choice unstable
+        (12–14 configs within one SE)
 - [x] P4 A4b learned metric — reports/a4b_selection.md, results/dev/final_select_all_summary.md (new splits)
   - [!] BLiPS-val D cb: B1 0.648 · B4 0.670 · N1 0.697 · N2 0.704 · A4b n1_linear 0.737 · n2_linear+CSLS 0.751 (best)
   - [x] n1_linear raw: BLiPS L 0.718, TOUGH-M1-dev D 0.721 (B1 0.617), PPIPS MRR 0.719 (N1 0.790, B1 0.761)

@@ -1,0 +1,57 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/dev/final_method_runtime.json",
+  "result_sha256": "a92cf89331acc6658a60f751009497ebedaf56a8f1896b6e21d01e4281a38969",
+  "n_rows": null,
+  "git_commit": "1ce80fb50833b34ce66d0a1a8ac1dc5c89706dba",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "configs/final_method.yaml",
+    "results/audit/checks_4_5.json",
+    "results/audit/mmseqs_checks.json",
+    "results/audit/mmseqs_examples.tsv",
+    "results/audit/useq_map.tsv",
+    "results/dev/final_select_nonlearned_candidates.parquet",
+    "results/dev/final_select_nonlearned_candidates.parquet.prov.json",
+    "results/dev/final_select_nonlearned_details.json",
+    "results/dev/final_select_nonlearned_details.json.prov.json",
+    "results/dev/final_select_nonlearned_ppips.parquet",
+    "results/dev/final_select_nonlearned_ppips.parquet.prov.json",
+    "results/dev/final_select_nonlearned_summary.md",
+    "results/dev/final_select_nonlearned_summary.parquet",
+    "results/dev/final_select_nonlearned_summary.parquet.prov.json",
+    "results/ppi/ppips_counts.json",
+    "results/trials.tsv",
+    "scripts/eval_dev.py",
+    "scripts/write_final_method.py",
+    "src/pocketcompare/a4b.py",
+    "src/pocketcompare/method.py"
+  ],
+  "git_untracked": 96,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/bench_method.py",
+  "script_sha256": "30b9fede8d7d981dcf917346fef8f442cbe1636d0eb223be5651b0e8200aa3c3",
+  "args": [
+    "--n-structures",
+    "200"
+  ],
+  "config": {
+    "n_structures": 200
+  },
+  "config_sha256": "33694e79f21e97460b549daaacf40e1c84a4d8d45a559cb96a53f14c690c0615",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/configs/final_method.yaml",
+      "size": 2152,
+      "sha256": "ca37ce671d4e16d2580b44e44580dbb57309c822f9b3821ea1205f6b2a211fcd",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T01:32:17+00:00",
+  "end_time": "2026-10-28T01:32:39+00:00",
+  "wall_seconds": 21.076,
+  "extra": null
+}
