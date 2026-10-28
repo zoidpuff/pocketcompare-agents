@@ -49,6 +49,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   pre-registered reported items were not run (blind test on BLiPS-test; PPIPS-test BURROW-homology strata). Computed
   post-hoc with a separate script importing the frozen functions; disclosed in REPORT. Also: the B0m size diagnostic
   fails on test (0.582 stratified) → residual size signal in TOUGH-M1-test; reported as a limitation.
+- DEV7 (08:05) First PDB-T run aborted at set construction (pairs referenced the 9 D25-excluded sites; the script
+  raised instead of dropping them) after unsealing pdbt_pairs but before any score was computed. Fix: drop and count
+  pairs involving excluded sites; re-run recorded with --rerun.
 - D25 (08:00) Before any PDB-T score: exclude the 9 audit boundary sites (excluded_audit_tm_boundary in
   pdbt_sites.parquet; strict option). Disclose: 51 PDB-T chains are near-identical to non-featurised, non-partner
   chains of BURROW entries (never used in training). 83 % of PDB-T positives use a ligand seen in BLiPS-train

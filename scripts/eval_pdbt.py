@@ -270,12 +270,17 @@ def build_set(name: str, ds: str, sites: pd.DataFrame, pairs: pd.DataFrame) -> t
     """final_eval.PairSet over the whole site pool (= z-score / CSLS background), units = homology components."""
     ca, cb = _pick(pairs, PAIR_COLS, "pair site")
     pcl = _pick(pairs, CLUSTER_COLS, "positive ligand cluster", required=False)
+    # D25: sites flagged `excluded` (audit boundary) leave the pool; their pairs are dropped and counted (no scores yet)
+    keep = pairs[ca].isin(sites.site_id) & pairs[cb].isin(sites.site_id)
+    n_drop, n_drop_pos = int((~keep).sum()), int(pairs.label[~keep].sum())
+    pairs = pairs[keep].reset_index(drop=True)
     P = FE._attach_geometry(pd.DataFrame({"pocket_id": sites.site_id.to_numpy(), "unit_label": sites._unit.to_numpy()}),
                             ds)
     unit = pd.factorize(P.unit_label)[0]
     P["unit"] = unit
     ia, ib = FE._pairs_index(P, pairs, ca, cb)
     y = pairs.label.to_numpy().astype(int)
+    log(f"[{name}] dropped {n_drop} pairs ({n_drop_pos} positive) involving excluded sites")
     if not set(np.unique(y)) <= {0, 1}:
         raise SystemExit("labels must be 0 / 1")
     ps = FE.PairSet(name, ds, P, ia, ib, y, {"hom": unit}, pos_cluster=None if pcl is None else pairs[pcl].to_numpy(),
