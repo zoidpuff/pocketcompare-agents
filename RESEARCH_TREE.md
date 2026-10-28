@@ -224,7 +224,8 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] TOUGH-M1 dev 765 / test 1,045 / excluded 5,714 (254 pockets moved); BLiPS-test unchanged (0 moved)
   - [x] BLiPS v2 train/val redrawn (972 sites moved); PPIPS redrawn (681 complexes moved); 128 readmitted
         train/val sites not cached → excluded_not_cached
-  - [~] re-audit (auditor) in parallel with A4b/L4 fits; freeze requires PASS
+  - [x] **re-audit PASS** (reports/audit_splits.md "Re-audit"): 0 sequence-rule hits across all checked partitions;
+        4 boundary structure pairs with approximate min-TM 0.50–0.56 have exact TM 0.41–0.497 (< rule) → kept
 - [x] P4 Blind deployment test script + val dry run — reports/blind_and_ppil.md
   - [x] detection recall 0.615 on val AF models; partner retrieval (84 pairs) final hit@10 0.155 vs B1 0.107, AUC
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44

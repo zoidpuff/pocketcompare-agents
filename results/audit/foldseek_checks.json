@@ -1,141 +1,141 @@
 {
  "TM_test vs BUR": {
-  "aligned_pairs": 600142,
-  "tm_both_ge0.5_pairs": 11,
-  "tm_both_query_chains": 6,
-  "tm_one_dir_only_pairs": 1061,
-  "tm_min_0.45_0.5_pairs": 75,
-  "union_seq_or_struct_query_chains": 16,
-  "union_query_members": 16
+  "aligned_pairs": 646738,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 1219,
+  "tm_min_0.45_0.5_pairs": 141,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
  },
  "TM_dev vs PROS": {
-  "aligned_pairs": 160985,
+  "aligned_pairs": 169267,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 289,
-  "tm_min_0.45_0.5_pairs": 11,
-  "union_seq_or_struct_query_chains": 4,
-  "union_query_members": 4
+  "tm_one_dir_only_pairs": 354,
+  "tm_min_0.45_0.5_pairs": 26,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
  },
  "TM_dev vs VTX": {
-  "aligned_pairs": 317835,
+  "aligned_pairs": 343066,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 2317,
-  "tm_min_0.45_0.5_pairs": 59,
+  "tm_one_dir_only_pairs": 2357,
+  "tm_min_0.45_0.5_pairs": 62,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "TM_dev vs AF": {
-  "aligned_pairs": 182253,
+  "aligned_pairs": 191690,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 581,
-  "tm_min_0.45_0.5_pairs": 15,
-  "union_seq_or_struct_query_chains": 3,
-  "union_query_members": 3
+  "tm_one_dir_only_pairs": 601,
+  "tm_min_0.45_0.5_pairs": 23,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
  },
  "TM_dev vs PPIL_test": {
-  "aligned_pairs": 12511,
+  "aligned_pairs": 12764,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 111,
-  "tm_min_0.45_0.5_pairs": 0,
+  "tm_one_dir_only_pairs": 112,
+  "tm_min_0.45_0.5_pairs": 1,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "TM_dev vs TM_test": {
-  "aligned_pairs": 43826,
-  "tm_both_ge0.5_pairs": 2,
-  "tm_both_query_chains": 1,
-  "tm_one_dir_only_pairs": 74,
-  "tm_min_0.45_0.5_pairs": 11,
+  "aligned_pairs": 49033,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 92,
+  "tm_min_0.45_0.5_pairs": 19,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
+ },
+ "BL_train vs AF": {
+  "aligned_pairs": 465285,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 1627,
+  "tm_min_0.45_0.5_pairs": 136,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
+ },
+ "BL_train vs PROS": {
+  "aligned_pairs": 396860,
+  "tm_both_ge0.5_pairs": 8,
+  "tm_both_query_chains": 3,
+  "tm_one_dir_only_pairs": 1293,
+  "tm_min_0.45_0.5_pairs": 278,
   "union_seq_or_struct_query_chains": 3,
   "union_query_members": 3
  },
- "BL_train vs AF": {
-  "aligned_pairs": 440414,
-  "tm_both_ge0.5_pairs": 4,
-  "tm_both_query_chains": 4,
-  "tm_one_dir_only_pairs": 1444,
-  "tm_min_0.45_0.5_pairs": 53,
-  "union_seq_or_struct_query_chains": 5,
-  "union_query_members": 5
- },
- "BL_train vs PROS": {
-  "aligned_pairs": 371777,
-  "tm_both_ge0.5_pairs": 0,
-  "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 1043,
-  "tm_min_0.45_0.5_pairs": 151,
-  "union_seq_or_struct_query_chains": 5,
-  "union_query_members": 5
- },
  "BL_train vs VTX": {
-  "aligned_pairs": 746031,
+  "aligned_pairs": 812072,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 4397,
-  "tm_min_0.45_0.5_pairs": 88,
+  "tm_one_dir_only_pairs": 5164,
+  "tm_min_0.45_0.5_pairs": 355,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "BL_train vs TM_test": {
-  "aligned_pairs": 146915,
-  "tm_both_ge0.5_pairs": 3,
-  "tm_both_query_chains": 3,
-  "tm_one_dir_only_pairs": 185,
-  "tm_min_0.45_0.5_pairs": 22,
-  "union_seq_or_struct_query_chains": 9,
-  "union_query_members": 9
- },
- "BL_train vs PPIL_test": {
-  "aligned_pairs": 30449,
-  "tm_both_ge0.5_pairs": 3,
-  "tm_both_query_chains": 3,
-  "tm_one_dir_only_pairs": 453,
-  "tm_min_0.45_0.5_pairs": 1,
-  "union_seq_or_struct_query_chains": 3,
-  "union_query_members": 3
- },
- "BL_val vs AF": {
-  "aligned_pairs": 24410,
+  "aligned_pairs": 165876,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 72,
-  "tm_min_0.45_0.5_pairs": 7,
+  "tm_one_dir_only_pairs": 246,
+  "tm_min_0.45_0.5_pairs": 44,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
+ },
+ "BL_train vs PPIL_test": {
+  "aligned_pairs": 31880,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 459,
+  "tm_min_0.45_0.5_pairs": 3,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
+ },
+ "BL_val vs AF": {
+  "aligned_pairs": 26599,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 71,
+  "tm_min_0.45_0.5_pairs": 8,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "BL_val vs PROS": {
-  "aligned_pairs": 20470,
+  "aligned_pairs": 22774,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 60,
-  "tm_min_0.45_0.5_pairs": 5,
+  "tm_one_dir_only_pairs": 57,
+  "tm_min_0.45_0.5_pairs": 8,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "BL_val vs VTX": {
-  "aligned_pairs": 40496,
+  "aligned_pairs": 44881,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 276,
-  "tm_min_0.45_0.5_pairs": 0,
+  "tm_one_dir_only_pairs": 304,
+  "tm_min_0.45_0.5_pairs": 21,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "BL_val vs TM_test": {
-  "aligned_pairs": 8181,
+  "aligned_pairs": 9532,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 8,
+  "tm_one_dir_only_pairs": 7,
   "tm_min_0.45_0.5_pairs": 0,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
  "BL_val vs PPIL_test": {
-  "aligned_pairs": 1781,
+  "aligned_pairs": 1939,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
   "tm_one_dir_only_pairs": 0,
@@ -144,57 +144,39 @@
   "union_query_members": 0
  },
  "BL_train vs BL_val": {
-  "aligned_pairs": 24921,
-  "tm_both_ge0.5_pairs": 1,
-  "tm_both_query_chains": 1,
-  "tm_one_dir_only_pairs": 35,
-  "tm_min_0.45_0.5_pairs": 3,
-  "union_seq_or_struct_query_chains": 1,
-  "union_query_members": 1
- },
- "BL2_train vs BL2_val": {
-  "aligned_pairs": 71975,
-  "tm_both_ge0.5_pairs": 4,
-  "tm_both_query_chains": 4,
-  "tm_one_dir_only_pairs": 230,
-  "tm_min_0.45_0.5_pairs": 23,
-  "union_seq_or_struct_query_chains": 9,
-  "union_query_members": 9
- },
- "PPIPS_train vs PPIPS_val+PPIPS_test": {
-  "aligned_pairs": 746621,
-  "tm_both_ge0.5_pairs": 2,
-  "tm_both_query_chains": 2,
-  "tm_one_dir_only_pairs": 753,
-  "tm_min_0.45_0.5_pairs": 66,
-  "union_seq_or_struct_query_chains": 2,
-  "union_query_members": 1
- },
- "PPIPS_val vs PPIPS_test": {
-  "aligned_pairs": 56534,
+  "aligned_pairs": 28031,
   "tm_both_ge0.5_pairs": 0,
   "tm_both_query_chains": 0,
-  "tm_one_dir_only_pairs": 66,
-  "tm_min_0.45_0.5_pairs": 0,
+  "tm_one_dir_only_pairs": 42,
+  "tm_min_0.45_0.5_pairs": 12,
   "union_seq_or_struct_query_chains": 0,
   "union_query_members": 0
  },
- "PPIPS_val vs BUR": {
-  "aligned_pairs": 424350,
-  "tm_both_ge0.5_pairs": 1092,
-  "tm_both_query_chains": 321,
-  "tm_one_dir_only_pairs": 2709,
-  "tm_min_0.45_0.5_pairs": 625,
-  "union_seq_or_struct_query_chains": 324,
-  "union_query_members": 179
+ "BL2_train vs BL2_val": {
+  "aligned_pairs": 74992,
+  "tm_both_ge0.5_pairs": 1,
+  "tm_both_query_chains": 1,
+  "tm_one_dir_only_pairs": 138,
+  "tm_min_0.45_0.5_pairs": 26,
+  "union_seq_or_struct_query_chains": 2,
+  "union_query_members": 2
  },
- "PPIPS_test vs BUR": {
-  "aligned_pairs": 350029,
-  "tm_both_ge0.5_pairs": 1189,
-  "tm_both_query_chains": 335,
-  "tm_one_dir_only_pairs": 914,
-  "tm_min_0.45_0.5_pairs": 269,
-  "union_seq_or_struct_query_chains": 347,
-  "union_query_members": 191
+ "PPIPS_train vs PPIPS_val+PPIPS_test": {
+  "aligned_pairs": 666359,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 246,
+  "tm_min_0.45_0.5_pairs": 26,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
+ },
+ "PPIPS_val vs PPIPS_test": {
+  "aligned_pairs": 44793,
+  "tm_both_ge0.5_pairs": 0,
+  "tm_both_query_chains": 0,
+  "tm_one_dir_only_pairs": 0,
+  "tm_min_0.45_0.5_pairs": 4,
+  "union_seq_or_struct_query_chains": 0,
+  "union_query_members": 0
  }
 }

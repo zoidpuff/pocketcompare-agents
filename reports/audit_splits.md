@@ -41,3 +41,23 @@
 Small as these numbers are, they break a hard requirement. **Fix:** rerun `build_homology_graph.py` with `-a` on the MMseqs2 search and exhaustive Foldseek (or `--max-seqs` ≥ 10 k), then re-derive the splits. The changes are about 2 % of units, so headline counts barely change.
 
 **Warning outside the rule.** PPIPS is not BURROW-clean, but DESIGN only requires UniProt exclusion. 191 / 251 test and 179 / 268 val complexes contain a chain with a sequence or TM ≥ 0.5 edge to BURROW train/dev chains. BURROW detects the PPIPS pockets, so PROMPT's "model used to prepare receptors" clause applies. Disclose this, or restrict PPIPS claims.
+
+## Re-audit after the D15 rebuild (2026-10-28 03:30, commit 1ce80fb; same independent code path)
+
+**Method.** All steps were re-run on the new partition files: gemmi extraction, MMseqs2 `easy-search` all-vs-all over 24,618 unique sequences, and exhaustive Foldseek with exact TM for every query→target block. Scripts are unchanged except that the PPIPS-vs-BURROW Foldseek block was dropped. The first-audit outputs are kept in `results/audit/v1/`. `data/sealed/` was not opened.
+
+**Partition sizes.** TOUGH-M1 765 / 1,045 / 5,714 (dev / test / excluded) and BLiPS v1 1,839 / 104 proteins both match SPLITS.md. Excluded pockets are not checked here; they are used in no evaluation.
+
+| Check | Result | Counts (rule-hit pairs) |
+|---|---|---|
+| 2 MMseqs2: TM-test vs BURROW; TM-dev vs ProSPECCTs/Vertex/af_set/PPI-L-test; TM-dev vs TM-test | **PASS** | 0 / 0 / 0 / 0 / 0 / 0. Near misses (25–30 %): 32 test chains, median 0.267. |
+| 2 MMseqs2: BLiPS v1 train and val vs af_set/ProSPECCTs/Vertex/TM-test/PPI-L-test; v1 train vs val | **PASS** | All 0. |
+| 2 MMseqs2: BLiPS-v2 train vs val | PASS (1 boundary case) | 1 pair, 5odq_G–9gz4_A: identity 0.329, alnlen exactly 80, cov 0.12/0.16, E 8.1e‑4. The reverse direction has alnlen 68, so this is not a meaningful homology. |
+| 2 MMseqs2: PPIPS train vs val/test; val vs test | **PASS** | 0 / 0. |
+| 3 Foldseek, TM ≥ 0.5 both directions: TM-test vs BURROW; TM-dev vs the 4 sealed sets; TM-dev vs TM-test; BLiPS val vs sealed sets; BLiPS v1 train vs val; PPIPS train vs val/test; PPIPS val vs test | **PASS** | All 0. One-direction-only counts (info): 1,219 / 354, 2,357, 601, 112 / 92 / … |
+| 3 Foldseek: BLiPS train vs ProSPECCTs; BLiPS-v2 train vs val | PASS (boundary) | 8 pairs from 3 train proteins (6hur_A, 2i10_B, 3a4m_A; min-TM 0.502–0.518). 1 v2 pair, 7uq2_A–8g0e_4 (0.556/0.596, E 3.5, 80 aa). Their exact TM for the same sid pairs is 0.41–0.497 (2i10–2gby: approximate 0.44, so never re-scored). These are alignment-variance disagreements at the threshold, not clear homologues. Being conservative would mean dropping 3 of 1,839 train proteins and 1 v2 protein. |
+| 4 Identical sequences / PDB IDs | **PASS** | Identical sequences across partitions: 0 everywhere. Shared PDB entries always have different chains and proteins: TM dev/test 1 (4xru); TM-test vs BURROW 3; BLiPS-v2 train vs val 26; BLiPS train vs af_set holo entries 5. UniProt overlap: 0 (BLiPS vs af_set, PPIPS between splits, PPIPS vs BURROW). |
+| Previous six examples | **gone** | 1kapA, 2qiaA, 1ecmA: test → dev. 2qo3A, 3nmxB: dev → excluded. 4xg0A–5dmhA and 3remA–1ecmA now all in dev. PPIPS AF-…66231028 and …66233041 are both in train, in the same group. |
+| Info | — | PPIPS val/test with a BURROW sequence edge: 37 / 25 complexes (theirs: 37 / 24). TOUGH-M1: 73 % of test pockets have a dev ligand with Tc ≥ 0.6; 57 of 77 positive-capable test clusters occur in dev. BLiPS-v2: 46 % of test sites carry a train qualifying CCD. |
+
+**Verdict: PASS.** No leak beyond threshold-level alignment variance (1 sequence pair, 4 structural pairs at min-TM ≤ 0.56). The PPIPS–BURROW homology warning still applies; it is now handled by the `burrow_rep_edge` stratification flag.

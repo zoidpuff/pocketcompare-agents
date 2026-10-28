@@ -15,16 +15,16 @@
    ]
   },
   "TM_dev vs BURROW train+dev (pdb, expected)": {
-   "n": 193,
+   "n": 207,
    "examples": [
     "1aod",
     "1cvr",
     "1cw0",
     "1gkm",
+    "1gny",
     "1gu2",
     "1i82",
-    "1nlt",
-    "1o7d"
+    "1nlt"
    ]
   },
   "TM_dev vs ProSPECCTs (pdb)": {
@@ -46,10 +46,10 @@
    "examples": []
   },
   "TM_test vs ProSPECCTs (pdb, allowed)": {
-   "n": 40,
+   "n": 41,
    "examples": [
-    "1asz",
     "1bdg",
+    "1cz2",
     "1e8x",
     "1ecj",
     "1k1w",
@@ -59,7 +59,7 @@
    ]
   },
   "BLiPS-v1 train vs val (pdb)": {
-   "n": 9,
+   "n": 10,
    "examples": [
     "5ysn",
     "6coj",
@@ -137,14 +137,14 @@
   "BLiPS-v2 train vs val (pdb)": {
    "n": 26,
    "examples": [
+    "2ivf",
     "2oiz",
-    "5hkk",
-    "5odq",
-    "6coj",
-    "6h5l",
-    "6ly5",
-    "6tdv",
-    "6ynx"
+    "3wry",
+    "3zcb",
+    "5of3",
+    "5ysn",
+    "6r2q",
+    "6tdv"
    ]
   },
   "BLiPS-v2 train vs val (uniprot)": {
@@ -156,9 +156,10 @@
    "examples": []
   },
   "BLiPS-v2 train vs af_set holo PDBs": {
-   "n": 4,
+   "n": 5,
    "examples": [
     "4wma",
+    "5zq7",
     "6yx5",
     "7sss",
     "7v0k"
@@ -188,10 +189,9 @@
    "examples": []
   },
   "BLiPS-v2 val vs af_set holo PDBs": {
-   "n": 2,
+   "n": 1,
    "examples": [
-    "5mza",
-    "5zq7"
+    "5mza"
    ]
   },
   "BLiPS-v2 val vs ProSPECCTs (pdb)": {
@@ -223,43 +223,43 @@
    "examples": []
   },
   "PPIPS val+test vs af_set (uniprot)": {
-   "n": 71,
+   "n": 59,
    "examples": [
-    "A4D126",
     "A6NK06",
-    "O14744",
-    "O43488",
+    "O14802",
+    "O43708",
+    "O43776",
     "O75390",
-    "O95154",
-    "O95166",
-    "O95749"
+    "O75843",
+    "O75936",
+    "O95166"
    ]
   }
  },
  "check5_tough": {
-  "test_pockets_fp": 1014,
-  "dev_ligands_fp": 731,
-  "test_pockets_maxTc_to_dev_ge0.6": 0.7327416173570019,
-  "ge0.7": 0.6568047337278107,
-  "ge1.0": 0.5433925049309665,
+  "test_pockets_fp": 1045,
+  "dev_ligands_fp": 765,
+  "test_pockets_maxTc_to_dev_ge0.6": 0.7301435406698564,
+  "ge0.7": 0.6526315789473685,
+  "ge1.0": 0.5511961722488038,
   "median_maxTc": 1.0,
-  "test_pos_capable_clusters": 70,
-  "of_which_in_dev": 52,
-  "test_clusters_all": 302,
-  "test_clusters_in_dev": 89
+  "test_pos_capable_clusters": 77,
+  "of_which_in_dev": 57,
+  "test_clusters_all": 315,
+  "test_clusters_in_dev": 93
  },
  "check5_blips_v1": {
   "test_sites": 3606,
   "with_ok_ligands": 3606,
-  "frac_sites_any_ccd_in_train_qualifying_ccds": 0.4667221297836938,
-  "frac_sites_any_ccd_eq_train_label_ccd": 0.4514697726012202,
-  "train_qualifying_ccds": 1344
+  "frac_sites_any_ccd_in_train_qualifying_ccds": 0.4683860232945091,
+  "frac_sites_any_ccd_eq_train_label_ccd": 0.45341098169717137,
+  "train_qualifying_ccds": 1395
  },
  "check5_blips_v2": {
   "test_sites": 3606,
   "with_ok_ligands": 3606,
-  "frac_sites_any_ccd_in_train_qualifying_ccds": 0.4597892401552967,
-  "frac_sites_any_ccd_eq_train_label_ccd": 0.44647809206877426,
-  "train_qualifying_ccds": 1107
+  "frac_sites_any_ccd_in_train_qualifying_ccds": 0.46089850249584025,
+  "frac_sites_any_ccd_eq_train_label_ccd": 0.447032723239046,
+  "train_qualifying_ccds": 1175
  }
 }
