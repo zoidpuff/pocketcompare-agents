@@ -1,0 +1,80 @@
+{
+ "n_sites": 1299,
+ "n_models": 843,
+ "n_pool": 4502,
+ "detected": 0.6497305619707467,
+ "matched_score_median": 0.4127434862453771,
+ "cutoffs": [
+  {
+   "cut": 0.0,
+   "site_recall": 0.6497305619707467,
+   "site_recall_given_detected": 1.0,
+   "pool_fraction_kept": 1.0,
+   "pockets_per_model": 5.340450771055753
+  },
+  {
+   "cut": 0.01,
+   "site_recall": 0.648960739030023,
+   "site_recall_given_detected": 0.9988151658767772,
+   "pool_fraction_kept": 0.9242558862727677,
+   "pockets_per_model": 4.935943060498221
+  },
+  {
+   "cut": 0.02,
+   "site_recall": 0.6474210931485759,
+   "site_recall_given_detected": 0.9964454976303317,
+   "pool_fraction_kept": 0.8298533984895602,
+   "pockets_per_model": 4.431791221826809
+  },
+  {
+   "cut": 0.03,
+   "site_recall": 0.6443418013856813,
+   "site_recall_given_detected": 0.9917061611374408,
+   "pool_fraction_kept": 0.778764993336295,
+   "pockets_per_model": 4.158956109134045
+  },
+  {
+   "cut": 0.05,
+   "site_recall": 0.6089299461123941,
+   "site_recall_given_detected": 0.9372037914691943,
+   "pool_fraction_kept": 0.564193691692581,
+   "pockets_per_model": 3.0130486358244366
+  },
+  {
+   "cut": 0.1,
+   "site_recall": 0.5511932255581217,
+   "site_recall_given_detected": 0.8483412322274881,
+   "pool_fraction_kept": 0.3700577521101733,
+   "pockets_per_model": 1.9762752075919336
+  },
+  {
+   "cut": 0.2,
+   "site_recall": 0.4695919938414165,
+   "site_recall_given_detected": 0.7227488151658767,
+   "pool_fraction_kept": 0.2423367392270102,
+   "pockets_per_model": 1.2941874258600237
+  },
+  {
+   "cut": 0.3,
+   "site_recall": 0.4018475750577367,
+   "site_recall_given_detected": 0.6184834123222749,
+   "pool_fraction_kept": 0.17436694802310085,
+   "pockets_per_model": 0.9311981020166074
+  },
+  {
+   "cut": 0.5,
+   "site_recall": 0.2525019245573518,
+   "site_recall_given_detected": 0.3886255924170616,
+   "pool_fraction_kept": 0.09018214127054643,
+   "pockets_per_model": 0.4816132858837485
+  }
+ ],
+ "site_recall_by_rank": {
+  "1": 0.4149345650500385,
+  "3": 0.596612779060816,
+  "5": 0.6327944572748267,
+  "10": 0.6481909160892995
+ },
+ "seconds": 8.088561773300171,
+ "note": "dev data only (BLiPS v2 val + train sites with AF models); merged region pockets >= 10 points"
+}

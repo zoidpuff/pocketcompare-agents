@@ -68,3 +68,40 @@ query service on the IVF-PQ index is the realistic deliverable.
 - AFDB length distribution assumed from bacterial/yeast proteomes; long eukaryotic proteins cost somewhat more.
 - BURROW's `--preset fast` would cut detection cost further but changes the pockets; the method was not validated
   with it.
+
+## 7. Which pockets are fingerprinted, and score cutoffs (added 2026-10-28)
+`describe_all` fingerprints every merged BURROW region-rule pocket with ≥ 10 points, with **no score cutoff**.
+Human run: 43 BURROW candidates → 18.1 region pockets → 17.6 merged → **5.39 kept** per model (12 per model are < 10
+points: surface tiles and single-point metal candidates). Median BURROW score of kept pockets 0.05; 28 % ≥ 0.1.
+Effect of a score cutoff on true ligand sites (dev data: 1,299 BLiPS val+train sites on 843 AF models, blind
+setting; `results/tooling/site_score_recall.json`, `scripts/tooling/site_score_recall.py`):
+| min BURROW score | detected true sites kept | pockets kept | pockets / model |
+|---|---|---|---|
+| none (current) | 100 % (65 % of all sites detected) | 100 % | 5.3 |
+| 0.03 | 99.2 % | 78 % | 4.2 |
+| 0.05 | 93.7 % | 56 % | 3.0 |
+| 0.1 | 84.8 % | 37 % | 2.0 |
+| 0.3 | 61.8 % | 17 % | 0.9 |
+These are known small-molecule sites; interface (PPI) pockets score lower in BURROW (only 9.9 % ≥ 0.3 vs 17 % for
+single-chain pockets, reports/ppi_dimers.md), so cutoffs remove them disproportionately. Recommendation: keep all,
+store the score, and use a cutoff (e.g. 0.03) only as a search-time filter or index tier.
+
+## 8. Storing BURROW's pockets (beyond the fingerprints)
+| what | per pocket | 0.95 × 10⁹ pockets | note |
+|---|---|---|---|
+| pocket table (ranks, score, centre, residues, volumes, pLDDT) | 116 B (parquet, measured) | **≈ 0.11 TB** | enough for docking boxes (centre + volume) |
+| pocket grid points, xyz only (mean 97 points; 1 Å lattice → int16 or fp16) | ≈ 0.6 KB (≈ 0.25 KB zstd) | ≈ 0.25–0.6 TB | merged pocket; the sph8 site (mean 257 points) ×2.6 |
+| pocket grid points + 84 point features (fp16) | ≈ 16 KB | ≈ 15 TB | not worth it: recomputing is ~0.16 CPU-s/structure |
+| BURROW full point cache (all grid points of the structure) | — | ≈ 100–160 TB (0.5–0.8 MB/structure) | infeasible; recompute on demand |
+
+## 9. Staggered roll-out on our node (≈ 380 structures/s, GPU path)
+| tier | structures | node time | pockets | fp16 + table |
+|---|---|---|---|---|
+| human (done: data/processed/release/human_afdb_v6) | 23.6 k | ≈ 1 min (measured 3 min on half the node) | 116 k | ≈ 0.1 GB |
+| all 48 local model-organism / global-health proteomes | ≈ 0.5–0.7 M (84.6 GB of tarballs) | ≈ 25–30 min | ≈ 3 M | ≈ 3 GB |
+| Swiss-Prot (local, 68.6 GB) | ≈ 0.55 M | ≈ 25 min | ≈ 2.6 M | ≈ 2.3 GB |
+| AFDB Foldseek cluster representatives | ≈ 2.3 M | ≈ 1.7 h | ≈ 11 M | ≈ 10 GB |
+| AFDB50 (UniRef50-level representatives) | ≈ 50 M | ≈ 1.5 days | ≈ 0.24 B | ≈ 0.2 TB |
+| full AFDB | ≈ 200–214 M | ≈ 6–6.5 days | ≈ 0.95–1.0 B | ≈ 0.85 TB |
+Cluster-representative counts are from the AFDB/Foldseek publications (approximate); only the first three tiers
+are on local disk.
