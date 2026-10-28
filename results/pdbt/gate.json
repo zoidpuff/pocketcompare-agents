@@ -1,0 +1,29 @@
+{
+ "created": "2026-10-28 07:30:16",
+ "prereg": "PREREG2.md",
+ "rule": {
+  "min_pos": 300,
+  "min_groups": 30,
+  "min_clusters": 10
+ },
+ "n_pos": 1353,
+ "n_neg": 6765,
+ "n_pos_homology_groups": 186,
+ "n_pos_ligand_clusters": 38,
+ "n_sites_in_pairs": 996,
+ "n_groups_pool": 317,
+ "n_sites_pool": 996,
+ "n_proteins_pool": 545,
+ "max_pos_cluster_share": 0.0998,
+ "n_pos_shared_ge2": 0,
+ "n_pos_promiscuous": 682,
+ "n_pos_ccd_in_blips_train": 1127,
+ "n_pos_uncapped": 17972,
+ "cluster_cap": 135,
+ "cap_meets_10pct": true,
+ "n_neg_eligible": 431003,
+ "n_ambiguous_dropped": 43454,
+ "pass": true,
+ "verdict": "PASS: PDB-T supports the PREREG2 claims",
+ "sealed_sha256": "b4bf2909f44a819f4a1fd5160a23e30b2fbbc7695082aaeb460b7899d1f70c60"
+}

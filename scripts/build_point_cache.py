@@ -50,7 +50,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BENCH = ROOT / "data" / "processed" / "benchmarks"
 CACHE = ROOT / "data" / "processed" / "cache" / "points"
 SEALED = {"prospeccts", "vertex"}
-SUPPORTED = {"tough_m1", "tough_c1", "prospeccts", "vertex", "blips", "blips_test_holo", "blips_test_af"}
+SUPPORTED = {"tough_m1", "tough_c1", "prospeccts", "vertex", "blips", "blips_test_holo", "blips_test_af", "pdbt"}
 POCKET_COLS = ["pocket_id", "structure_path", "chain", "pocket_def_type", "pocket_def", "ligand_file",
                "ligand_resname", "het_instances",
                # BLiPS tables (scripts/data/prep_blips_pockets.py): explicit structure key + featurised chains,

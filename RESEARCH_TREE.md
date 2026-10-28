@@ -275,7 +275,11 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
       pockets across families (AUC 0.552 [0.495, 0.590], P@10 0.52 vs chance 0.55; B1 0.493; B4 P@10 0.74, cause unclear)
 - [x] P6 EXPLORATORY dimer interface atlas: 15,161 AFDB dimers, 0 errors, 347 s (43.7 dimers/s), 127,824 pockets
       (32,473 interface); interface pockets not closer to modulator pockets than to ligand pockets
-- [ ] P7 Temporal replication PDB-T (PREREG2)
+- [~] P7 Temporal replication PDB-T (PREREG2) — reports/pdbt_build.md
+  - [x] gate PASS: 996 sites, 545 proteins, 317 homology groups; 1,353 pos / 6,765 neg; 38 ligand clusters
+  - [x] leakage: 9,082/13,036 chains removed (edge to any training source); 208 exact-sequence test overlaps removed
+  - [x] eval_pdbt.py dry run on BLiPS-val reproduces dev exactly
+  - [~] independent PDB-T leakage check (auditor) before the single evaluation
 - [x] P6 REPORT.md written (143 tagged numbers checked)
   - [!] gaps found by the writer: FINAL paired C5 Δ skipped by a key-parsing bug in final_eval; blind test on
         BLiPS-test and PPIPS-test BURROW-homology strata not run; B0m stratified 0.582 on test (fails 0.5 ± 0.03 band)
