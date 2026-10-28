@@ -1,0 +1,32 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt_dryrun/report.md",
+  "result_sha256": "31916d8e99c3da7ebeafb3379592c3ca78c22f1b0037a882d3f7d3799109ec06",
+  "git_commit": "d11155e112c4caf5810bb30a74475c636a722d9f",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 11,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_pdbt.py",
+  "script_sha256": "0fe8dca3d51127657b7070027b291acfb1a495909163901dcba811ba092140e0",
+  "args": [
+    "--dryrun-dev",
+    "--threads",
+    "12",
+    "--device",
+    "cuda:2"
+  ],
+  "config": {
+    "task": "eval_pdbt",
+    "run_mode": "DRYRUN-DEV confirmatory",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "fusion_w": 0.5,
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "prereg2_sha256": "20c3e6c5ac5c573fd63d381276e0476d4a85f865b65396b590bad7cc13e3e686"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt_dryrun/summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt_dryrun/claims.json"
+  ]
+}
