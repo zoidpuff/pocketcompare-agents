@@ -36,7 +36,7 @@ test = ["pytest==9.1.1"]
 pocketcompare = "pocketcompare.cli:main"
 
 [project.urls]
-Repository = "https://github.com/[set the final URL]/pocketcompare"
+Repository = "https://github.com/zoidpuff/pocketcompare"
 
 [build-system]
 requires = ["hatchling>=1.25"]

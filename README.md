@@ -6,7 +6,7 @@ are compared with one dot product, so a pocket can be searched against millions 
 [FAISS](https://github.com/facebookresearch/faiss). The fingerprint uses neither sequence nor fold. It describes the
 cavity and the protein environment around it, and it does not depend on which ligand (if any) is bound.
 
-Pockets come from [BURROW](https://github.com/zoidpuff/burrow) **[set the final URL]**, a fast pocket detector that
+Pockets come from [BURROW](https://github.com/zoidpuff/burrow), a fast pocket detector that
 also runs on AlphaFold models. Each pocket is described by a typed volumetric fingerprint of its buried core (A1:
 pharmacophore-typed cavity histograms, pair-distance distributions and shape moments) plus a block of
 protein-environment features (env). A small linear head trained contrastively maps this 627-d descriptor to the
@@ -30,8 +30,8 @@ BURROW (`burrow-pockets`, import name `pocketdetect`, MIT) is not on PyPI, so in
 
 ```bash
 uv venv --python 3.12 && source .venv/bin/activate          # or: python -m venv .venv
-uv pip install "git+https://github.com/zoidpuff/burrow"     # [set the final URL]; or a local clone: uv pip install /path/to/burrow
-uv pip install "pocketcompare[search] @ git+https://github.com/[set the final URL]/pocketcompare"
+uv pip install "git+https://github.com/zoidpuff/burrow"     # or a local clone: uv pip install /path/to/burrow
+uv pip install "pocketcompare[search] @ git+https://github.com/zoidpuff/pocketcompare"
 # from a clone of this repository instead:
 #   uv pip install -e ".[search,test]"   &&   pytest
 ```
@@ -233,7 +233,7 @@ If you use pocketcompare, please cite: **[citation to be added: authors, title, 
 pocketcompare builds on ideas and tools from the following work. Identifiers are those of the project's literature
 review (pocket methods, benchmarks) and of the Crossref/arXiv-checked reference list of the project briefing
 (standard methods).
-- **BURROW** pocket detection (MIT): https://github.com/zoidpuff/burrow **[set the final URL]**. The pinned BURROW model
+- **BURROW** pocket detection (MIT): https://github.com/zoidpuff/burrow. The pinned BURROW model
   and the example files 1a28_A.pdb and AF-P00918-F1-model_v6.cif.gz come from the BURROW release.
 - **VolSite/Shaper** pharmacophoric cavity typing: Desaphy J et al. *J Chem Inf Model* (2012). doi:10.1021/ci300184x
 - Alignment-free pocket fingerprints and distance histograms: **FuzCav**, Weill N, Rognan D. *J Chem Inf Model*

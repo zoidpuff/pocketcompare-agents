@@ -5,7 +5,7 @@ type: software
 version: 1.0.0
 date-released: 2026-10-28
 license: MIT
-repository-code: "https://github.com/[set the final URL]/pocketcompare"
+repository-code: "https://github.com/zoidpuff/pocketcompare"
 authors:
   - name: "pocketcompare authors [set author names]"
 keywords:
@@ -18,6 +18,6 @@ references:
     title: "BURROW: fast protein ligand-binding pocket detection and ranking"
     version: 1.0.0
     license: MIT
-    repository-code: "https://github.com/zoidpuff/burrow [set the final URL]"
+    repository-code: "https://github.com/zoidpuff/burrow"
     authors:
       - name: "BURROW authors [set author names]"
