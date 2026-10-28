@@ -34,6 +34,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D21 (03:40) **FREEZE** at commit 1daec1b (tag freeze-v1): FREEZE.json names final method A4b:n1_linear raw, weights,
+  evaluate.py f22d0296…, PREREG 4454979e…. Dry run reproduced dev numbers exactly. Final evaluation follows.
+  Known caveat: method.describe (API) locates a given D site over all region pockets, the evaluation uses the best
+  member of the matched merged pocket (API-only difference; documented, fixed post-test if needed).
 - D20 (02:55) L4 trained: best L4:egnn_small|CSLS BLiPS-val D 0.756 (SE 0.040) → one-SE threshold 0.716; A4b
   n1_linear raw (0.737) is within it and simpler → **final method = A4b:n1_linear raw** (configs/final_method.yaml from
   results/dev/final_select_pi.json). PREREG addendum A2 (sha256 4454979ed1efe50d04837e21bff49454154e0b6dfd13a709667ab7fd4e305e25): N1 raw and L4 reported descriptively at final eval.
