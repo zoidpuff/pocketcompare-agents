@@ -1176,7 +1176,8 @@ def enter_worktree(fr: dict, argv) -> int:
         raise SystemExit("main tree has uncommitted changes to tracked files; refusing")
     commit = fr["commit"]
     git("cat-file", "-e", f"{commit}^{{commit}}")
-    wt = ROOT.parent / f"{ROOT.name}_final_{commit[:10]}"
+    # the parent of ROOT is a read-only mount on this cluster -> worktree under FINAL_EVAL_WT_DIR (default /tmp)
+    wt = Path(os.environ.get("FINAL_EVAL_WT_DIR", "/tmp")) / f"{ROOT.name}_final_{commit[:10]}"
     if not wt.exists():
         git("worktree", "add", "--detach", str(wt), commit)
     if git("rev-parse", "HEAD", cwd=wt) != commit:
