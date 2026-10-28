@@ -1,0 +1,65 @@
+{
+ "vertex": {
+  "n_protein_pairs": 6977,
+  "n_scored": 6931,
+  "n_pos": 6569,
+  "label_conflicts": 0,
+  "auc_final_L": 0.821921817611433,
+  "reported": [
+   0.8219218176114329,
+   6931
+  ]
+ },
+ "blips_test": {
+  "n_sites": 3603,
+  "n_excluded": 3,
+  "n_pairs": 41438,
+  "n_pos": 6905,
+  "auc_final_L": 0.7258432588266326,
+  "reported": [
+   0.7258432441485254,
+   41438
+  ]
+ },
+ "ppips_test": {
+  "n_queries": 153,
+  "mrr_final_raw": 0.6832078778157209,
+  "mrr_ties_pessimistic": 0.6832078778157209,
+  "top1": 0.5424836601307189,
+  "reported_mrr": 0.6832078778157209,
+  "reported_top1": 0.5424836601307189
+ },
+ "tough_full_minus_dev_B0": {
+  "n_pairs": 866483,
+  "n_pos": 430846,
+  "L_shell_volume": [
+   0.8152563710265798,
+   866483
+  ],
+  "D_volume": [
+   0.5432913486768524,
+   794332
+  ],
+  "residue_list_points_volume": [
+   0.5932266508487494,
+   866483
+  ],
+  "fpocket_volume_shipped": [
+   0.5553063908945859,
+   866483
+  ],
+  "fpocket_n_residues_shipped": [
+   0.580223272288536,
+   866483
+  ],
+  "ligand_heavy_atoms": [
+   0.9564879259413177,
+   866483
+  ],
+  "reported_B0_L": [
+   0.8152563710265799,
+   866483
+  ],
+  "tm_score_auc": 0.5199714007207781
+ }
+}

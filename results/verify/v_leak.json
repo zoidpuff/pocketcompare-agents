@@ -1,0 +1,36 @@
+{
+ "test_dev_pocket_id_overlap": 0,
+ "test_dev_pdbchain_overlap": 0,
+ "test_dev_pdb_overlap": 1,
+ "test_dev_sid_overlap": 0,
+ "test_dev_group_overlap": 0,
+ "blips_train_sites": 2318,
+ "test_blipstrain_pdbchain_overlap": 0,
+ "test_blipstrain_pdb_overlap": 2,
+ "test_blipstrain_sid_overlap": 0,
+ "test_blipsall_v2_pdbchain_overlap": 0,
+ "blips_train_pairs_sites_all_train": true,
+ "ppips_train_pockets": 15555,
+ "ppips_train_pocket_split_consistent": true,
+ "ppips_train_pairs_in_train_pockets": true,
+ "ppips_train_complexes_mapped_to_nodes": 2966,
+ "direct_edges_test_to_blips_train": 0,
+ "direct_edges_test_to_ppips_train": 565,
+ "direct_edges_test_to_dev": 0,
+ "test_sealed_flags": {
+  "touch_burrow": 0,
+  "touch_sealed": 728
+ },
+ "input_stats_n_ref_a1": [
+  4636,
+  4636
+ ],
+ "input_stats_n_ref_env": [
+  4636,
+  4636
+ ],
+ "input_stats_mean_max_abs_diff_refit_on_blips_train": [
+  0.0,
+  0.0
+ ]
+}

@@ -1,0 +1,10 @@
+time	file	sha256	mode_before	mode_after	rows	purpose	user	host	pid
+2026-10-28T04:59:42+0100	data/sealed/tough_m1_test_pairs.parquet	17973ec019b5e7a511d47e4c0327c777768d102d39753773c6d1f9ebe7a0cda2	0o0	0o0	24337	verify C1a/C1b/C1-D/B0 (independent verifier)	gmagnusson	eu-g6-048	1632392
+2026-10-28T05:01:32+0100	data/sealed/tough_m1_test_pairs.parquet	17973ec019b5e7a511d47e4c0327c777768d102d39753773c6d1f9ebe7a0cda2	0o0	0o0	24337	verify C1a/C1b/C1-D/B0 (independent verifier)	gmagnusson	eu-g6-048	1632661
+2026-10-28T05:04:31+0100	data/sealed/prospeccts_pairs.parquet	25b92e1254af89498e3499810e689be65dfa8e8dc947d933e1b533765b3e5c57	0o0	0o0	450625	verify C2 + ProSPECCTs sanity + P6/P6.2 (independent verifier)	gmagnusson	eu-g6-048	1633744
+2026-10-28T05:06:55+0100	data/sealed/tough_m1_test_pairs.parquet	17973ec019b5e7a511d47e4c0327c777768d102d39753773c6d1f9ebe7a0cda2	0o0	0o0	24337	verify: sensitivity to PPIPS-train homology (verifier)	gmagnusson	eu-g6-048	1634438
+2026-10-28T05:08:17+0100	data/sealed/vertex_pairs.parquet	abbc5e934a530ad358360e97e2234a32272ecd88fb0dfe80ab4495d7ba402e75	0o0	0o0	1564604	verify spot check Vertex AUC (verifier)	gmagnusson	eu-g6-048	1634764
+2026-10-28T05:08:22+0100	data/sealed/blips_test_pairs.parquet	a10773a548b66a250054f3e5c0ee107af3b55b83cda1aa7bfe4e6ea3bd8916b9	0o0	0o0	41514	verify spot check BLiPS-test AUC (verifier)	gmagnusson	eu-g6-048	1634764
+2026-10-28T05:08:22+0100	data/sealed/blips_test_sites.parquet	4059e7c80e6172fc473ccde065345d6edcbf6cde39bf155a30eb216423794d32	0o0	0o0	3606	verify spot check BLiPS-test AUC (verifier)	gmagnusson	eu-g6-048	1634764
+2026-10-28T05:08:22+0100	data/sealed/ppips_test_queries.parquet	85989dcc06b0bce9fe51d720e05b02ddc42f71aa2be7e477b73944f6e8070e41	0o0	0o0	153	verify spot check PPIPS-test MRR (verifier)	gmagnusson	eu-g6-048	1634764
+2026-10-28T05:08:23+0100	data/sealed/tough_m1_pairs.parquet	740fe939cec3c67bc9fbe6e412123ef452f4054b23a0a0586fd44086adc1b875	0o0	0o0	1061926	verify B0 on TOUGH-M1 full-minus-dev (verifier)	gmagnusson	eu-g6-048	1634764

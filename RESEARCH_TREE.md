@@ -5,6 +5,17 @@ Started 2026-10-27 ~18:00 CET; 24 h budget (revisit ~2026-10-28 18:00).
 
 ## Status summary (latest first)
 
+### 2026-10-28 05:35 — M3 final evaluation done and verified
+The frozen method (A4b:n1_linear on the ligand-free N1 descriptor) beats B1 and ESM-2 on the BURROW-clean
+TOUGH-M1 test in both pocket modes (C1a/C1b/C1-D reject under Holm; C1a/C1b only marginally and Monte-Carlo-fragile,
+C1-D robust), but not on ProSPECCTs D5.2/D6.2/D7 (C2). It is robust to AlphaFold models (BLiPS-test AF ≈ holo). The
+largest finding is methodological: ligand-defined 4 Å pockets leak ligand size (ligand heavy-atom count alone gives
+ROC 0.95 on TOUGH-M1), so L-mode benchmark numbers in the literature and ours overstate pocket similarity.
+
+Independent verification reproduced all headlines. Remaining time goes to exploratory (dev-selected, clearly
+labelled) improvements — A4b+L4 fusion, API/CLI for the docking team, proteome fingerprints with the final head —
+and REPORT.md.
+
 ### 2026-10-27 23:05 — M2 dev results, PREREG consolidated
 Dev evaluation on TOUGH-M1-dev, BLiPS-val and PPIPS-val is complete for all arms. The typed volumetric fingerprint
 A1 wins in ligand-defined (L) mode (TOUGH-M1-dev ROC 0.795, BLiPS-val 0.775 vs B1 0.64/0.69) but collapses in the
@@ -34,6 +45,8 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- DEV4 (05:30, found by the verifier) 66 TOUGH-M1-test pockets have homology edges to PPIPS-train chains used to
+  train A4b (PPIPS was not in the TOUGH-M1-test exclusion check); excluding them leaves Δ unchanged. Disclosed.
 - DEV3 (04:25) First final-eval run aborted at the PPIPS step: recorded sealed hash for ppips_test_queries /
   ppips_sym_test_pairs was the pre-rebuild one (the D18 rebuild rewrote them but did not update
   data/sealed_SHA256SUMS.txt). The observed hash equals the creation log of the rebuild (logs/ppips_build_D15.log,
@@ -243,4 +256,16 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44
   - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
 - [ ] P4 Exploratory PPI-R task (modulator pockets retrieving other families' modulator pockets) (TOUGH-M1-dev, BLiPS-val, PPI val)
-- [ ] P5 Freeze, final held-out evaluation, verification, REPORT.md
+- [x] P5 Freeze (D21) + final evaluation (results/final/) + independent verification (reports/verification_final.md)
+  - [!] C1a TOUGH-M1-test L: final 0.698 vs B1 0.568, Δ +0.129 [+0.015, +0.208], Holm p 0.0495 — rejects, FRAGILE
+        (B = 20,000: p 0.0164 vs Holm threshold 0.0167; 30–50 % of B = 2000 reruns would not reject)
+  - [!] C1b vs B4: Δ +0.130 [+0.012, +0.251], Holm p 0.0495 — rejects, FRAGILE (same)
+  - [!] C1-D TOUGH-M1-test D: final 0.699 vs B1 0.546, Δ +0.154 [+0.050, +0.289], Holm p 0.024 — robust
+  - [-] C2 ProSPECCTs P5.2+P6.2+P7 macro Δ +0.022 [−0.064, +0.113], p 0.27 — not supported
+  - [!] size-stratified TOUGH-M1-test L: final 0.719, L4 0.726, G-LoSA 0.658, SiteEngine 0.613, B1 0.567, B0 0.504
+  - [!] ligand-size imprint: B0 (L-mode volume) ROC 0.796 test / 0.815 full; ligand heavy-atom count alone 0.95;
+        with TOUGH-M1's own fpocket pockets B0 0.48–0.59 → L-mode ligand-shell pockets leak ligand size
+  - [x] BLiPS-test D: final 0.728 vs B1 0.648, B4 0.655 (L4 0.740); AF models D 0.723 (C5: no loss vs holo)
+  - [x] Vertex final 0.822 (L4 0.840, B4 0.837); ProSPECCTs P1/P1.2/P2 0.99/1.00/1.00 (L), P7 0.890
+  - [x] PPIPS-test P-ortho MRR final 0.683 (B1 0.628, L4 0.747, B4 0.954); P-sym percentile 0.998
+  - [-] ProSPECCTs P6 ≡ P6.2: BURROW strips cofactors, so the D6.2 condition is untestable; D-mode P6 has 4 pairs
