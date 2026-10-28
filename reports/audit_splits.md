@@ -61,3 +61,27 @@ Small as these numbers are, they break a hard requirement. **Fix:** rerun `build
 | Info | — | PPIPS val/test with a BURROW sequence edge: 37 / 25 complexes (theirs: 37 / 24). TOUGH-M1: 73 % of test pockets have a dev ligand with Tc ≥ 0.6; 57 of 77 positive-capable test clusters occur in dev. BLiPS-v2: 46 % of test sites carry a train qualifying CCD. |
 
 **Verdict: PASS.** No leak beyond threshold-level alignment variance (1 sequence pair, 4 structural pairs at min-TM ≤ 0.56). The PPIPS–BURROW homology warning still applies; it is now handled by the `burrow_rep_edge` stratification flag.
+
+## PDB-T audit (2026-10-28 08:00; own gemmi extraction, MMseqs2 `easy-search` with exact alignments, exhaustive Foldseek with exact TM)
+
+**Inputs.**
+- **PDB-T:** 960 chains (829 unique sequences) behind the 996 non-excluded sites in `pdbt_sites.parquet`.
+- **Training side** (19,661 unique sequences; one structure per sequence for Foldseek):
+  - BLiPS v2 train+val proteins (1,851 chains);
+  - PPIPS train+val, both chains of each complex (3,480 model chains);
+  - TOUGH-M1-dev (765);
+  - BURROW train/dev representatives (7,054);
+  - BURROW assembly partners (2,478 chains; the chain IDs come from `homology_nodes` `burrow_partner`, but I extracted the sequences and structures myself);
+  - as a conservative superset, every other protein chain of the BURROW entries (20,262).
+
+Code: `results/audit/scripts/b1_pdbt_extract.py`, `b2_pdbt_check.py`. Output: `results/audit/pdbt/pdbt_audit.json`, `leak_examples.tsv`. `data/sealed/` was not opened.
+
+| Check | Result | Counts |
+|---|---|---|
+| Sequence edge (BURROW rule) to BLiPS-v2 / PPIPS / BURROW rep / partners / TOUGH-M1-dev | **PASS** | 0 PDB-T chains, and 0 identical sequences. Near misses at 25–30 % identity: 68 chains. |
+| Sequence edge to *other* chains of BURROW entries (not featurised, not assembly partners; info) | info | 51 chains, 44 proteins, 79 sites. Example: 9uz0_A / 21ok_A vs 3rlf_E at 99.7 % identity; 9tb0_C vs 3mmp_A at 98.6 %. These are only training data if non-assembly chains of BURROW entries count as training. PREREG2 and the builder count only representatives and partners. |
+| Foldseek min-TM ≥ 0.5 to frozen-model training chains | **FAIL (boundary)** | 8 pairs, 7 chains, 9 sites, 6 proteins, 6 PDB-T groups. BURROW rep 6: 9kmd_H / 9lo8_O / 9l3u_A (MSP1) vs 8bv3 at TM 0.51–0.53; 9qmf_C–5zsx_A at 0.50; 32qr_A–4kg0_A at 0.50; 9woj_C–3csv_A at 0.53. BLiPS-v2/BURROW rep 1: 9lqe_B–6zm9_A at 0.555/0.570. PPIPS 1: 9s30_A–AF-…65792505_B at 0.50/0.55. All have min-TM 0.500–0.557 and fident 0.11–0.18, and none appears in their `train_hits.parquet`. For the three 8bv3 pairs, my structure is chain A, a copy with the same sequence as rep chain E. This is the same threshold-variance pattern seen before. Being conservative would mean dropping these 9 sites. One-direction-only pairs: 4,611; partners and TOUGH-M1-dev: 0. |
+| Release dates (50 random entries, initial `pdbx_audit_revision_history` date) | **PASS** | 50 / 50 after 2025-11-12 (range 2025-11-19 … 2026-10-21). |
+| PDB-T homology components (own sequence ∪ identity ∪ min-TM ≥ 0.5 graph) | **PASS** | 316 components against their 317. Largest: 12 proteins (2.2 %) / 32 sites (3.2 %), identical to theirs. 1 of my components joins 2 of theirs (31 sites). |
+
+**Verdict: PASS with one boundary caveat.** There is no sequence leak and no clear structural leak. 9 sites (0.9 %) sit just over the TM 0.5 line against BURROW, BLiPS or PPIPS training chains. The PI should decide whether to drop them before the first PDB-T evaluation; this is a filtering choice, not a pair-label decision. The 51 chains with high identity to non-assembly chains of BURROW entries should be disclosed.

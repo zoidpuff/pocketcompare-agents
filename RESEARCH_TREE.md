@@ -49,6 +49,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   pre-registered reported items were not run (blind test on BLiPS-test; PPIPS-test BURROW-homology strata). Computed
   post-hoc with a separate script importing the frozen functions; disclosed in REPORT. Also: the B0m size diagnostic
   fails on test (0.582 stratified) → residual size signal in TOUGH-M1-test; reported as a limitation.
+- D25 (08:00) Before any PDB-T score: exclude the 9 audit boundary sites (excluded_audit_tm_boundary in
+  pdbt_sites.parquet; strict option). Disclose: 51 PDB-T chains are near-identical to non-featurised, non-partner
+  chains of BURROW entries (never used in training). 83 % of PDB-T positives use a ligand seen in BLiPS-train
+  (new proteins, mostly familiar chemotypes).
 - D24 (06:45) PREREG2 (sha256 20c3e6c5ac5c573fd63d381276e0476d4a85f865b65396b590bad7cc13e3e686): temporal replication set PDB-T (PDB released > 2025-11-12, after every
   training source) with claims R1 FINAL−B1, R2 FUSION−FINAL, R3 L4−FINAL (D-mode, Holm); frozen artefacts only;
   feasibility gate before any score.
@@ -279,7 +283,8 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] gate PASS: 996 sites, 545 proteins, 317 homology groups; 1,353 pos / 6,765 neg; 38 ligand clusters
   - [x] leakage: 9,082/13,036 chains removed (edge to any training source); 208 exact-sequence test overlaps removed
   - [x] eval_pdbt.py dry run on BLiPS-val reproduces dev exactly
-  - [~] independent PDB-T leakage check (auditor) before the single evaluation
+  - [x] independent PDB-T audit PASS with boundary caveat (reports/audit_splits.md "PDB-T audit"): 0 sequence edges;
+        9 sites (8 chains) at min-TM 0.50–0.56 vs training chains → excluded before any score (D25)
 - [x] P6 REPORT.md written (143 tagged numbers checked)
   - [!] gaps found by the writer: FINAL paired C5 Δ skipped by a key-parsing bug in final_eval; blind test on
         BLiPS-test and PPIPS-test BURROW-homology strata not run; B0m stratified 0.582 on test (fails 0.5 ± 0.03 band)
