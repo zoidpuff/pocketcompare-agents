@@ -4,14 +4,15 @@ What is kept: the conversation records (user / assistant messages incl. tool cal
 queue operations) and the session's cost record. What is dropped: harness bookkeeping records that duplicate the
 conversation or carry account identifiers (api-request*, bridge-session, file-history*, atis-latch, frame-link,
 artifact-*). Redactions applied to every exported line:
-  * the session owner's institutional e-mail -> the public address chosen by the owner;
+  * the session owner's private e-mail (--email-from) -> the public address chosen by the owner (--email-to);
   * ProSPECCTs pair-label rows (e.g. "1eyn,1ow4,active"), because the ProSPECCTs licence forbids redistribution;
   * any account / organisation UUID field that might remain.
 Outputs: agent_logs/raw/ (gzipped JSONL, one file per agent, + sub-agent meta.json + persisted tool outputs) and
 agent_logs/readable/ (Markdown renderings with long tool outputs truncated). A redaction summary is printed and
 written to agent_logs/EXPORT.json.
 
-    python scripts/meta/export_transcripts.py --session <~/.claude/projects/.../SESSION_ID> --out agent_logs
+    python scripts/meta/export_transcripts.py --session <~/.claude/projects/.../SESSION_ID> --out agent_logs \
+        --email-from <private address> --email-to <public address>
 """
 import argparse
 import gzip
@@ -20,7 +21,7 @@ import re
 from pathlib import Path
 
 KEEP = {"user", "assistant", "attachment", "queue-operation", "cost-state"}
-EMAIL_FROM, EMAIL_TO = "zoidpuff@gmail.com", "zoidpuff@gmail.com"
+EMAIL_FROM, EMAIL_TO = "", ""  # set from --email-from / --email-to
 PROSPECCTS_ROW = re.compile(r"(?:(?<=\\n)|(?<=\\t)|(?<![A-Za-z0-9_.\\]))[A-Za-z0-9_.]{4,8}[,; \t]+[A-Za-z0-9_.]{4,8}"
                             r"[,; \t]+(?:active|inactive)(?![A-Za-z])")
 UUID_FIELD = re.compile(r'("(?:owner)?(?:Account|Organization|account|organization)Uuid"\s*:\s*")[0-9a-f-]{36}(")')
@@ -28,7 +29,7 @@ TRUNC = 1500
 
 
 def redact(line: str, stats: dict) -> str:
-    n = line.count(EMAIL_FROM)
+    n = line.count(EMAIL_FROM) if EMAIL_FROM else 0
     if n:
         stats["email"] += n
         line = line.replace(EMAIL_FROM, EMAIL_TO)
@@ -96,7 +97,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--session", type=Path, required=True, help="session directory (its .jsonl sits next to it)")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--email-from", required=True, help="address to replace (the session owner's private address)")
+    ap.add_argument("--email-to", required=True, help="public replacement address")
     a = ap.parse_args()
+    global EMAIL_FROM, EMAIL_TO
+    EMAIL_FROM, EMAIL_TO = a.email_from, a.email_to
     stats = {"email": 0, "prospeccts_rows": 0, "uuid_fields": 0, "dropped_records": 0}
     raw, readable = a.out / "raw", a.out / "readable"
     main_rec = export_jsonl(a.session.with_suffix(".jsonl"), raw / "main_session_PI.jsonl.gz", stats)
