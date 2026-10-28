@@ -148,6 +148,10 @@ More details are in the folder's `README.md`, `results/release/human_afdb_v6.jso
 
 ## Reproduce
 
+**One command:** `bash scripts/reproduce_all.sh smoke` (< 5 min: tests, describe/compare demo, report check, freeze hashes) or
+`bash scripts/reproduce_all.sh all` (all stages below, logs in `logs/reproduce_<stage>.log`; final evaluation and PREREG2
+are printed instructions only). Manual steps:
+
 Run everything from the project root with `.venv` active and `NUMBA_CACHE_DIR` set. Long jobs should run detached
 (see LESSONS.md). Sealed test labels live in `data/sealed/` (chmod 000) and are read only by
 `scripts/final_eval.py`.

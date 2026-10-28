@@ -5,6 +5,19 @@ Started 2026-10-27 ~18:00 CET; 24 h budget (revisit ~2026-10-28 18:00).
 
 ## Status summary (latest first)
 
+### 2026-10-28 08:30 — M4 project complete (14.5 h of 24 h)
+Final method: `pocketcompare` = ligand-free sph8 site → N1 descriptor (typed volumetric fingerprint + protein
+environment, 627-d) → frozen linear contrastive head (A4b:n1_linear, 384-d), cosine + FAISS; ≈ 3.5 ms/pocket after
+BURROW, ≈ 0.1 µs/pair, 116 k human AFDB pockets indexed in minutes. Confirmatory: C1-D (TOUGH-M1-test, detected
+pockets) Δ +0.154 vs B1 (Holm p 0.024); C1a/C1b borderline; C2 (ProSPECCTs) not supported; replicated on a fresh
+temporal PDB set (R1 Δ +0.081, Holm p 0.003); AF models ≈ holo (C5). Key methodological finding: 4 Å ligand-shell
+pockets leak ligand size (ligand heavy-atom count alone ROC 0.95 on TOUGH-M1). Negatives: fragment docking, PPI
+fragment sub-hypothesis, PPI-L feasibility, PPI-R recognition, fusion/L4 on fresh data.
+
+Everything is committed on branch `pocket-compare` (REPORT.md, README.md, docs/FINGERPRINTS.md, PREREG/PREREG2,
+FREEZE.json, tag freeze-v1). `bash scripts/reproduce_all.sh smoke` passes in 135 s. Remaining ideas need new
+training and another unseen held-out set (REPORT §11); stopped here rather than add untestable variants (D26).
+
 ### 2026-10-28 05:35 — M3 final evaluation done and verified
 The frozen method (A4b:n1_linear on the ligand-free N1 descriptor) beats B1 and ESM-2 on the BURROW-clean
 TOUGH-M1 test in both pocket modes (C1a/C1b/C1-D reject under Holm; C1a/C1b only marginally and Monte-Carlo-fragile,
@@ -52,6 +65,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
 - DEV7 (08:05) First PDB-T run aborted at set construction (pairs referenced the 9 D25-excluded sites; the script
   raised instead of dropping them) after unsealing pdbt_pairs but before any score was computed. Fix: drop and count
   pairs involving excluded sites; re-run recorded with --rerun.
+- D26 (08:30) Stop research: the remaining ideas (PDB-wide cross-family training, blind-search re-ranking,
+  cofactor-aware pockets, PPI-specific training) each need new training AND a further unseen held-out set to be
+  tested honestly; both held-out reserves (PREREG tests, PDB-T) are spent. Documented as follow-ups.
 - D25 (08:00) Before any PDB-T score: exclude the 9 audit boundary sites (excluded_audit_tm_boundary in
   pdbt_sites.parquet; strict option). Disclose: 51 PDB-T chains are near-identical to non-featurised, non-partner
   chains of BURROW entries (never used in training). 83 % of PDB-T positives use a ligand seen in BLiPS-train
