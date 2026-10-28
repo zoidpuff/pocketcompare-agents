@@ -1519,7 +1519,10 @@ def main():
         if not fp.exists():
             raise SystemExit("FREEZE.json missing (python scripts/final_eval.py --write-freeze, review, commit)")
         fr = json.loads(fp.read_text())
-        if os.environ.get("FINAL_EVAL_WORKTREE") != fr["commit"]:
+        if os.environ.get("FINAL_EVAL_WORKTREE"):
+            if os.environ["FINAL_EVAL_WORKTREE"] != fr["commit"]:
+                raise SystemExit("inside a final-eval worktree whose FREEZE.json names another commit; refusing to nest")
+        else:
             return enter_worktree(fr, sys.argv[1:])
         if git("rev-parse", "HEAD") != fr["commit"] or not tracked_clean():
             raise SystemExit("worktree is not clean at the frozen commit")
