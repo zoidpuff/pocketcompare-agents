@@ -49,6 +49,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   pre-registered reported items were not run (blind test on BLiPS-test; PPIPS-test BURROW-homology strata). Computed
   post-hoc with a separate script importing the frozen functions; disclosed in REPORT. Also: the B0m size diagnostic
   fails on test (0.582 stratified) → residual size signal in TOUGH-M1-test; reported as a limitation.
+- D24 (06:45) PREREG2 (sha256 20c3e6c5ac5c573fd63d381276e0476d4a85f865b65396b590bad7cc13e3e686): temporal replication set PDB-T (PDB released > 2025-11-12, after every
+  training source) with claims R1 FINAL−B1, R2 FUSION−FINAL, R3 L4−FINAL (D-mode, Holm); frozen artefacts only;
+  feasibility gate before any score.
 - D23 (06:45) Post-freeze API fix: method.describe(site, locate="burrow") now locates D sites exactly as evaluated
   (old rule kept as "burrow_flat"; differed on 4/765 TOUGH-dev and 2/523 BLiPS-val sites); regression test matches stored
   evaluation embeddings to ≤ 1.1e-7. Evaluated numbers unaffected (frozen tag holds the evaluated code).
@@ -272,6 +275,7 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
       pockets across families (AUC 0.552 [0.495, 0.590], P@10 0.52 vs chance 0.55; B1 0.493; B4 P@10 0.74, cause unclear)
 - [x] P6 EXPLORATORY dimer interface atlas: 15,161 AFDB dimers, 0 errors, 347 s (43.7 dimers/s), 127,824 pockets
       (32,473 interface); interface pockets not closer to modulator pockets than to ligand pockets
+- [ ] P7 Temporal replication PDB-T (PREREG2)
 - [x] P6 REPORT.md written (143 tagged numbers checked)
   - [!] gaps found by the writer: FINAL paired C5 Δ skipped by a key-parsing bug in final_eval; blind test on
         BLiPS-test and PPIPS-test BURROW-homology strata not run; B0m stratified 0.582 on test (fails 0.5 ± 0.03 band)
