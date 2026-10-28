@@ -1,0 +1,22 @@
+{
+ "tar": "/cluster/work/beltrao/shared/alphafold/v6/UP000005640_9606_HUMAN_v6.tar",
+ "n_structures": 2000,
+ "workers": 24,
+ "device": "cuda:0",
+ "rc": 0,
+ "wall_s_incl_startup": 30.562547206878662,
+ "structures_per_s": 65.43957172358537,
+ "pockets": 9420,
+ "pockets_per_structure": 4.71,
+ "pockets_per_s": 308.2203828180871,
+ "residues_mean": 513.9885,
+ "residues_median": 402,
+ "peak_rss_tree_GB": 15.003578368,
+ "cpu_count": 128,
+ "loadavg_start": [
+  45.06005859375,
+  25.83203125,
+  19.8798828125
+ ],
+ "seed": 0
+}

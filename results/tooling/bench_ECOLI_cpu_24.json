@@ -1,0 +1,22 @@
+{
+ "tar": "/cluster/work/beltrao/shared/alphafold/v6/UP000000625_83333_ECOLI_v6.tar",
+ "n_structures": 2000,
+ "workers": 24,
+ "device": "cpu",
+ "rc": 0,
+ "wall_s_incl_startup": 25.168424606323242,
+ "structures_per_s": 79.46464791830975,
+ "pockets": 9239,
+ "pockets_per_structure": 4.6195,
+ "pockets_per_s": 367.08694105863185,
+ "residues_mean": 310.635,
+ "residues_median": 269,
+ "peak_rss_tree_GB": 9.986523136,
+ "cpu_count": 128,
+ "loadavg_start": [
+  60.02587890625,
+  31.2587890625,
+  21.89013671875
+ ],
+ "seed": 0
+}

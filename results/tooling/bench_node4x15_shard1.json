@@ -1,0 +1,22 @@
+{
+ "tar": "/cluster/work/beltrao/shared/alphafold/v6/UP000001014_99287_SALTY_v6.tar",
+ "n_structures": 4000,
+ "workers": 15,
+ "device": "cuda:1",
+ "rc": 0,
+ "wall_s_incl_startup": 103.07624435424805,
+ "structures_per_s": 38.806225673618556,
+ "pockets": 18569,
+ "pockets_per_structure": 4.64225,
+ "pockets_per_s": 180.14820113335574,
+ "residues_mean": 310.1245,
+ "residues_median": 270,
+ "peak_rss_tree_GB": 15.714963456,
+ "cpu_count": 128,
+ "loadavg_start": [
+  136.72119140625,
+  79.02099609375,
+  49.5947265625
+ ],
+ "seed": 0
+}

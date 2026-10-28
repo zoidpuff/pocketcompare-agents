@@ -1,0 +1,1 @@
+4000 structures (0 errors), 18262 pockets -> /tmp/pc_bench_afdb/node_3/out3/fp.parquet  [68.4 s wall, 0.017 s/structure; cpu, backend fast, 15 workers]

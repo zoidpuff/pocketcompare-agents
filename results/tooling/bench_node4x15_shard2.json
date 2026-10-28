@@ -1,0 +1,22 @@
+{
+ "tar": "/cluster/work/beltrao/shared/alphafold/v6/UP000002438_208964_PSEAE_v6.tar",
+ "n_structures": 4000,
+ "workers": 15,
+ "device": "cuda:2",
+ "rc": 0,
+ "wall_s_incl_startup": 109.14881467819214,
+ "structures_per_s": 36.64721428073554,
+ "pockets": 19034,
+ "pockets_per_structure": 4.7585,
+ "pockets_per_s": 174.38576915488008,
+ "residues_mean": 330.68525,
+ "residues_median": 290,
+ "peak_rss_tree_GB": 16.37394432,
+ "cpu_count": 128,
+ "loadavg_start": [
+  126.9736328125,
+  77.9580078125,
+  49.40869140625
+ ],
+ "seed": 0
+}

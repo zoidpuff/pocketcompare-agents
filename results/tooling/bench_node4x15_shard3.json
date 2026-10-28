@@ -1,0 +1,22 @@
+{
+ "tar": "/cluster/work/beltrao/shared/alphafold/v6/UP000002311_559292_YEAST_v6.tar",
+ "n_structures": 4000,
+ "workers": 15,
+ "device": "cuda:3",
+ "rc": 0,
+ "wall_s_incl_startup": 61.983389139175415,
+ "structures_per_s": 64.5334186392831,
+ "pockets": 18262,
+ "pockets_per_structure": 4.5655,
+ "pockets_per_s": 294.62732279764697,
+ "residues_mean": 476.9725,
+ "residues_median": 393,
+ "peak_rss_tree_GB": 16.21628928,
+ "cpu_count": 128,
+ "loadavg_start": [
+  52.947265625,
+  48.54345703125,
+  37.20361328125
+ ],
+ "seed": 0
+}
