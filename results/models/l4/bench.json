@@ -1,0 +1,93 @@
+{
+ "egnn_base": {
+  "gpu": {
+   "ms_per_pocket": 0.9031181971295155,
+   "batch": 256,
+   "n": 1024
+  },
+  "cpu1": {
+   "ms_per_pocket": 144.9296581959061,
+   "batch": 32,
+   "n": 128
+  },
+  "n_params_per_seed": 615941
+ },
+ "egnn_inv": {
+  "gpu": {
+   "ms_per_pocket": 0.8416294131166069,
+   "batch": 256,
+   "n": 1024
+  },
+  "cpu1": {
+   "ms_per_pocket": 118.01021851533733,
+   "batch": 32,
+   "n": 128
+  },
+  "n_params_per_seed": 549381
+ },
+ "egnn_n1cat": {
+  "gpu": {
+   "ms_per_pocket": 0.9150420175956242,
+   "batch": 256,
+   "n": 1024
+  },
+  "cpu1": {
+   "ms_per_pocket": 145.4121489841782,
+   "batch": 32,
+   "n": 128
+  },
+  "n_params_per_seed": 729349
+ },
+ "egnn_nce": {
+  "gpu": {
+   "ms_per_pocket": 0.9013297753881488,
+   "batch": 256,
+   "n": 1024
+  },
+  "cpu1": {
+   "ms_per_pocket": 145.8532815468061,
+   "batch": 32,
+   "n": 128
+  },
+  "n_params_per_seed": 615941
+ },
+ "egnn_noppi": {
+  "gpu": {
+   "ms_per_pocket": 0.9022266981446592,
+   "batch": 256,
+   "n": 1024
+  },
+  "cpu1": {
+   "ms_per_pocket": 145.69021507850266,
+   "batch": 32,
+   "n": 128
+  },
+  "n_params_per_seed": 615941
+ },
+ "egnn_small": {
+  "gpu": {
+   "ms_per_pocket": 0.5352560235678538,
+   "batch": 256,
+   "n": 1024
+  },
+  "cpu1": {
+   "ms_per_pocket": 47.13761167113262,
+   "batch": 32,
+   "n": 128
+  },
+  "n_params_per_seed": 138500
+ },
+ "_extraction_ms_median": {
+  "blips": {
+   "L": 4.243252100422978,
+   "U": 4.419752047397196
+  },
+  "tough_m1": {
+   "L": 5.122186033986509,
+   "U": 4.850630881264806
+  },
+  "ppips": {
+   "D": 4.980861209332943
+  }
+ }
+}

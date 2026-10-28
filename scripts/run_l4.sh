@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 source .venv/bin/activate
 export NUMBA_CACHE_DIR=/tmp/numba_cache
-: "${L4_AUDIT_PASSED:?set L4_AUDIT_PASSED=1 only after the PI's go}"
+: "${L4_AUDIT_PASSED:?set L4_AUDIT_PASSED=1 only after the PI go}"
 python scripts/l4_extract.py --dataset all --workers 16
 python scripts/train_l4.py --all --devices cuda:2,cuda:3
 python scripts/bench_l4.py --models results/models/l4 --device cuda:2

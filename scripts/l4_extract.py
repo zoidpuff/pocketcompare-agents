@@ -73,10 +73,16 @@ def work(task):
             try:
                 t0 = time.perf_counter()
                 I = pk.shape_site(fs, idx, "sph8")
+                fb = len(I) == 0
+                if fb:                  # SPH_FALLBACK (as pocketcompare.a4b.raw_parts): empty sph8 -> located set
+                    I = np.asarray(idx, np.int64)
                 if len(I) == 0:
                     rec["sets"][loc] = {"n_sph8": 0}
                     continue
                 d = L4.site_points(fs, I, at, a1_cfg=cfg)
+                d["fallback"] = fb
+                if fb:
+                    d["n_sph8"] = 0
                 d["t_ms"] = 1e3 * (time.perf_counter() - t0)
                 rec["sets"][loc] = d
             except Exception as e:  # noqa: BLE001
@@ -116,14 +122,16 @@ def run(dataset, workers, limit=None):
         sizes = np.zeros(n, np.int64)
         parts = {k: [] for k in ("xyz", "feats", "types", "vol")}
         nsph, tms = np.zeros(n, np.int64), np.full(n, np.nan)
+        nfb = np.zeros(n, bool)
         for i, r in enumerate(res):
             d = r["sets"].get(loc)
             if d is None:
                 nsph[i] = -1
                 continue
             nsph[i] = d["n_sph8"]
-            if d["n_sph8"] == 0:
+            if "xyz" not in d:
                 continue
+            nfb[i] = d.get("fallback", False)
             sizes[i] = len(d["xyz"])
             tms[i] = d["t_ms"]
             for k in parts:
@@ -142,6 +150,7 @@ def run(dataset, workers, limit=None):
         tab[f"n_pts_{loc}"] = sizes
         tab[f"t_ms_{loc}"] = tms
         tab[f"has_{loc}"] = sizes > 0
+        tab[f"sph8_fallback_{loc}"] = nfb
         # consistency with the a1r (N1) sph8 set of the same locator
         a1r_loc = A4.locator(dataset, "L" if loc == "L" else "D")
         with np.load(A4.a1r_dir(dataset) / f"{a1r_loc}_sph8.npz") as z:
@@ -153,6 +162,7 @@ def run(dataset, workers, limit=None):
         mism = int((refn[ok] != nsph[ok]).sum())
         summ[loc] = {"n_sets": int((sizes > 0).sum()), "n_empty_sph8": int((nsph == 0).sum()),
                      "n_no_locator": int((nsph < 0).sum()), "n_capped": int((nsph > L4.CAP).sum()),
+                     "n_sph8_fallback_to_located": int(nfb.sum()),
                      "pts_median": float(np.median(sizes[sizes > 0])), "sph8_median": float(np.median(nsph[nsph > 0])),
                      "t_ms_median": float(np.nanmedian(tms)), "t_ms_p90": float(np.nanpercentile(tms, 90)),
                      "n_mismatch_vs_a1r_sph8": mism, "bytes": int(f.stat().st_size)}

@@ -45,3 +45,8 @@ One additional learned candidate is declared for the §1 selection: **L4 = point
 trained under the same data rules as A4b (BLiPS-train v2 + PPIPS-train + L↔D same-site positives), seeds SEEDS[:3]
 ensemble, time box 3 h. Same objective, one-SE rule (L4 counts as "learned", more complex than A4b) and guards. No
 other candidates will be added.
+
+## Addendum A2 (2026-10-28 02:55, before any test use)
+Final method (PREREG §1, decision D19): **A4b:n1_linear, raw cosine** (linear projection of N1 = A1(sph8)+env(sph8),
+3-seed ensemble, 384 stored dims). Descriptive (non-claim) arms added to the final evaluation: N1 raw (non-learned
+parent) and L4:egnn_small|CSLS (best dev candidate, more complex). They are not in the Holm family.

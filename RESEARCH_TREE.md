@@ -34,6 +34,9 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D20 (02:55) L4 trained: best L4:egnn_small|CSLS BLiPS-val D 0.756 (SE 0.040) → one-SE threshold 0.716; A4b
+  n1_linear raw (0.737) is within it and simpler → **final method = A4b:n1_linear raw** (configs/final_method.yaml from
+  results/dev/final_select_pi.json). PREREG addendum A2 (sha256 4454979ed1efe50d04837e21bff49454154e0b6dfd13a709667ab7fd4e305e25): N1 raw and L4 reported descriptively at final eval.
 - D19 (01:20) A4b tie-break: the agent picked n1_base by "grid order" (not a declared rule). PREREG says "simplest"
   (non-learned < learned; fewer stored dims; no CSLS); all A4b heads store 384 dims, so the natural next criterion is
   fewest parameters → **A4b:n1_linear raw** (0.737 ≥ threshold 0.715). Provisional final method pending L4 (Addendum A1).
@@ -214,7 +217,9 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
 - [x] P4 AF robustness (C5) on val — reports/af_robustness_dev.md (239 val sites with holo + AF)
   - [!] holo/holo vs holo/AF ligand-sharing ΔAUC (N1): val L −0.005 [−0.054, +0.041], train L −0.008 [−0.019, +0.003]
   - [x] same-site holo→AF retrieval: L top-1 0.78 (B1 0.88), D top-1 0.55 (B1 0.41); pLDDT 70–90 −0.17 top-1
-- [~] P4 L4 point-cloud network candidate (cuda:2,3; training gated on re-audit)
+- [x] P4 L4 point-cloud network — reports/l4_pointnet.md
+  - [!] egnn_small+CSLS: BLiPS-val D 0.756, L 0.765, PPIPS MRR 0.821 (best), but TOUGH-M1-dev D 0.646–0.681 (< A4b 0.72)
+  - [x] vs N1 on BLiPS-val D +0.059 [−0.006, +0.130]; vs B1 +0.108 [+0.018, +0.181]; 0.54 ms/pocket GPU, 47 ms CPU
 - [x] P3 Split rebuild (mmseqs -a, exhaustive Foldseek) — verify_splits 101/101; seq edges 1.02 M → 1.21 M
   - [x] TOUGH-M1 dev 765 / test 1,045 / excluded 5,714 (254 pockets moved); BLiPS-test unchanged (0 moved)
   - [x] BLiPS v2 train/val redrawn (972 sites moved); PPIPS redrawn (681 complexes moved); 128 readmitted

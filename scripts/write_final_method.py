@@ -66,7 +66,8 @@ def main():
                  "D_pockets": "BURROW region-rule output (pk_in_region), each sub-pocket separately",
                  "D_locator_with_site": "best-covering region pocket (pockets.best_member, cover 1.5 Å)",
                  "shaper_sph8": {"radius_A": 8.0, "centroid": "vol * bur16^4-weighted", "bur_feature":
-                                 pk.SITE_BUR_FEATURE, "bur_min": pk.SITE_BUR_MIN}},
+                                 pk.SITE_BUR_FEATURE, "bur_min": pk.SITE_BUR_MIN,
+                                 "empty_fallback": "located (base) set"}},
         "a1": {"version": A1.A1_VERSION, "overrides": {}, "config_hash": A1.config_hash(a1cfg)},
         "env": {"version": A1R.A1R_VERSION, "dims": A1R.env_layout()[-1]["stop"]},
         "scaling": "per part z-score, BLiPS-train v2 sites (L + D rows), constant dims -> 0"

@@ -1,0 +1,101 @@
+{
+ "model": "egnn",
+ "layers": 4,
+ "hidden": 128,
+ "k": 16,
+ "n_rbf": 16,
+ "r_max": 12.0,
+ "update_x": true,
+ "concat_n1": false,
+ "out_dim": 128,
+ "dropout": 0.1,
+ "lr": 0.001,
+ "weight_decay": 0.0001,
+ "tau": 0.1,
+ "batch_pos": 128,
+ "batch_lab": 128,
+ "lambda_bce": 1.0,
+ "graded": false,
+ "w_blips_pos": 0.5,
+ "w_ld": 0.25,
+ "w_ppips": 0.0,
+ "p_d": 0.5,
+ "rotate": true,
+ "point_dropout": 0.15,
+ "steps_per_epoch": 50,
+ "max_epochs": 30,
+ "patience": 6,
+ "name": "egnn_noppi",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "d_point": 93,
+ "d_n1": 0,
+ "synthetic": false,
+ "data_counts": {
+  "sites": 2318,
+  "sites_holdout": 247,
+  "groups_holdout": 98,
+  "dmatch_sites": 1757,
+  "train_pairs": 33334,
+  "train_pos": 5574,
+  "es_pairs": 8618,
+  "es_pos": 1418,
+  "ld_pos": 1560,
+  "ppips_pockets": 15555,
+  "ppips_pos": 3327,
+  "ppips_sym": 2284,
+  "ppips_ortho": 1043,
+  "items": 20191,
+  "items_without_points": 0,
+  "pts_median": 256.0
+ },
+ "files_sha256": {
+  "seed0.pt": "db5d5ee0d5d6f6d6b4f688daace1a616e3ed57a111246f7cce452ddaef02a86e",
+  "seed1.pt": "69d0266733087383a7d6d3b8080a15ff54ddcc62ea265c03b34b2df532c6a6be",
+  "seed2.pt": "79f5e0d1da6aa5cbb04499565a2b03b38ab8bb2358bc19ec2d7fd5f2c3cc4fd6",
+  "point_scaler.json": "a8d14b49df6c462ffb1c683c7b18ae94cf04f6e52a0da9fa9004c4b96e7a1751",
+  "n1_stats.json": "845d5671dc3ef8184330ebcd788c70b9a078280cf7ea57a623facbba8a86a95d"
+ },
+ "grid_sha256": "71884154a7b9fda40d3c85604e0f1ca7383da5c8ae0ae23c1303398c51b68cb3",
+ "script_sha256": "18ddd952f7e1dbfca35742dc14d4f128dfa15f3fdcf11adf3ea1bf75e0028239",
+ "l4_module_sha256": "01ac9ce2db330aefc62d6395e6c3ae72c097bf2b0e09c5bb76e17a44b513996c",
+ "points_sha256": {
+  "blips/L": "3889bb3e63c9c202289790aab41c398ca64d7a4a36b6103a250caf76e714792b",
+  "blips/U": "528b14b7f83f83227e4c9b7fbe6bfd54bcbfec656c6a5a7b4b0ac33498826f0a",
+  "ppips/D": "37f32e8462815e0557363417800faa681afe1257c33922d2942b66209960ab67"
+ },
+ "git_commit": "43e7b6d1fc67f0df3eb9f724c6360b2a598ad767",
+ "git_dirty": true,
+ "device": "cuda:3",
+ "torch": "2.6.0+cu124",
+ "best_epochs": [
+  1,
+  1,
+  2
+ ],
+ "best_es": [
+  0.7950946743330465,
+  0.7955829687259977,
+  0.7981952587077081
+ ],
+ "wall_s_train": 385.350546836853,
+ "embeddings_sha256": {
+  "emb_blips_L.npy": "509f3f8e440875ebc5e2d2f62198ec62813f93a4d74ca94e30f40ca79ccce99e",
+  "emb_blips_U.npy": "43a242e9e648b8dc2390f49630ffc8f13abc2c28b9c864812252a1ea0372582a",
+  "emb_ppips_D.npy": "6a1d8acdb26679656c4fca03a7ee626991d7a76d1b5e7a890e577bea23888c06",
+  "emb_tough_m1_L.npy": "b67f6581f475e6f054f6f1cf1290fb5d90a654ca7e197d01c09d9b5c82466c98",
+  "emb_tough_m1_U.npy": "5c1abf578f13457a53d91e577ab6e7919016eb6d015c2ee1e82ef3322a360446"
+ },
+ "wall_s_embed": 37.007646322250366,
+ "points_sha256_at_embedding": {
+  "blips/L": "439fc0f29f2bde3fa5fe519dfec83fd47043ce0a9179bdc869b193ef531acd0b",
+  "blips/U": "528b14b7f83f83227e4c9b7fbe6bfd54bcbfec656c6a5a7b4b0ac33498826f0a",
+  "tough_m1/L": "b1b86728142953948fc59c128d788e4a37f78d676362c859d2a33d52d6dd80aa",
+  "tough_m1/U": "6effc6161ff3e7531c1cea327f8d76d7f88af9938dd29a302b3f97da13d933e1",
+  "ppips/D": "37f32e8462815e0557363417800faa681afe1257c33922d2942b66209960ab67"
+ },
+ "note_reembed": "2026-10-28 03:15: eval embeddings re-written after the SPH_FALLBACK fix (1 BLiPS-val L site with empty sph8 -> located set, as a4b.raw_parts); training items unaffected (site not in BLiPS-train)"
+}
