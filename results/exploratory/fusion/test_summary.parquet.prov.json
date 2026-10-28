@@ -1,0 +1,61 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/exploratory/fusion/test_summary.parquet",
+  "result_sha256": "160cd931fde1c3b6596b9895611495b41073f14bbedcb668eabf2c3dc78f9074",
+  "n_rows": 195,
+  "git_commit": "5f51395ec904178d4317f744be5f49716d442a00",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/trials.tsv"
+  ],
+  "git_untracked": 21,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/explore/fusion_a4b_l4.py",
+  "script_sha256": "57c2f85c001b592f2820f9b5f51de5ad5f7a42df081f5545638eae73cb28cc63",
+  "args": [
+    "--phase",
+    "test",
+    "--B",
+    "2000",
+    "--threads",
+    "16"
+  ],
+  "config": {
+    "task": "fusion exploratory test look",
+    "tag": "exploratory_posttest",
+    "w": 0.5,
+    "scales_sha256": "cf64b3c8f2fc2200efc0d88030ba38caa08b66238f0b86353165ead4f865c53e",
+    "selection_sha256": "e8736fd83f6b126fbbf9fbc530375937619406038bfc2264b49855b56b3cce85",
+    "final_method_config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+    "B": 2000,
+    "seed": 0
+  },
+  "config_sha256": "d1d1f50d22bc968d1d6b32cfdc3fc3e5c305ecf9ad847d02e209bcd3fdb8f2fd",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/results/exploratory/fusion/fusion_scales.json",
+      "size": 727,
+      "sha256": "cf64b3c8f2fc2200efc0d88030ba38caa08b66238f0b86353165ead4f865c53e",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/results/exploratory/fusion/dev/fusion_selection.json",
+      "size": 797,
+      "sha256": "e8736fd83f6b126fbbf9fbc530375937619406038bfc2264b49855b56b3cce85",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/configs/final_method.yaml",
+      "size": 2170,
+      "sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T04:42:10+00:00",
+  "end_time": "2026-10-28T04:57:58+00:00",
+  "wall_seconds": 947.511,
+  "extra": null
+}

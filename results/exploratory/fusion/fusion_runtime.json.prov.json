@@ -1,0 +1,34 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/exploratory/fusion/fusion_runtime.json",
+  "result_sha256": "96c6f1eecec191b4c57c00fb0c1a8850a45456ce9555d0190f9a57d7c8e56145",
+  "n_rows": null,
+  "git_commit": "5f51395ec904178d4317f744be5f49716d442a00",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/trials.tsv"
+  ],
+  "git_untracked": 29,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/explore/fusion_a4b_l4.py",
+  "script_sha256": "f3f03923c53e3b5134f69850172d0e2473105d9c5303a32522147201962f64a7",
+  "args": [
+    "--phase",
+    "runtime",
+    "--threads",
+    "1"
+  ],
+  "config": {
+    "task": "fusion runtime",
+    "tag": "exploratory_posttest"
+  },
+  "config_sha256": "cdcb73c0ac705d224768e0e3c8af910ca4d8631cef61300788de578ebf11394a",
+  "inputs": [],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T04:58:36+00:00",
+  "end_time": "2026-10-28T04:58:42+00:00",
+  "wall_seconds": 5.756,
+  "extra": null
+}

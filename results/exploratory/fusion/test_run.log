@@ -1,0 +1,30 @@
+[    0.3s] test look: FUSEz:w0.50(A4b:n1_linear raw + L4:egnn_small raw); final pocketcompare-final:A4b:n1_linear|raw (config sha de21f35d0d92)
+[    0.5s] unsealed tough_m1_test_pairs.parquet (24337 rows) for EXPLORATORY post-test fusion (A4b+L4): TOUGH-M1-test; mode restored 0o0
+[   61.7s] TOUGH-M1-test done
+[   62.0s] unsealed prospeccts_pairs.parquet (450625 rows) for EXPLORATORY post-test fusion (A4b+L4): ProSPECCTs; mode restored 0o0
+[  171.5s] prospeccts_P1 done
+[  175.7s] prospeccts_P1.2 done
+[  266.8s] prospeccts_P2 done
+[  341.8s]     generic bootstrap 20/24 (74 s)
+[  363.2s] prospeccts_P3 done
+[  440.1s]     generic bootstrap 20/24 (76 s)
+[  462.6s] prospeccts_P4 done
+[  475.8s] prospeccts_P5 done
+[  490.6s] prospeccts_P5.2 done
+[  490.7s] prospeccts_P6 done
+[  490.8s] prospeccts_P6.2 done
+[  519.6s] prospeccts_P7 done
+[  519.8s] unsealed blips_test_pairs.parquet (41514 rows) for EXPLORATORY post-test fusion (A4b+L4): BLiPS-test; mode restored 0o0
+[  519.8s] unsealed blips_test_sites.parquet (3606 rows) for EXPLORATORY post-test fusion (A4b+L4): BLiPS-test sites; mode restored 0o0
+[  589.7s]     generic bootstrap 20/72 (68 s)
+[  636.5s]     generic bootstrap 40/72 (115 s)
+[  693.7s]     generic bootstrap 60/72 (172 s)
+[  935.6s] BLiPS-test done
+[  935.9s] unsealed vertex_pairs.parquet (1564604 rows) for EXPLORATORY post-test fusion (A4b+L4): Vertex; mode restored 0o0
+[  942.6s] Vertex done
+[  942.7s] unsealed ppips_test_queries.parquet (153 rows) for EXPLORATORY post-test fusion (A4b+L4): PPIPS-test P-ortho; mode restored 0o0
+[  942.8s] unsealed ppips_sym_test_pairs.parquet (272 rows) for EXPLORATORY post-test fusion (A4b+L4): PPIPS-test P-sym; mode restored 0o0
+[  946.5s] [ppips_test] 153 ortho queries, 544 sym queries, 13 rows
+[  947.4s] PPIPS-test done
+[  947.4s] reproduction vs results/final: 130 rows, max |dev| 0.00e+00
+[  950.8s] 67 trial rows appended; done

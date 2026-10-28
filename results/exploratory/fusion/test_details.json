@@ -1,0 +1,92 @@
+{
+  "B": 2000,
+  "label": "EXPLORATORY \u2014 post-test",
+  "method": "FUSEz:w0.50(A4b:n1_linear raw + L4:egnn_small raw)",
+  "reproduction_vs_results_final": {
+    "max_abs_deviation": 0.0,
+    "metrics": [
+      "auc",
+      "auc_lo",
+      "auc_hi",
+      "ap",
+      "auc_cb",
+      "auc_strat",
+      "auc_cb_lo",
+      "auc_cb_hi"
+    ],
+    "rows_compared": 130,
+    "rows_mine": 130
+  },
+  "scales": {
+    "mu_A": 0.14677356920427742,
+    "mu_L": 0.2816380445007128,
+    "n_pairs_pooled": 65858,
+    "n_pairs_total": 41952,
+    "pearson_pooled": 0.7184054036851069,
+    "per_mode": {
+      "D": {
+        "mu_A": 0.12446647360824388,
+        "mu_L": 0.2668556436589493,
+        "n_pairs": 23906,
+        "pearson": 0.7111362407893117,
+        "sd_A": 0.2826743912560125,
+        "sd_L": 0.24924841664420677
+      },
+      "L": {
+        "mu_A": 0.15948508301336345,
+        "mu_L": 0.29006167327939314,
+        "n_pairs": 41952,
+        "pearson": 0.7216128334250883,
+        "sd_A": 0.2784548424638554,
+        "sd_L": 0.24372191203210772
+      }
+    },
+    "sd_A": 0.2804997672809255,
+    "sd_L": 0.24599559202421598,
+    "source": "data/splits/blips_train_pairs_v2.parquet"
+  },
+  "sealed_files_accessed": [
+    "tough_m1_test_pairs.parquet",
+    "prospeccts_pairs.parquet",
+    "blips_test_pairs.parquet",
+    "blips_test_sites.parquet",
+    "vertex_pairs.parquet",
+    "ppips_test_queries.parquet",
+    "ppips_sym_test_pairs.parquet"
+  ],
+  "seed": 0,
+  "selection": {
+    "B": 2000,
+    "best": "FUSEz:w0.25",
+    "best_bl_D_cb": 0.761199097798766,
+    "candidate": "FUSEz:w0.50",
+    "guards_reported_not_used": {
+      "FUSEz:w0.25": {
+        "blips_L_ge_B1": true,
+        "tm_D_ge_B1": true
+      },
+      "FUSEz:w0.50": {
+        "blips_L_ge_B1": true,
+        "tm_D_ge_B1": true
+      },
+      "FUSEz:w0.75": {
+        "blips_L_ge_B1": true,
+        "tm_D_ge_B1": true
+      }
+    },
+    "rule": "argmax_w BLiPS-val D cb (raw, z-scored fusion); threshold = best - SE_hom(best); prefer w = 0.5 if within one SE",
+    "scales": {
+      "mu_A": 0.14677356920427742,
+      "mu_L": 0.2816380445007128,
+      "sd_A": 0.2804997672809255,
+      "sd_L": 0.24599559202421598
+    },
+    "se_best": 0.039092837624622484,
+    "seed": 0,
+    "tag": "exploratory_posttest",
+    "threshold": 0.7221062601741436,
+    "w_star": 0.5
+  },
+  "tag": "exploratory_posttest",
+  "w": 0.5
+}

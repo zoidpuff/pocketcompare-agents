@@ -265,6 +265,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44
   - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
 - [-] P4 Exploratory PPI-R task — not run (cut for time; listed as follow-up)
+- [x] P6 EXPLORATORY post-test fusion A4b+L4 (w = 0.5 chosen on dev; one labelled test look) — reports/exploratory_fusion.md
+  - [x] Δ fused − FINAL: TOUGH-M1 D −0.007 [−0.038, +0.009], L +0.026; BLiPS-test L/D +0.030/+0.029 (CI > 0);
+        ProSPECCTs P3/P4 +0.062/+0.064; Vertex +0.025; PPIPS MRR +0.059 [+0.008, +0.108]; cost 8.9 ms GPU / 55 ms CPU
+  - decision: FINAL unchanged; fusion offered as optional mode (exploratory evidence only)
 - [x] P6 Tooling (post-test) — reports/tooling.md, docs/FINGERPRINTS.md
   - [x] CLI pocketcompare describe/compare/index/search (10 tests); full suite 122 passed
   - [x] per structure 0.42 s ref CPU / 0.21 s fast CPU / 0.13 s GPU; 22 workers ≈ 55 structures/s

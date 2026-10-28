@@ -1,0 +1,32 @@
+{
+  "B": 2000,
+  "best": "FUSEz:w0.25",
+  "best_bl_D_cb": 0.761199097798766,
+  "candidate": "FUSEz:w0.50",
+  "guards_reported_not_used": {
+    "FUSEz:w0.25": {
+      "blips_L_ge_B1": true,
+      "tm_D_ge_B1": true
+    },
+    "FUSEz:w0.50": {
+      "blips_L_ge_B1": true,
+      "tm_D_ge_B1": true
+    },
+    "FUSEz:w0.75": {
+      "blips_L_ge_B1": true,
+      "tm_D_ge_B1": true
+    }
+  },
+  "rule": "argmax_w BLiPS-val D cb (raw, z-scored fusion); threshold = best - SE_hom(best); prefer w = 0.5 if within one SE",
+  "scales": {
+    "mu_A": 0.14677356920427742,
+    "mu_L": 0.2816380445007128,
+    "sd_A": 0.2804997672809255,
+    "sd_L": 0.24599559202421598
+  },
+  "se_best": 0.039092837624622484,
+  "seed": 0,
+  "tag": "exploratory_posttest",
+  "threshold": 0.7221062601741436,
+  "w_star": 0.5
+}

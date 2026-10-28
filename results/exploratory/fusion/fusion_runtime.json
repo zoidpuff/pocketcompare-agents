@@ -1,0 +1,78 @@
+{
+  "a4b_final_method_runtime_json": {
+    "D_ms_per_pocket_mean_weighted": 3.802878726574202,
+    "D_ms_per_pocket_median": 3.540210664383025,
+    "D_ms_per_pocket_p90": 4.565917224199934,
+    "D_pockets_per_structure_median": 13.0,
+    "L_ms_per_site_median": 6.1093890108168125,
+    "L_ms_per_site_p90": 10.500765894539654,
+    "bytes_per_pocket_float32": 1536,
+    "dims": 384,
+    "embed_us_per_pocket": 63.56750901322812,
+    "method": "pocketcompare-final:A4b:n1_base|raw",
+    "n_structures": 200,
+    "note": "BURROW featurisation excluded (descriptor + embedding only); cached BLiPS-val structures",
+    "pair_us_batched_1M": 0.09952644095756114,
+    "pair_us_single_call": 2.840879885479808,
+    "threads": 1
+  },
+  "fused_bytes_per_pocket_float32": 3072,
+  "l4_egnn_small_bench": {
+    "cpu1": {
+      "batch": 32,
+      "ms_per_pocket": 47.13761167113262,
+      "n": 128
+    },
+    "gpu": {
+      "batch": 256,
+      "ms_per_pocket": 0.5352560235678538,
+      "n": 1024
+    },
+    "n_params_per_seed": 138500
+  },
+  "l4_point_set_extraction": {
+    "blips": {
+      "L_t_ms_median": 4.220748553052545,
+      "L_t_ms_p90": 6.726510054431856,
+      "U_t_ms_median": 4.416992887854576,
+      "U_t_ms_p90": 6.208356912247837
+    },
+    "blips_test_af": {
+      "L_t_ms_median": 4.816080909222364,
+      "L_t_ms_p90": 6.823227135464549,
+      "U_t_ms_median": 4.825972020626068,
+      "U_t_ms_p90": 6.445024907588959
+    },
+    "blips_test_holo": {
+      "L_t_ms_median": 4.822882590815425,
+      "L_t_ms_p90": 6.772313849069178,
+      "U_t_ms_median": 4.731017048470676,
+      "U_t_ms_p90": 6.361428997479379
+    },
+    "ppips": {
+      "D_t_ms_median": 4.954831907525659,
+      "D_t_ms_p90": 6.729322718456388
+    },
+    "prospeccts": {
+      "L_t_ms_median": 5.488310940563679,
+      "L_t_ms_p90": 6.6430282313376665,
+      "U_t_ms_median": 4.910781979560852,
+      "U_t_ms_p90": 6.337421154603362
+    },
+    "tough_m1": {
+      "L_t_ms_median": 5.1211920799687505,
+      "L_t_ms_p90": 6.687253899872303,
+      "U_t_ms_median": 4.836561973206699,
+      "U_t_ms_p90": 6.167308054864407
+    },
+    "vertex": {
+      "L_t_ms_median": 5.628329934552312,
+      "L_t_ms_p90": 7.316698040813208,
+      "U_t_ms_median": 5.195411155000329,
+      "U_t_ms_p90": 6.748198997229337
+    }
+  },
+  "note": "fused per-pocket cost = A4b descriptor+embed + L4 point-set extraction + L4 forward (GPU or CPU); BURROW featurisation shared and excluded",
+  "pair_us_batched_1M_384d": 0.6545697229448706,
+  "pair_us_batched_1M_768d": 1.154562460957095
+}
