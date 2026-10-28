@@ -614,7 +614,9 @@ def main():
     ap.add_argument("--out", default=str(ROOT / "results/dev"))
     ap.add_argument("--no-trials", action="store_true", help="do not append to results/trials.tsv (smoke tests)")
     ap.add_argument("--a1-chosen", default=None,
-                    help="ppips only: A1 config chosen under D11 (default: read results/dev/blips_val_details.json)")
+                    help="ppips only: A1 config chosen under D11 (default: read results/dev/blips_val<suffix>_details.json)")
+    ap.add_argument("--out-suffix", default="", help="appended to the output file tag, e.g. _v2splits")
+    ap.add_argument("--trial-tag", default=None, help="added as 'tag' to every trials.tsv config (e.g. splits_v2)")
     args = ap.parse_args()
     os.environ["POCKETCOMPARE_THREADS"] = str(args.threads)
     if args.dataset == FS_TAG:
@@ -626,7 +628,7 @@ def main():
     t_start = time.time()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    tag = f"{args.dataset}_dev"
+    tag = f"{args.dataset}_dev{args.out_suffix}"
 
     def log(msg):
         print(f"[{time.time() - t_start:7.1f}s] {msg}", flush=True)
@@ -899,7 +901,8 @@ def main():
                                          "pauc_mcclish", "auc_cb", "auc_cb_lo", "auc_cb_hi", "auc_strat",
                                          "auc_strat_lo", "auc_strat_hi")}
             append_trial(r["arm"], {"config": r["config"], "variant": r["variant"], "mode": r["mode"],
-                                    "pairset": r["pairset"], "B": args.B, "seed": args.seed},
+                                    "pairset": r["pairset"], "B": args.B, "seed": args.seed,
+                                    **({"tag": args.trial_tag} if args.trial_tag else {})},
                          f"{args.dataset}_{ds.split}", metrics, f_sum)
     log(f"done: {f_sum}")
 
@@ -1029,7 +1032,7 @@ def main_blips(args):
     t_start = time.time()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    tag = "blips_val"
+    tag = f"blips_val{args.out_suffix}"
 
     def log(msg):
         print(f"[{time.time() - t_start:7.1f}s] {msg}", flush=True)
@@ -1219,7 +1222,8 @@ def main_blips(args):
                                          "auc_strat_lo", "auc_strat_hi", "auc_ci_unit")}
             append_trial(r["arm"], {"config": r["config"], "variant": r["variant"], "mode": r["mode"],
                                     "pairset": r["pairset"], "B": args.B, "seed": args.seed,
-                                    "units": "wider of hom/lig", "data": "blips_val_v2"},
+                                    "units": "wider of hom/lig", "data": "blips_val_v2",
+                                    **({"tag": args.trial_tag} if args.trial_tag else {})},
                          "blips_val", metrics, f_sum)
     log(f"done: {f_sum}")
 
@@ -1304,7 +1308,7 @@ def main_ppips(args):
     t_start = time.time()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    tag = "ppips_val"
+    tag = f"ppips_val{args.out_suffix}"
 
     def log(msg):
         print(f"[{time.time() - t_start:7.1f}s] {msg}", flush=True)
@@ -1313,7 +1317,7 @@ def main_ppips(args):
     P = ds.pockets
     chosen = args.a1_chosen
     if chosen is None:
-        f_sel = Path(args.out) / "blips_val_details.json"
+        f_sel = Path(args.out) / f"blips_val{args.out_suffix}_details.json"
         chosen = json.loads(f_sel.read_text())["selection"]["chosen"]
         ds.inputs.append(f_sel)
     pid = {p: i for i, p in enumerate(P.pocket_id)}
@@ -1390,7 +1394,8 @@ def main_ppips(args):
         f = ROOT / "data/processed/docking/ppips" / f"{panel}.parquet"
         ds.inputs.append(f)
         raw_tab = pd.read_parquet(f)
-        raw_tab = raw_tab[raw_tab.split.isin(["train", "val"])]
+        # membership from the current pocket table (the docking table's own `split` column predates the D15 rebuild)
+        raw_tab = raw_tab[raw_tab.pocket_id.isin(set(P.pocket_id[ref]))]
         desc = A2Descriptor(A2Config(panel=panel)).fit(raw_tab, geom, reference_pocket_ids=train_ids)
         Vv = desc.transform(raw_tab, geom)
         rows_ = pd.Series(np.arange(len(Vv.pocket_id)), index=Vv.pocket_id)
@@ -1532,7 +1537,8 @@ def main_ppips(args):
                                          "sym_all_pct_lo", "sym_all_pct_hi", "sym_all_top1", "sym_if_pct")}
             append_trial(r["arm"], {"config": r["config"], "variant": r["variant"], "mode": "D",
                                     "task": "P-ortho + P-sym", "B": args.B, "seed": args.seed,
-                                    "reference": "ppips_train"}, "ppips_val", metrics, f_sum)
+                                    "reference": "ppips_train", **({"tag": args.trial_tag} if args.trial_tag else {})},
+                         "ppips_val", metrics, f_sum)
     log(f"done: {f_sum}")
 
 
@@ -1954,6 +1960,7 @@ def main_final_select(args):
                "candidate_table": C.drop(columns="simplicity").to_dict(orient="records"),
                "deltas": deltas.to_dict(orient="records"), "ppips": pp_df.to_dict(orient="records")}
     cfg = {"task": "final_select", "candidates": args.candidates, "B": args.B, "seed": args.seed, "csls_k": CSLS_K,
+           "splits_sha256sums": sha256_file(ROOT / "data/splits/SHA256SUMS.txt"),
            "scaling": "N1/N2/A4b inputs: BLiPS-train v2 statistics (L+U rows); B1/B4 references: pool z-score as "
                       "eval_dev (PPIPS: train)", "selection_units": sel_unit}
     inputs = sorted(set(map(str, bl.inputs + tm.inputs + pp.inputs)) | {str(ROOT / "src/pocketcompare/a4b.py")}
@@ -1970,12 +1977,13 @@ def main_final_select(args):
     if not args.no_trials:
         seen = _logged_trials()
         n_new = 0
+        splits_fp = sha256_file(ROOT / "data/splits/SHA256SUMS.txt")[:16]     # split version (D18 rebuild)
         for r in rows:
             if r["kind"] == "reference":
                 continue
             conf = {"candidate": r["cand"], "variant": r["variant"], "mode": r["mode"], "B": args.B,
                     "seed": args.seed, "task": "final_select", "scaling": "blips_train" if r["kind"] != "sensitivity"
-                    else "pool"}
+                    else "pool", "splits": splits_fp}
             split = f"{r['dataset']}_{'val' if r['dataset'] == 'blips' else 'dev'}"
             if (r["cand"].split(":")[0], config_sha256(conf), split) in seen:
                 continue
@@ -1986,7 +1994,7 @@ def main_final_select(args):
             if r["kind"] == "reference":
                 continue
             conf = {"candidate": r["cand"], "variant": r["variant"], "mode": "D", "B": args.B, "seed": args.seed,
-                    "task": "final_select P-ortho + P-sym"}
+                    "task": "final_select P-ortho + P-sym", "splits": splits_fp}
             if (r["cand"].split(":")[0], config_sha256(conf), "ppips_val") in seen:
                 continue
             append_trial(r["cand"].split(":")[0], conf, "ppips_val",

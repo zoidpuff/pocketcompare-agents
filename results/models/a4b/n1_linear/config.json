@@ -1,0 +1,67 @@
+{
+ "hidden": null,
+ "out_dim": 128,
+ "dropout": 0.2,
+ "lr": 0.001,
+ "weight_decay": 0.0001,
+ "tau": 0.1,
+ "batch_pos": 256,
+ "batch_lab": 512,
+ "lambda_bce": 1.0,
+ "graded": false,
+ "w_blips_pos": 0.5,
+ "w_ld": 0.25,
+ "w_ppips": 0.25,
+ "p_d": 0.5,
+ "steps_per_epoch": 50,
+ "max_epochs": 80,
+ "patience": 10,
+ "input": "N1",
+ "name": "n1_linear",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "d_in": 627,
+ "synthetic": false,
+ "data_counts": {
+  "sites": 2318,
+  "sites_holdout": 247,
+  "groups_holdout": 98,
+  "dmatch_sites": 1757,
+  "train_pairs": 33334,
+  "train_pos": 5574,
+  "es_pairs": 8618,
+  "es_pos": 1418,
+  "ld_pos": 1560,
+  "ppips_pockets": 15555,
+  "ppips_pos": 3327,
+  "ppips_sym": 2284,
+  "ppips_ortho": 1043
+ },
+ "files_sha256": {
+  "seed0.npz": "d455b1fca0f49bf39a57efc768cc12e70792ff5e9b2c6fb5f814ce166e6c3d99",
+  "seed1.npz": "b5f60af927724e43e5bf5ced0e0a0527409b9718dd90cd350944669f0985f254",
+  "seed2.npz": "c221fcc0f10e61555ca3fc201d4c83d3ccc48f9fe708cfa5281e679974ac0c5b",
+  "input_stats.json": "845d5671dc3ef8184330ebcd788c70b9a078280cf7ea57a623facbba8a86a95d"
+ },
+ "grid_sha256": "823dbdb0bd7bf2877b85562086cff5c214bc369b98c700f332de79fd20cb9208",
+ "script_sha256": "e63f7bcdce17827aa1c377098d03666d0ed18affc44981450700d90a20af6b9c",
+ "a4b_module_sha256": "dc0a0a13ab9a07f54eb92e45326fcf7887d7e7443208c19db3051afd8f4c1169",
+ "git_commit": "1ce80fb50833b34ce66d0a1a8ac1dc5c89706dba",
+ "git_dirty": true,
+ "device": "cuda:1",
+ "torch": "2.6.0+cu124",
+ "best_epochs": [
+  3,
+  4,
+  5
+ ],
+ "best_es": [
+  0.7822205303687731,
+  0.7777544940429004,
+  0.7798383029082954
+ ],
+ "wall_s": 8.74734354019165
+}

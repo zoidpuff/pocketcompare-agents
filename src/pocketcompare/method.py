@@ -14,7 +14,7 @@ Pipeline (all parameters in configs/final_method.yaml, with sha256 of every data
    a residue list ("chain:num") -> the residue shell (4 Å, bur10 >= 0.5).  ``locate="burrow"`` replaces a given
    site by the single region-rule BURROW pocket that best covers it (the evaluation's D-mode locator).
 3. Description: ``base`` = the located points, ``sph8`` = buried points (bur10 >= 0.5) within 8 Å of the
-   bur16^4-weighted centroid of ``base``; parts = A1 default (514) and env (113) blocks of these sets
+   bur16^4-weighted centroid of ``base`` (``base`` itself if that set is empty); parts = A1 default (514) and env (113) blocks of these sets
    (N1: A1(sph8) + env(sph8); N2: + A1(base)).
 4. Embedding: each part z-scored with the shipped BLiPS-train statistics; non-learned -> equal-weight block cosine
    (unit vector); A4b -> the seed-ensemble projection head (concatenated unit vectors / sqrt(n_seeds)).
@@ -122,6 +122,9 @@ class Method:
         if atom_types is None:
             atom_types = A1.atom_type_codes(fs.res_names[fs.atom_res], fs.atom_name, fs.atom_element)
         sets = {sh: pk.shape_site(fs, base, sh) for sh in dict.fromkeys(sh for _, sh in self.parts)}
+        for sh in sets:                       # empty shaped set (fully exposed site) -> the located set
+            if len(sets[sh]) == 0:
+                sets[sh] = np.asarray(base, np.int64)
         out = []
         feats = A1.needed_features(self.a1_cfg)
         for src, sh in self.parts:

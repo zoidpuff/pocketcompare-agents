@@ -7,6 +7,8 @@ Inputs (label-free; ``scripts/compute_descriptors.py --arm a1r``, TOUGH-M1: ``sc
 
 ``base`` = the located point set (L: 4 Å ligand shell; D: the single BURROW sub-pocket ``U`` that best covers the
 site, or the merged region pocket for PPIPS); ``sph8`` = buried points within 8 Å of its bur16^4-weighted centroid.
+SPH_FALLBACK (fixed 2026-10-28 before any score of it was seen; one fully solvent-exposed BLiPS-val site): if the
+sph8 set is empty, the sph8 parts are computed on ``base``.
 
 Scaling (fixed, shipped with the method): each part is z-scored with statistics of the BLiPS-train v2 sites (L rows
 and D (= U) rows pooled; label-free).  Non-learned score = equal-weight block cosine (each part z-scored, L2-normalised,
@@ -67,7 +69,24 @@ def raw_parts(dataset: str, mode: str, pocket_ids, inp: str) -> list[np.ndarray]
     ids = ids_table(dataset)
     row = pd.Series(np.arange(len(ids)), index=ids.pocket_id).loc[list(pocket_ids)].to_numpy()
     loc = locator(dataset, mode)
-    return [np.asarray(_npz(dataset, loc, sh)[src][row], np.float64) for src, sh in PARTS[inp]]
+    out = []
+    for src, sh in PARTS[inp]:
+        M = np.asarray(_npz(dataset, loc, sh)[src][row], np.float64)
+        if sh != "base":       # SPH_FALLBACK: empty shaped set -> the located (base) set
+            B = np.asarray(_npz(dataset, loc, "base")[src][row], np.float64)
+            fb = ~np.isfinite(M).any(1) & np.isfinite(B).any(1)
+            M[fb] = B[fb]
+        out.append(M)
+    return out
+
+
+def n_fallback(dataset: str, mode: str, pocket_ids) -> int:
+    """Number of pockets whose sph8 set is empty (described by the base set instead)."""
+    ids = ids_table(dataset)
+    row = pd.Series(np.arange(len(ids)), index=ids.pocket_id).loc[list(pocket_ids)].to_numpy()
+    loc = locator(dataset, mode)
+    M, B = _npz(dataset, loc, "sph8")["a1"][row], _npz(dataset, loc, "base")["a1"][row]
+    return int((~np.isfinite(M).any(1) & np.isfinite(B).any(1)).sum())
 
 
 def part_times(dataset: str, mode: str, pocket_ids, inp: str) -> np.ndarray:
@@ -188,5 +207,5 @@ def load_heads(model_dir) -> tuple[list[dict], dict, PartScaler]:
 
 
 __all__ = ["PARTS", "CLIP", "SITES_V2", "blips_train_ids", "blips_train_scaler", "a1r_dir", "locator",
-           "ids_table", "raw_parts", "part_times", "available",
+           "ids_table", "raw_parts", "n_fallback", "part_times", "available",
            "PartScaler", "embed_nonlearned", "head_input", "head_forward_np", "ensemble_embed", "load_heads"]

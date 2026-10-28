@@ -34,6 +34,9 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D19 (01:20) A4b tie-break: the agent picked n1_base by "grid order" (not a declared rule). PREREG says "simplest"
+  (non-learned < learned; fewer stored dims; no CSLS); all A4b heads store 384 dims, so the natural next criterion is
+  fewest parameters → **A4b:n1_linear raw** (0.737 ≥ threshold 0.715). Provisional final method pending L4 (Addendum A1).
 - D18 (00:50) Accept rebuilt splits as drawn (rules unchanged, deterministic; no model fit yet). DEV2: BLiPS
   largest within-dataset component 10.6 % > 10 % gate (narrow); not re-split with DataSAIL (would redraw again, ~1 h);
   mitigated by cluster-balanced metrics and homology-group bootstrap. All dev numbers before 00:50 are provisional
@@ -186,7 +189,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [!] ligand imprint replicates (A1 L→D on same pairs −0.268 [−0.359, −0.175])
   - [x] PPIPS-val P-ortho MRR: B4 0.942 · B1 0.764 · A1 0.633 · B0 0.426 (interolog transfer; 13 units); P-sym ≥ 0.92 all
   - [-] PPI sub-hypothesis fragments > lead-like: not supported (IFP +0.074 MRR, Holm p ≥ 0.25; underpowered)
-- [~] P4 A4b learned metric (descriptors first; fit only after the audit passes)
+- [x] P4 A4b learned metric — reports/a4b_selection.md, results/dev/final_select_all_summary.md (new splits)
+  - [!] BLiPS-val D cb: B1 0.648 · B4 0.670 · N1 0.697 · N2 0.704 · A4b n1_linear 0.737 · n2_linear+CSLS 0.751 (best)
+  - [x] n1_linear raw: BLiPS L 0.718, TOUGH-M1-dev D 0.721 (B1 0.617), PPIPS MRR 0.719 (N1 0.790, B1 0.761)
+  - [!] learned heads lower PPIPS P-ortho MRR vs N1 (0.69–0.76 vs 0.79)
   - [x] N1/N2 inputs for BLiPS (train/val/test holo+AF), PPIPS, TOUGH-M1; 3.8–6.2 ms/pocket
   - [!] non-learned BLiPS-val D cb-AUC: N1 0.686 (SE 0.041), N2+CSLS 0.701, B1 0.641, B4 0.655; N1 passes guards
   - [x] a4b grid pre-declared (configs/a4b_grid.yaml, 12 configs); train script refuses without audit flag (after audit + BLiPS descriptors)
