@@ -30,6 +30,7 @@ method is frozen: the code here reproduces the evaluated fingerprints exactly (s
 - **How this method was made** (a 24-hour autonomous AI-agent project, written for a broad audience, with figures): [docs/BRIEFING.md](docs/BRIEFING.md).
 - Technical description with every parameter: [docs/METHOD.md](docs/METHOD.md). Result tables:
   [docs/RESULTS.md](docs/RESULTS.md). Cost of running it on the whole AlphaFold DB: [docs/AFDB_COST.md](docs/AFDB_COST.md).
+- Running it over the whole AlphaFold DB on Euler (staged tiers, SLURM, FAISS index): [afdb/README.md](afdb/README.md).
 
 ## Install
 

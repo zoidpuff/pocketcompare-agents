@@ -1,0 +1,47 @@
+order	code	species	taxid	n_structures	file	rationale
+1	HUMAN	Homo sapiens	9606	23586	UP000005640_9606_HUMAN_v6.tar	human: drug targets, disease variants
+2	YEAST	Saccharomyces cerevisiae	559292	6055	UP000002311_559292_YEAST_v6.tar	budding yeast: model eukaryote, best-annotated cell
+3	ECOLI	Escherichia coli	83333	4370	UP000000625_83333_ECOLI_v6.tar	E. coli K-12: model bacterium
+4	MOUSE	Mus musculus	10090	21452	UP000000589_10090_MOUSE_v6.tar	mouse: mammalian model organism
+5	RAT	Rattus norvegicus	10116	22152	UP000002494_10116_RAT_v6.tar	rat: pharmacology / toxicology model
+6	DROME	Drosophila melanogaster	7227	13461	UP000000803_7227_DROME_v6.tar	fruit fly: invertebrate genetics model
+7	CAEEL	Caenorhabditis elegans	6239	19700	UP000001940_6239_CAEEL_v6.tar	C. elegans: nematode model
+8	DANRE	Danio rerio	7955	26290	UP000000437_7955_DANRE_v6.tar	zebrafish: vertebrate development model
+9	ARATH	Arabidopsis thaliana	3702	27402	UP000006548_3702_ARATH_v6.tar	Arabidopsis: plant model
+10	SCHPO	Schizosaccharomyces pombe	284812	5196	UP000002485_284812_SCHPO_v6.tar	fission yeast: second yeast model
+11	DICDI	Dictyostelium discoideum	44689	12612	UP000002195_44689_DICDI_v6.tar	Dictyostelium: amoebozoan model
+12	METJA	Methanocaldococcus jannaschii	243232	1773	UP000000805_243232_METJA_v6.tar	M. jannaschii: the only archaeon
+13	PLAF7	Plasmodium falciparum	36329	5168	UP000001450_36329_PLAF7_v6.tar	P. falciparum: malaria; apicomplexan
+14	TRYB2	Trypanosoma brucei	185431	8491	UP000008524_185431_TRYB2_v6.tar	T. brucei: sleeping sickness; kinetoplastid
+15	MYCTU	Mycobacterium tuberculosis	83332	3991	UP000001584_83332_MYCTU_v6.tar	M. tuberculosis: TB; actinobacterium
+16	STAA8	Staphylococcus aureus	93061	2888	UP000008816_93061_STAA8_v6.tar	S. aureus: Gram-positive pathogen (Bacillota)
+17	CAMJE	Campylobacter jejuni	192222	1620	UP000000799_192222_CAMJE_v6.tar	C. jejuni: Campylobacterota pathogen
+18	ORYSJ	Oryza sativa	39947	43645	UP000059680_39947_ORYSJ_v6.tar	rice: monocot crop
+19	CANAL	Candida albicans	237561	5973	UP000000559_237561_CANAL_v6.tar	C. albicans: fungal pathogen
+20	SCHMA	Schistosoma mansoni	6183	9735	UP000008854_6183_SCHMA_v6.tar	S. mansoni: schistosomiasis; flatworm
+21	BRUMA	Brugia malayi	6279	10972	UP000006672_6279_BRUMA_v6.tar	B. malayi: lymphatic filariasis; nematode
+22	NEIG1	Neisseria gonorrhoeae	242231	2106	UP000000535_242231_NEIG1_v6.tar	N. gonorrhoeae: Betaproteobacteria; AMR
+23	PSEAE	Pseudomonas aeruginosa	208964	5555	UP000002438_208964_PSEAE_v6.tar	P. aeruginosa: Gammaproteobacteria; AMR
+24	LEIIN	Leishmania infantum	5671	7924	UP000008153_5671_LEIIN_v6.tar	L. infantum: leishmaniasis; kinetoplastid
+25	AJECG	Ajellomyces capsulatus	447093	9199	UP000001631_447093_AJECG_v6.tar	H. capsulatum: dimorphic fungal pathogen
+26	STRR6	Streptococcus pneumoniae	171101	2031	UP000000586_171101_STRR6_v6.tar	S. pneumoniae: Gram-positive pathogen
+27	HELPY	Helicobacter pylori	85962	1540	UP000000429_85962_HELPY_v6.tar	H. pylori: gastric pathogen
+28	HAEIN	Haemophilus influenzae	71421	1660	UP000000579_71421_HAEIN_v6.tar	H. influenzae: first sequenced genome
+29	SOYBN	Glycine max	3847	55796	UP000008827_3847_SOYBN_v6.tar	soybean: dicot crop (large proteome)
+30	MAIZE	Zea mays	4577	39139	UP000007305_4577_MAIZE_v6.tar	maize: monocot crop (large proteome)
+31	TRYCC	Trypanosoma cruzi	353153	19036	UP000002296_353153_TRYCC_v6.tar	T. cruzi: Chagas disease
+32	SPOS1	Sporothrix schenckii	1391915	8652	UP000018087_1391915_SPOS1_v6.tar	S. schenckii: sporotrichosis fungus
+33	9NOCA1	Nocardia brasiliensis	1133849	8398	UP000006304_1133849_9NOCA1_v6.tar	N. brasiliensis: actinomycetoma
+34	MYCLE	Mycobacterium leprae	272631	1602	UP000000806_272631_MYCLE_v6.tar	M. leprae: leprosy
+35	SALTY	Salmonella typhimurium	99287	4526	UP000001014_99287_SALTY_v6.tar	S. Typhimurium: enteric pathogen
+36	KLEPH	Klebsiella pneumoniae	1125630	5727	UP000007841_1125630_KLEPH_v6.tar	K. pneumoniae: AMR pathogen
+37	SHIDS	Shigella dysenteriae	300267	3893	UP000002716_300267_SHIDS_v6.tar	S. dysenteriae: dysentery
+38	STRER	Strongyloides stercoralis	6248	15335	UP000035681_6248_STRER_v6.tar	S. stercoralis: strongyloidiasis; nematode
+39	ONCVO	Onchocerca volvulus	6282	12039	UP000024404_6282_ONCVO_v6.tar	O. volvulus: river blindness; nematode
+40	TRITR	Trichuris trichiura	36087	9563	UP000030665_36087_TRITR_v6.tar	T. trichiura: whipworm
+41	WUCBA	Wuchereria bancrofti	6293	12725	UP000270924_6293_WUCBA_v6.tar	W. bancrofti: lymphatic filariasis
+42	DRAME	Dracunculus medinensis	318479	10834	UP000274756_318479_DRAME_v6.tar	D. medinensis: Guinea worm
+43	PARBA	Paracoccidioides lutzii	502779	8794	UP000002059_502779_PARBA_v6.tar	P. lutzii: paracoccidioidomycosis
+44	9EURO1	Cladophialophora carrionii	86049	11170	UP000094526_86049_9EURO1_v6.tar	C. carrionii: chromoblastomycosis
+45	9EURO2	Fonsecaea pedrosoi	1442368	12509	UP000053029_1442368_9EURO2_v6.tar	F. pedrosoi: chromoblastomycosis
+46	9PEZI1	Madurella mycetomatis	100816	9561	UP000078237_100816_9PEZI1_v6.tar	M. mycetomatis: eumycetoma
