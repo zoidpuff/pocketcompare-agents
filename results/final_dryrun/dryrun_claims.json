@@ -1,0 +1,170 @@
+{
+  "C1-D": {
+    "auc_a": 0.7045012799314126,
+    "auc_b": 0.6066227845387768,
+    "ci_high": 0.23773573732260597,
+    "ci_low": 0.03524777293143862,
+    "ci_unit": "u",
+    "comparison": "FINAL[raw] \u2212 B1 default[raw]",
+    "delta": 0.09787849539263582,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.05444369070738098,
+    "mode": "D (both D-matched; common set)",
+    "n_degenerate": 0,
+    "n_pairs": 8540,
+    "n_pairs_dropped_not_common": 0,
+    "n_pos": 2843,
+    "n_units": 119,
+    "p_holm": 0.005497251374312844,
+    "p_one_sided": 0.005497251374312844,
+    "reject_h0_holm": true,
+    "se": 0.04604434605955433,
+    "sesoi": 0.03,
+    "set": "tough_m1_dev"
+  },
+  "C1a": {
+    "auc_a": 0.7344078395950817,
+    "auc_b": 0.6353185394949914,
+    "ci_high": 0.198362413622249,
+    "ci_low": 0.056681340332420255,
+    "ci_unit": "u",
+    "comparison": "FINAL[raw] \u2212 B1 default[raw]",
+    "delta": 0.09908930010009032,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.06852631148053118,
+    "mode": "L",
+    "n_degenerate": 0,
+    "n_pairs": 10574,
+    "n_pairs_dropped_not_common": 0,
+    "n_pos": 3450,
+    "n_units": 130,
+    "p_holm": 0.00399800099950025,
+    "p_one_sided": 0.0009995002498750624,
+    "reject_h0_holm": true,
+    "se": 0.033302379716326436,
+    "sesoi": 0.03,
+    "set": "tough_m1_dev"
+  },
+  "C1b": {
+    "auc_a": 0.7344078395950817,
+    "auc_b": 0.5950368218473582,
+    "ci_high": 0.21785658628526777,
+    "ci_low": 0.05871674840991297,
+    "ci_unit": "u",
+    "comparison": "FINAL[raw] \u2212 B4 esm2 (z)[raw]",
+    "delta": 0.13937101774772354,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.07715931839500158,
+    "mode": "L",
+    "n_degenerate": 0,
+    "n_pairs": 10574,
+    "n_pairs_dropped_not_common": 0,
+    "n_pos": 3450,
+    "n_units": 130,
+    "p_holm": 0.00399800099950025,
+    "p_one_sided": 0.0014992503748125937,
+    "reject_h0_holm": true,
+    "se": 0.03620106682187845,
+    "sesoi": 0.03,
+    "set": "tough_m1_dev"
+  },
+  "C2": {
+    "auc_a": 0.7400815832596199,
+    "auc_b": 0.6656212644627372,
+    "ci_high": 0.1124758584789826,
+    "ci_low": 0.03326490157431402,
+    "comparison": "macro FINAL[raw] \u2212 B1 default[raw]",
+    "delta": 0.07446031879688275,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.03953479887000554,
+    "mode": "L, self-pairs removed",
+    "n_degenerate": 0,
+    "n_units": 716,
+    "p_holm": 0.00399800099950025,
+    "p_one_sided": 0.0009995002498750624,
+    "per_subset": {
+      "blips_val": {
+        "auc_b1": 0.695923989430483,
+        "auc_final": 0.7457553269241581,
+        "ci": [
+          -0.01621585063486394,
+          0.10525167984907713
+        ],
+        "delta": 0.04983133749367519,
+        "missing": {
+          "n_common": 2772,
+          "n_dropped": 0,
+          "n_dropped_neg": 0,
+          "n_dropped_pos": 0,
+          "n_kept": 2772,
+          "n_total": 2772,
+          "per_method": {
+            "a": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 2772,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            },
+            "b": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 2772,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            }
+          },
+          "policy": "common"
+        },
+        "n_units": 252
+      },
+      "tough_m1_dev": {
+        "auc_b1": 0.6353185394949914,
+        "auc_final": 0.7344078395950817,
+        "ci": [
+          0.050428527681741254,
+          0.14771010158389272
+        ],
+        "delta": 0.09908930010009032,
+        "missing": {
+          "n_common": 10574,
+          "n_dropped": 0,
+          "n_dropped_neg": 0,
+          "n_dropped_pos": 0,
+          "n_kept": 10574,
+          "n_total": 10574,
+          "per_method": {
+            "a": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 10574,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            },
+            "b": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 10574,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            }
+          },
+          "policy": "common"
+        },
+        "n_units": 464
+      }
+    },
+    "reject_h0_holm": true,
+    "se": 0.020186617918891377,
+    "sesoi": 0.03,
+    "set": "DRY RUN stand-in: macro over TOUGH-M1-dev + BLiPS-val (L)"
+  }
+}

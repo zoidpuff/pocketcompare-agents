@@ -1,0 +1,32 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_dryrun/dryrun_report.md",
+  "result_sha256": "b2f77b4e6000b5358c278f87ef25d2c1d31c7e7a59e8ceeec55d33dad43d6ca8",
+  "git_commit": "9fe98c02702bc5cc4fbf01e710f7ec4e380c639b",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 16,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/final_eval.py",
+  "script_sha256": "e8c34888cee51f9a029f9b4f56e4afba447e655ae4bbfa2b9924ef5aada97ddd",
+  "args": [
+    "--dryrun-dev",
+    "--B",
+    "2000",
+    "--threads",
+    "20"
+  ],
+  "config": {
+    "mode": "DRYRUN-DEV",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "sesoi": 0.03,
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "method_config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+    "prereg": "PREREG.md \u00a72\u2013\u00a74"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_dryrun/dryrun_summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_dryrun/dryrun_claims.json"
+  ]
+}

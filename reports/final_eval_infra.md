@@ -1,4 +1,30 @@
-# Final-evaluation infrastructure (final-eval agent, 2026-10-27)
+# Final-evaluation infrastructure (final-eval agent, 2026-10-27; update 2026-10-28 03:50)
+
+## Update 03:50 (final method A4b:n1_linear raw, D20; rebuilt splits, D18; Addendum A2)
+- **Splits:** `final_eval.py` reads the current split files: TOUGH-M1-dev has 765 pockets (10,574 pairs), BLiPS-val
+  v2 has 2,772 pairs, PPIPS-val has 217 ortho queries. The B0′ tables for TOUGH-M1-test/dev and BLiPS-val were
+  rebuilt on the new pocket lists.
+- **Sealed hashes:** all 9 needed hashes are now recorded, read from `data/sealed_SHA256SUMS.txt` and
+  `data/splits/SHA256SUMS.txt`.
+- **Addendum-A2 arms** (descriptive, not in Holm; raw and CSLS rows):
+  - **N1:** `eval_dev.fs_embed`, BLiPS-train statistics.
+  - **L4:egnn_small:** designated variant CSLS.
+- **Label-free inputs added for the sealed sets:**
+  - A4b inputs (`compute_descriptors --arm a1r --label-free-structures`) for ProSPECCTs, Vertex and PPI-L;
+  - L4 point sets (`l4_extract.py`) for ProSPECCTs and Vertex: 0 errors, 0 sph8 mismatches;
+  - L4 embeddings for all 7 sets (`scripts/l4_embed.py`, cuda:2) in `data/processed/l4_emb/egnn_small/`. The re-embedded
+    dev sets are bit-identical to the model directory's files.
+- **Empty-sph8 fallback:** the final-method adapter now goes through `a4b.raw_parts`, so the fallback (empty sph8 →
+  located set) applies everywhere.
+- **Dry run (B = 2000, `results/final_dryrun/`):**
+  - FINAL / N1 / L4 against `results/dev/l4/final_select_all_l4_summary`: 24 rows, **max |dev| = 0**, identical pair
+    counts. FINAL cb-AUC: BLiPS-val D 0.737, BLiPS-val L 0.718, TOUGH-M1-dev D 0.721.
+  - B1 / A1 against the `*_v2splits` dev tables: 58 rows, max |dev| = 4.4e-16.
+- **`--check-only` without `FINAL_EVAL`:** a static preflight in the current checkout. It does not open any sealed file
+  or write FREEZE.json. It reports OK except that the tracked tree is dirty and FREEZE.json is absent. It also lists
+  the checks that only the real preflight (worktree + FREEZE) performs.
+- **Supersedes:** the PPIPS-hash to-do below is done. The dry-run numbers in §3 are superseded.
+
 
 No file in `data/sealed/` and no chmod-000 file under `data/raw/` was opened, copied or chmod-ed; every check below
 ran on dev data or on label-free tables. Nothing is committed.
