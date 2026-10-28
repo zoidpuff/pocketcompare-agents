@@ -45,6 +45,10 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- DEV6 (06:50) final_eval.py silently skipped FINAL's paired holo−AF Δ (C5) — method name contains "|"; and two
+  pre-registered reported items were not run (blind test on BLiPS-test; PPIPS-test BURROW-homology strata). Computed
+  post-hoc with a separate script importing the frozen functions; disclosed in REPORT. Also: the B0m size diagnostic
+  fails on test (0.582 stratified) → residual size signal in TOUGH-M1-test; reported as a limitation.
 - D23 (06:45) Post-freeze API fix: method.describe(site, locate="burrow") now locates D sites exactly as evaluated
   (old rule kept as "burrow_flat"; differed on 4/765 TOUGH-dev and 2/523 BLiPS-val sites); regression test matches stored
   evaluation embeddings to ≤ 1.1e-7. Evaluated numbers unaffected (frozen tag holds the evaluated code).
@@ -265,7 +269,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44
   - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
 - [~] P6 EXPLORATORY PPI-R (train/val only) + AFDB dimer interface-pocket atlas demo (06:05)
-- [~] P6 Final REPORT.md (writer agent)
+- [x] P6 REPORT.md written (143 tagged numbers checked)
+  - [!] gaps found by the writer: FINAL paired C5 Δ skipped by a key-parsing bug in final_eval; blind test on
+        BLiPS-test and PPIPS-test BURROW-homology strata not run; B0m stratified 0.582 on test (fails 0.5 ± 0.03 band)
+  - [~] completion of these pre-registered reported items via scripts/post_final_reported.py (frozen code untouched)
 - [x] P6 EXPLORATORY post-test fusion A4b+L4 (w = 0.5 chosen on dev; one labelled test look) — reports/exploratory_fusion.md
   - [x] Δ fused − FINAL: TOUGH-M1 D −0.007 [−0.038, +0.009], L +0.026; BLiPS-test L/D +0.030/+0.029 (CI > 0);
         ProSPECCTs P3/P4 +0.062/+0.064; Vertex +0.025; PPIPS MRR +0.059 [+0.008, +0.108]; cost 8.9 ms GPU / 55 ms CPU
