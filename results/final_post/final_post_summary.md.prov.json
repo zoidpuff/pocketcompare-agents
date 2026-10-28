@@ -1,0 +1,39 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/final_post_summary.md",
+  "result_sha256": "652e6f862cb2be62ef76ae314755e6901d6b8d7529bb96592fb59e89babd10d3",
+  "git_commit": "6485e96710de9ee76cb97a9aad0b54f91f4d5960",
+  "git_dirty": true,
+  "git_dirty_files": [
+    "results/trials.tsv"
+  ],
+  "git_untracked": 24,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/post_final_reported.py",
+  "script_sha256": "2364b2e5352d7034d8a0c3f0f41cb16756c800d9aaf64f093344d21371f7acce",
+  "args": [
+    "summary",
+    "--threads",
+    "2"
+  ],
+  "config": {
+    "item": "summary of post-hoc pre-registered reported items",
+    "freeze_commit": "e5a6f357e5284bf588d764cbee8050d92b31c94c",
+    "frozen_files_checked": {
+      "scripts/final_eval.py": "ece829217d2202228606b7ba44aacdc3f8387b1b3e665d753a4d8e61b8143411",
+      "src/pocketcompare/evaluate.py": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+      "configs/final_method.yaml": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+      "PREREG.md": "4454979ed1efe50d04837e21bff49454154e0b6dfd13a709667ab7fd4e305e25",
+      "results/models/a4b/n1_linear/config.json": "32428248f6169fdca6e32e41cd154530a0ca4c011d5660b563b08f9700b5e8b6",
+      "results/models/a4b/n1_linear/input_stats.json": "845d5671dc3ef8184330ebcd788c70b9a078280cf7ea57a623facbba8a86a95d",
+      "results/models/a4b/n1_linear/seed0.npz": "d455b1fca0f49bf39a57efc768cc12e70792ff5e9b2c6fb5f814ce166e6c3d99",
+      "results/models/a4b/n1_linear/seed1.npz": "b5f60af927724e43e5bf5ced0e0a0527409b9718dd90cd350944669f0985f254",
+      "results/models/a4b/n1_linear/seed2.npz": "c221fcc0f10e61555ca3fc201d4c83d3ccc48f9fe708cfa5281e679974ac0c5b"
+    }
+  },
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/c5_holo_minus_af.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/c5_details.json",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/ppips_burrow_strata.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/ppips_burrow_strata.json",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/blind_test/metrics.parquet"
+  ]
+}

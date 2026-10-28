@@ -1,0 +1,26 @@
+{
+  "counts": {
+    "burrow_any_edge": {
+      "ortho_queries_both_clean": 61,
+      "ortho_queries_partner_flagged": 89,
+      "ortho_queries_query_clean": 61,
+      "ortho_queries_query_flagged": 92,
+      "sym_pairs_clean": 96,
+      "sym_pairs_flagged": 176,
+      "test_complexes": 251,
+      "test_complexes_flagged": 159
+    },
+    "burrow_rep_edge": {
+      "ortho_queries_both_clean": 83,
+      "ortho_queries_partner_flagged": 67,
+      "ortho_queries_query_clean": 83,
+      "ortho_queries_query_flagged": 70,
+      "sym_pairs_clean": 96,
+      "sym_pairs_flagged": 176,
+      "test_complexes": 251,
+      "test_complexes_flagged": 136
+    }
+  },
+  "reproduction_max_abs_deviation": 0.0,
+  "reproduction_rows": 13
+}

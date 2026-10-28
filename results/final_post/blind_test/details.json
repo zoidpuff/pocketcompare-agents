@@ -1,0 +1,13 @@
+{
+ "n_sites": 3600,
+ "n_models": 2295,
+ "n_pool_pockets": 13876,
+ "pockets_per_model_median": 5.0,
+ "n_sites_detected": 2520,
+ "n_pairs_pos": 6896,
+ "n_directed_pos": 13792,
+ "n_directed_both_detected": 8048,
+ "median_candidates": 13859.0,
+ "b4": "not computed (ESM-2 needs a GPU)",
+ "n_model_errors": 0
+}

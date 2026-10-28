@@ -1,0 +1,92 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/final_post/ppips_burrow_strata.json",
+  "result_sha256": "69d060662b0354beeadbc647c52e78235c344a7a89453e571237334124cafdf6",
+  "n_rows": null,
+  "git_commit": "5181a2146676a7a07e3d42873b276ffb3935a126",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 26,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/post_final_reported.py",
+  "script_sha256": "ae3bcaab2b611c5fd49256ca506ebe808489b71c0c68307768d670ec8529415b",
+  "args": [
+    "ppips",
+    "--threads",
+    "8"
+  ],
+  "config": {
+    "item": "PPIPS-test P-ortho / P-sym stratified by BURROW-homology flag (PREREG \u00a73 via D15/SPLITS.md)",
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "method_config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+    "B": 2000,
+    "seed": 0,
+    "flags": "data/splits/ppips_burrow_homology.parquet (primary burrow_rep_edge; secondary burrow_any_edge)",
+    "ortho_stratified_by": "query complex flag",
+    "sym_stratified_by": "complex flag",
+    "freeze_commit": "e5a6f357e5284bf588d764cbee8050d92b31c94c",
+    "frozen_files_checked": {
+      "scripts/final_eval.py": "ece829217d2202228606b7ba44aacdc3f8387b1b3e665d753a4d8e61b8143411",
+      "src/pocketcompare/evaluate.py": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+      "configs/final_method.yaml": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+      "PREREG.md": "4454979ed1efe50d04837e21bff49454154e0b6dfd13a709667ab7fd4e305e25",
+      "results/models/a4b/n1_linear/config.json": "32428248f6169fdca6e32e41cd154530a0ca4c011d5660b563b08f9700b5e8b6",
+      "results/models/a4b/n1_linear/input_stats.json": "845d5671dc3ef8184330ebcd788c70b9a078280cf7ea57a623facbba8a86a95d",
+      "results/models/a4b/n1_linear/seed0.npz": "d455b1fca0f49bf39a57efc768cc12e70792ff5e9b2c6fb5f814ce166e6c3d99",
+      "results/models/a4b/n1_linear/seed1.npz": "b5f60af927724e43e5bf5ced0e0a0527409b9718dd90cd350944669f0985f254",
+      "results/models/a4b/n1_linear/seed2.npz": "c221fcc0f10e61555ca3fc201d4c83d3ccc48f9fe708cfa5281e679974ac0c5b"
+    }
+  },
+  "config_sha256": "cd19c68b14b0c953be2125676a2e1e8a5336394b3d80936f29ef10cfafe34179",
+  "inputs": [
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_pair_only_D.ids.parquet",
+      "size": 773860,
+      "sha256": "d41fcd075e4658f632dcd1f121011fc9cb2c5beb259cf9f286c9c9fb979644bb",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/a1_pair_only_D.npy",
+      "size": 32139424,
+      "sha256": "774e2db4276d1729374b198529c1090f0c43672faec6eef86d320bc3a215a0cd",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b1_default_D.ids.parquet",
+      "size": 752035,
+      "sha256": "476d751153e4a11abf5661079442563a89f0e724b30ebdac2209a267326abe91",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b1_default_D.npy",
+      "size": 3689588,
+      "sha256": "66284006ec70b8e9ac2102381e6f09453b04c4a196e0016f745bafbcc3399a11",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b4_esm2_D.npy",
+      "size": 104944768,
+      "sha256": "c941ed4306484cbe745da615e2035e1f0b174c3e33455338ca4b69e0fa5085ca",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/processed/descriptors/ppips/b4_esm2_ids.parquet",
+      "size": 235026,
+      "sha256": "a3aa45b303b78639ee3cda7321751f9baaa5d5f7958e6cf766a67351b24c0835",
+      "method": "sha256"
+    },
+    {
+      "path": "/cluster/project/beltrao/gmagnus/pocket_compare/data/splits/ppips_burrow_homology.parquet",
+      "size": 21912,
+      "sha256": "adf96e7fbafd4d9fac2c0a762ad8c1615cc2d637afb52f3a9bc94044d9eb4063",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T05:21:19+00:00",
+  "end_time": "2026-10-28T05:21:43+00:00",
+  "wall_seconds": 24.253,
+  "extra": null
+}
