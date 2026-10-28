@@ -19,3 +19,4 @@ results/a2/*.npz
 results/audit/*.tsv
 results/audit/*.fasta
 *.egg-info/
+release/
