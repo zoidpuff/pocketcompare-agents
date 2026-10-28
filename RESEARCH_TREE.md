@@ -45,6 +45,12 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D22 (06:00) M3 retrospective adopted (reviews/milestone_M3_retrospective.md): LESSONS pruned to 12; headline = D-mode
+  (C1-D); C1a/C1b reported as borderline and Monte-Carlo-fragile; P6.2 ≡ P6 disclosed (DEV5: BURROW strips HETATM, so
+  the C2 macro double-weights P6); exploratory fusion capped at one pre-declared protocol and one labelled test look;
+  no changes under the frozen tag except disclosed bug fixes.
+- DEV5 (06:00) ProSPECCTs P6 and P6.2 are identical after BURROW strips cofactors; C2 includes both (as pre-registered),
+  effectively double-weighting P6. Not re-run; disclosed.
 - DEV4 (05:30, found by the verifier) 66 TOUGH-M1-test pockets have homology edges to PPIPS-train chains used to
   train A4b (PPIPS was not in the TOUGH-M1-test exclusion check); excluding them leaves Δ unchanged. Disclosed.
 - DEV3 (04:25) First final-eval run aborted at the PPIPS step: recorded sealed hash for ppips_test_queries /

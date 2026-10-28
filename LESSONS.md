@@ -1,21 +1,14 @@
-# LESSONS — process rules (pruned at milestone M2, 2026-10-27 22:40; source: reviews/milestone_M2_retrospective.md)
+# LESSONS — process rules (pruned at milestone M3, 2026-10-28 06:00; source: reviews/milestone_M3_retrospective.md)
 
-1. Seal label/pair tables technically (move + chmod 000, sha256) at creation, before any agent or reviewer launches. (DEV1: a reviewer read TOUGH-M1 labels 2 min before sealing.)
-2. Record gates and the claim family in a hashed pre-registration before computing scores; amend only before test use, in one consolidated file (PREREG.md). (Gates D7/D10 stopped work cleanly; piecemeal amendments D6/D8/D9/D11 cost review time.)
-3. Run size-only baselines and size-stratified AUC first on any pocket-pair benchmark. (B0 ROC 0.78 on TOUGH-M1-dev vs B0m stratified 0.489; fragment score vs volume ρ −0.74.)
-4. Evaluate in the deployment pocket definition (detected, ligand-free) beside the ligand-defined one; use label-free L-vs-D agreement as a pre-check. (A1 0.808 → 0.560; ligand-free sph8+env agreement 0.996.)
-5. Freeze the metric module first, test it on synthetic data with known answers, stamp its hash in every output. (evaluate.py, 41 tests; it also caught that 5×5 size strata leave a 0.539 shortcut.)
-6. "Done" for data/split/leakage work needs an independent re-implementation that finishes before anything is fitted. (verify_splits 97 checks; review caught the global graph percolating at 49.8 %.)
-7. Cap dev exploration: log every variant in results/trials.tsv, fix a trial budget, discount gains whose CI includes zero given the test MDE. (36 variants; best +0.024 [−0.039, +0.043]; MDE ≈ 0.13.)
-8. Stop a path when its gate fails; do not scale compute behind a failed gate except for a separately pre-registered sub-test. (A2 gate failed at D10.)
-9. Prefer shipped prior-art scores or published numbers over bespoke external baselines with no marginal information. (B5 EPoCS 0.599 ≈ B4 0.601 after ~38 GPU-min + env hacks; TOUGH-M1 ships APoc/G-LoSA/SiteEngine.)
-10. Run jobs > 5 min detached with log + marker + stored PID; never `pkill -f`; append to LD_LIBRARY_PATH, never overwrite; check mounts first. (Overwritten LD_LIBRARY_PATH silently ran ESM on CPU; rsyncPDB not mounted, D1.)
-11. The PI must not `git add` directories that running agents are editing; commit agents' files only after they report. (22:00: an in-progress pockets.py was swept into a commit.)
-12. Homology rules need exact alignment identities (mmseqs `-a`) and exhaustive structural search near thresholds;
-    score-based identity estimates leaked 16 TOUGH-M1-test pockets past a 30 % rule (D15, independent audit).
-13. Agents must not run `--help` on scripts that take no arguments (it executes them); give such scripts an argparse
-    guard. (03:30: --help re-ran make_blips_resplit_v2.py and verify_splits.py; outputs byte-identical by luck of determinism.)
-14. Dry-run the full freeze → worktree → preflight path (not only the evaluation code) before the freeze moment;
-    a read-only parent mount and a stale tracked FREEZE.json each forced a re-freeze (D21).
-15. Any script that rewrites a sealed file must update the sealed hash list in the same step; a stale list aborted
-    the first final-eval run (DEV3). The hash guard itself worked — keep it.
+1. Seal label/pair tables technically (move, chmod 000, sha256) at creation by the script that writes them, and update the recorded hash list in the same step. (DEV1: reviewer read labels 2 min before sealing; DEV3: stale hash aborted the first final run; the guard itself worked.)
+2. Pre-register gates and the claim family in one hashed file before computing scores; amend only before test use. (D7/D10 gates ended paths cleanly; D6/D8/D9/D11 piecemeal amendments cost review time.)
+3. Run size-only baselines and size-stratified AUC first, and report the deployment (detected, ligand-free) definition as primary. (B0 0.78 vs stratified 0.489; A1 0.808 -> 0.560 in D-mode; ligand heavy-atom count alone gives ROC 0.95.)
+4. Freeze and unit-test the metric module on synthetic data with known answers; stamp its hash in every output. (evaluate.py, 41 tests; it exposed the 5x5 strata shortcut 0.539.)
+5. Data/split/leakage work is "done" only after an independent re-implementation, run before fitting and covering every training source. (verify_splits 97 checks; global graph percolated at 49.8 %; DEV4 missed PPIPS-train.)
+6. Use exact alignment identities (mmseqs `-a`) and exhaustive structure search near thresholds. (Score-based identity leaked 16 test pockets past 30 %, D15.)
+7. Cap dev exploration with a declared trial budget and tie-break rule, log every variant, and discount gains whose CI includes zero given the test MDE. (36 variants, best +0.024 [-0.039, +0.043]; D19 "grid order" was not a rule.)
+8. Stop a path at a failed gate; do not scale compute behind it. (A2 failed D10; the later PPIPS dockings served a separately pre-registered sub-test, which also failed.)
+9. Prefer shipped prior-art scores to bespoke baselines. (B5 EPoCS 0.599 ~ B4 0.601 after ~38 GPU-min; TOUGH-M1 ships APoc/G-LoSA/SiteEngine.)
+10. Always have a different agent verify headline numbers with its own code path, and report what it finds (fragile p-values, identical conditions, shortcuts). (verification_final: 1e-8 match plus DEV4, P6=P6.2, Holm margin.)
+11. Dry-run the full freeze -> worktree -> preflight path before the freeze, and keep post-freeze code changes out of the frozen tree. (Read-only parent mount and stale FREEZE.json forced D21 re-freezes; four re-freeze commits.)
+12. Operations: detach jobs > 5 min with log, marker and PID; never `pkill -f`; append to LD_LIBRARY_PATH; give no-arg scripts an argparse guard (`--help` executes them); do not `git add` dirs agents are editing. (Silent CPU ESM run; --help re-ran split scripts; in-progress pockets.py swept into a commit.)
