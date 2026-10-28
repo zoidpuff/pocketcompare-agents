@@ -264,7 +264,8 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] detection recall 0.615 on val AF models; partner retrieval (84 pairs) final hit@10 0.155 vs B1 0.107, AUC
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44
   - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
-- [-] P4 Exploratory PPI-R task — not run (cut for time; listed as follow-up)
+- [~] P6 EXPLORATORY PPI-R (train/val only) + AFDB dimer interface-pocket atlas demo (06:05)
+- [~] P6 Final REPORT.md (writer agent)
 - [x] P6 EXPLORATORY post-test fusion A4b+L4 (w = 0.5 chosen on dev; one labelled test look) — reports/exploratory_fusion.md
   - [x] Δ fused − FINAL: TOUGH-M1 D −0.007 [−0.038, +0.009], L +0.026; BLiPS-test L/D +0.030/+0.029 (CI > 0);
         ProSPECCTs P3/P4 +0.062/+0.064; Vertex +0.025; PPIPS MRR +0.059 [+0.008, +0.108]; cost 8.9 ms GPU / 55 ms CPU
