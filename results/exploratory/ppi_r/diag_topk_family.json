@@ -1,0 +1,18 @@
+{
+ "FINAL": {
+  "p@10": 0.5179955703211517,
+  "share_top10_ppi_hits_same_pfam": 0.0,
+  "share_top10_ppi_hits_same_ligand_cluster": 0.0005263157894736842
+ },
+ "B4": {
+  "p@10": 0.7357142857142858,
+  "share_top10_ppi_hits_same_pfam": 0.0,
+  "share_top10_ppi_hits_same_ligand_cluster": 0.0007548685559156763
+ },
+ "B1": {
+  "p@10": 0.42862679955703215,
+  "share_top10_ppi_hits_same_pfam": 0.0,
+  "share_top10_ppi_hits_same_ligand_cluster": 0.0008998435054773082
+ },
+ "chance_same_pfam_among_other_group_ppi": 1.82292819992442e-06
+}

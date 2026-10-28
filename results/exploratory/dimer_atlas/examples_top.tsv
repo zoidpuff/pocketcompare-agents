@@ -1,0 +1,11 @@
+pair	organism	type	ipTM	max_ipSAE	f_min	plddt_mean	nn_mod_cos	nn_blips_cos	mod_pocket	mod_uniprot	mod_pfam_name	mod_lig	mod_label	hom_to_mod_target	same_uniprot_as_mod
+MYRFL–MYRFL	human	homo	0.330	0.610	0.356	87.479	0.926	0.805	5xxg:A:8HR:501	Q9H7B4	SET	8HR	PLOC	False	False
+ILM1–ILM1	yeast	homo	0.640	0.607	0.250	88.751	0.914	0.860	4c52:A:X0D:300	Q07817		X0D	PLOC	False	False
+HMG2–HMG2	yeast	homo	0.500	0.738	0.308	86.472	0.906	0.881	6ne5:A:KJP:400	Q07820	Bcl-2	KJP	PLOC	False	False
+HSD17B11–HSD17B11	human	homo	0.810	0.677	0.457	84.587	0.903	0.722	5csx:A:54J:801	P15056	PK_Tyr_Ser-Thr	54J	PLONC	False	False
+PXP1–PXP1	yeast	homo	0.940	0.914	0.364	97.874	0.899	0.902	5y95:A:8TL:201	Q62141	PAH	8TL	PLOC	False	False
+ERVK-10–ERVK-10	human	homo	0.700	0.760	0.415	88.179	0.898	0.730	3ka2:A:2NC:204	P03369	RVP	2NC	PLOC	True	False
+OCA2–OCA2	human	homo	0.710	0.776	0.312	94.718	0.898	0.905	5x72:A:P69:202	O43924	GMP_PDE_delta	P69	PLOC	False	False
+SEPTIN6–SEPTIN8	human	hetero	0.647	0.614	0.333	88.845	0.887	0.778	4ca8:A:3ES:1615	Q10714		3ES	PLOC	False	False
+AP3M1–AP3B2	human	hetero	0.938	0.862	0.375	94.327	0.879	0.748	4qp4:A:36O:401	P28482	Pkinase	36O	PLOC	False	False
+ATP6V0A4–ATP6V0E1	human	hetero	0.877	0.748	0.383	89.910	0.876	0.885	4mdq:A:28W:201	Q00987	SWIB	28W	PLOC	False	False

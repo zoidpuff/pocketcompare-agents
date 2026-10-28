@@ -1,0 +1,14 @@
+{
+ "EXPLORATORY": true,
+ "added_after_first_clustering": true,
+ "n_edges": 37531,
+ "n_pockets_with_edge": 19503,
+ "n_clusters_total": 14932,
+ "n_singletons": 12970,
+ "n_clusters_ge2": 1962,
+ "n_clusters_ge10": 150,
+ "frac_pockets_in_ge10": 0.43673205432205214,
+ "n_cross_family_ge10": 45,
+ "largest": 1154,
+ "wall_s": 26.5122971534729
+}

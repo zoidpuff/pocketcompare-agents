@@ -268,7 +268,10 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [x] detection recall 0.615 on val AF models; partner retrieval (84 pairs) final hit@10 0.155 vs B1 0.107, AUC
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44
   - [x] PPI-L N1 descriptors + final_eval stage (exploratory)
-- [~] P6 EXPLORATORY PPI-R (train/val only) + AFDB dimer interface-pocket atlas demo (06:05)
+- [-] P6 EXPLORATORY PPI-R (train/val only) — reports/exploratory_ppi.md: FINAL does NOT recognise PPI-modulator
+      pockets across families (AUC 0.552 [0.495, 0.590], P@10 0.52 vs chance 0.55; B1 0.493; B4 P@10 0.74, cause unclear)
+- [x] P6 EXPLORATORY dimer interface atlas: 15,161 AFDB dimers, 0 errors, 347 s (43.7 dimers/s), 127,824 pockets
+      (32,473 interface); interface pockets not closer to modulator pockets than to ligand pockets
 - [x] P6 REPORT.md written (143 tagged numbers checked)
   - [!] gaps found by the writer: FINAL paired C5 Δ skipped by a key-parsing bug in final_eval; blind test on
         BLiPS-test and PPIPS-test BURROW-homology strata not run; B0m stratified 0.582 on test (fails 0.5 ± 0.03 band)

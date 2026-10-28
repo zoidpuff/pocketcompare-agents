@@ -1,0 +1,35 @@
+{
+ "covariates": [
+  "log_volume_A3_L",
+  "mean_bur16_L"
+ ],
+ "caliper_sd": 0.25,
+ "n_ppi": 1806,
+ "n_pool": 2830,
+ "n_matched": 1272,
+ "smd_before": [
+  0.04117787768503399,
+  0.5687715408232364
+ ],
+ "smd_after": [
+  0.05996935292293128,
+  -0.09422390680869261
+ ],
+ "smd_after_matched_ppi_only": [
+  7.361769179546976e-05,
+  -0.002517398949450294
+ ],
+ "median_volume_ppi_bg_pool_bg_matched": [
+  651.0,
+  635.0,
+  628.5
+ ],
+ "median_bur16_ppi_bg_pool_bg_matched": [
+  0.7819878458976746,
+  0.7462936341762543,
+  0.8037776947021484
+ ],
+ "blips_trainval_L_ok": 2841,
+ "excluded_homologous_to_ppil": 11,
+ "pool": 2830
+}

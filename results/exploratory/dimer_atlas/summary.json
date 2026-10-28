@@ -1,0 +1,90 @@
+{
+ "EXPLORATORY": true,
+ "demo_not_evaluation": true,
+ "throughput": {
+  "n_structures": 15161,
+  "n_errors": 0,
+  "n_pockets": 127824,
+  "wall_s_both_shards": 347,
+  "structures_per_s": 43.69164265129683,
+  "per_structure_cpu_s_median": 0.35176800936460495,
+  "workers": "2 x (11 CPU workers + 1 GPU)",
+  "gpu_s_per_structure_median": 0.009572986004059203
+ },
+ "pockets_per_dimer_median": 7.0,
+ "n_interface_pockets": 32473,
+ "frac_pockets_interface": 0.25404462385780446,
+ "dimers_with_interface_pocket": 13093,
+ "frac_dimers_with_interface_pocket": 0.86359738803509,
+ "by_type": "{('ecoli', 'hetero'): 2594, ('ecoli', 'homo'): 2858, ('human', 'hetero'): 11415, ('human', 'homo'): 11634, ('yeast', 'hetero'): 2395, ('yeast', 'homo'): 1577}",
+ "index": {
+  "interface_flat": {
+   "n": 32473,
+   "build_s": 0.029843769967556
+  },
+  "all_ivfpq": {
+   "n": 127824,
+   "build_s": 540.3879470729735,
+   "factory": "OPQ64_384,IVF1024,PQ64",
+   "index_bytes_per_pocket": 92.06154556264865
+  },
+  "total_build_s": 541.4644691944122
+ },
+ "references": {
+  "ppil_modulator_pockets": 2236,
+  "ppil_D_mode": 2071,
+  "blips_trainval_pockets": 2841,
+  "blips_D_mode": 2143
+ },
+ "tau_pair_p99_iface_x_blips": 0.5934170484542847,
+ "pair_quantiles_iface_x_blips": {
+  "0.5": 0.09146231412887573,
+  "0.9": 0.38895657658576965,
+  "0.99": 0.5934170484542847,
+  "0.999": 0.7215309739112854
+ },
+ "close_neighbour": {
+  "interface": {
+   "n": 32473,
+   "nn_modulator_gt_tau_pair": 27572,
+   "frac_nn_modulator_gt_tau_pair": 0.8490746158346935,
+   "frac_nn_blips_equal_size_gt_tau_pair": 0.9276013919255998,
+   "tau_nn_p99_of_nn_to_blips_equal_size": 0.8812569975852966,
+   "nn_modulator_gt_tau_nn": 16,
+   "frac_nn_modulator_gt_tau_nn": 0.0004927170264527453,
+   "median_nn_cos_modulator": 0.6680482625961304,
+   "median_nn_cos_blips_equal_size": 0.7043315172195435,
+   "frac_modulator_nn_beats_blips_nn": 0.30616204231207467
+  },
+  "non_interface_control": {
+   "n": 95351,
+   "frac_nn_modulator_gt_tau_pair": 0.8709924384642007,
+   "frac_nn_blips_equal_size_gt_tau_pair": 0.9434195760925423,
+   "frac_nn_modulator_gt_tau_nn": 0.0018248366561441412,
+   "frac_modulator_nn_beats_blips_nn": 0.2803012029239337
+  }
+ },
+ "close_hits_homology": {
+  "n_close": 27572,
+  "hom_to_matched_target": 231,
+  "same_uniprot": 7,
+  "non_homologous": 27341,
+  "n_close_strict": 16,
+  "strict_non_homologous": 14,
+  "dimers_with_close_hit": 12281,
+  "frac_iface_hom_to_any_ppil": 0.09992917192744742
+ },
+ "clusters": {
+  "method": "Louvain on top-10 other-structure neighbours with cos >= tau_pair",
+  "n_edges": 243415,
+  "n_clusters": 29,
+  "n_singletons": 6,
+  "n_clusters_ge10": 23,
+  "frac_pockets_in_ge10": 0.9998152311150802,
+  "n_cross_family_ge10fam_share_lt0.3": 14,
+  "largest": 6468,
+  "knn_s": 0.8097560405731201,
+  "cluster_s": 12.617684125900269
+ },
+ "wall_s_analysis": 571.8521151542664
+}
