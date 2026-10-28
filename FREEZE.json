@@ -1,5 +1,5 @@
 {
- "commit": "44f07ffec8c368d296b246c38d044f1a420b5971",
+ "commit": "afdae23506a61489bdef7b9b69672dd6acccec06",
  "method_config": "configs/final_method.yaml",
  "method_config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
  "method_name": "pocketcompare-final:A4b:n1_linear|raw",
@@ -13,7 +13,7 @@
  },
  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
  "prereg_sha256": "4454979ed1efe50d04837e21bff49454154e0b6dfd13a709667ab7fd4e305e25",
- "final_eval_sha256": "e8c34888cee51f9a029f9b4f56e4afba447e655ae4bbfa2b9924ef5aada97ddd",
- "created": "2026-10-28T03:38:21+0100",
+ "final_eval_sha256": "85d07a7b408e898b1c15e32cc9e1dc69e8a92180fd04776866a23caaed697800",
+ "created": "2026-10-28T03:38:58+0100",
  "tree_clean_at_creation": true
 }
