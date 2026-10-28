@@ -1,0 +1,9 @@
+[    0.0s] frozen files match (19 files; FREEZE commit e5a6f357e5, PREREG2 20c3e6c5ac)
+[    0.0s] mode PDB-T; gate PASS -> confirmatory claims
+[    0.4s] unsealed pdbt_pairs.parquet (8118 rows) for PREREG2 PDB-T evaluation (R1-R3 + reported items), scripts/eval_pdbt.py; mode restored 0o0
+[    0.5s] [pdbt] dropped 141 pairs (33 positive) involving excluded sites
+[    0.5s] [pdbt] {"pair_cols": ["site_a", "site_b"], "pos_cluster_col": "pair_cluster", "n_sites_pool": 987, "n_sites_cache_ok": 987, "n_sites_d_match": 874, "n_units_pool": 316, "n_pairs": 7977, "n_pos": 1320, "n_neg": 6657, "n_units_in_positive_pairs": 183, "n_pos_clusters": 37, "n_pairs_D": 6171, "n_pos_D": 1060, "strat_bins_L": "5x20", "strat_bins_D": "5x20"}
+[    1.0s] [pdbt] 22 score vectors; per-arm metrics + bootstrap (B = 2000)
+[   33.8s]     generic bootstrap 20/22 (33 s)
+[   38.1s] claims: R1 Δ +0.0805 [+0.0279, +0.1322] p 0.0010 Holm 0.0030; R2 Δ +0.0104 [-0.0104, +0.0323] p 0.1714 Holm 0.3428; R3 Δ -0.0224 [-0.0611, +0.0184] p 0.8581 Holm 0.8581
+[   38.1s] done -> /cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt

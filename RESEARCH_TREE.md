@@ -282,7 +282,11 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
       pockets across families (AUC 0.552 [0.495, 0.590], P@10 0.52 vs chance 0.55; B1 0.493; B4 P@10 0.74, cause unclear)
 - [x] P6 EXPLORATORY dimer interface atlas: 15,161 AFDB dimers, 0 errors, 347 s (43.7 dimers/s), 127,824 pockets
       (32,473 interface); interface pockets not closer to modulator pockets than to ligand pockets
-- [~] P7 Temporal replication PDB-T (PREREG2) — reports/pdbt_build.md
+- [x] P7 Temporal replication PDB-T (PREREG2) — results/pdbt/report.md (987 sites, D set 6,171 pairs / 1,060 pos)
+  - [!] R1 FINAL − B1 (D): 0.752 vs 0.671, Δ +0.081 [+0.028, +0.132], Holm p 0.003 — REPLICATES
+  - [-] R2 FUSION − FINAL: +0.010 [−0.010, +0.032], Holm p 0.34 — exploratory fusion gain does not replicate
+  - [-] R3 L4 − FINAL: −0.022 [−0.061, +0.018] — L4 not better; one-SE choice of the linear head vindicated
+  - [x] L-mode FINAL 0.774 vs B1 0.760 (Δ +0.014, CI incl. 0); size-strat D 0.752
   - [x] gate PASS: 996 sites, 545 proteins, 317 homology groups; 1,353 pos / 6,765 neg; 38 ligand clusters
   - [x] leakage: 9,082/13,036 chains removed (edge to any training source); 208 exact-sequence test overlaps removed
   - [x] eval_pdbt.py dry run on BLiPS-val reproduces dev exactly

@@ -1,0 +1,19 @@
+{
+ "n_sites_in": 14528,
+ "n_sites_lt2_contact_res": 284,
+ "n_sites_no_homology_record": 0,
+ "n_sites_remove_train": 9845,
+ "n_sites_remove_test_exact": 441,
+ "n_sites_after_leakage": 4156,
+ "n_sites_one_per_entry_protein_cluster": 1910,
+ "n_sites_after_protein_cap": 996,
+ "n_proteins": 545,
+ "n_sites_cache_failed_or_missing": 0,
+ "n_sites_lt10_points": 0,
+ "n_sites_paired_pool": 996,
+ "sealed_sha256": "b4bf2909f44a819f4a1fd5160a23e30b2fbbc7695082aaeb460b7899d1f70c60",
+ "n_pairs": 8118,
+ "n_pos": 1353,
+ "n_neg": 6765,
+ "gate_pass": true
+}

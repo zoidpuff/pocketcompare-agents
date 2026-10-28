@@ -1,0 +1,32 @@
+{
+  "result": "/cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt/report.md",
+  "result_sha256": "8ab41d17539e7cf842f391917afb32110555a3e9ebaae3aa368e9b202fd63924",
+  "git_commit": "74a9683300e58768f5f929a27013b4d251dea247",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 7,
+  "script": "/cluster/project/beltrao/gmagnus/pocket_compare/scripts/eval_pdbt.py",
+  "script_sha256": "5973d139615aae951bcd07522982c2eb8a24a0245276d04e5029f0349f4412d0",
+  "args": [
+    "--rerun",
+    "--threads",
+    "16",
+    "--device",
+    "cuda:2"
+  ],
+  "config": {
+    "task": "eval_pdbt",
+    "run_mode": "PDB-T confirmatory",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "fusion_w": 0.5,
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "prereg2_sha256": "20c3e6c5ac5c573fd63d381276e0476d4a85f865b65396b590bad7cc13e3e686"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt/summary.parquet",
+    "/cluster/project/beltrao/gmagnus/pocket_compare/results/pdbt/claims.json"
+  ]
+}

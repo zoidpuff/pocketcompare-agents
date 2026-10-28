@@ -1,0 +1,3 @@
+time	file	sha256	sha256_ok	mode_before	mode_after	rows	purpose	user	host	pid	git_commit
+2026-10-28T07:53:46+0100	data/sealed/pdbt_pairs.parquet	b4bf2909f44a819f4a1fd5160a23e30b2fbbc7695082aaeb460b7899d1f70c60	True	0o0	0o0	8118	PREREG2 PDB-T evaluation (R1-R3 + reported items), scripts/eval_pdbt.py	gmagnusson	eu-g6-048	1846814	a86ecea81e80febe2c4346d8cd4d8c501f303675
+2026-10-28T07:54:35+0100	data/sealed/pdbt_pairs.parquet	b4bf2909f44a819f4a1fd5160a23e30b2fbbc7695082aaeb460b7899d1f70c60	True	0o0	0o0	8118	PREREG2 PDB-T evaluation (R1-R3 + reported items), scripts/eval_pdbt.py	gmagnusson	eu-g6-048	1848111	74a9683300e58768f5f929a27013b4d251dea247
