@@ -1,0 +1,397 @@
+{
+  "result": "/tmp/pocket_compare_final_e5a6f357e5/results/final/final_claims.json",
+  "result_sha256": "dae926a84f02289f25eea9f33a2515a401b7dabdf2b05933772d7752092caca5",
+  "n_rows": null,
+  "git_commit": "e5a6f357e5284bf588d764cbee8050d92b31c94c",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 9,
+  "script": "/tmp/pocket_compare_final_e5a6f357e5/scripts/final_eval.py",
+  "script_sha256": "ece829217d2202228606b7ba44aacdc3f8387b1b3e665d753a4d8e61b8143411",
+  "args": [
+    "--threads",
+    "24"
+  ],
+  "config": {
+    "mode": "FINAL",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "sesoi": 0.03,
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "method_config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+    "prereg": "PREREG.md \u00a72\u2013\u00a74"
+  },
+  "config_sha256": "48f257527e90730b751885e5a10e11fb6bfdea3acffc6429b105de55b04c6875",
+  "inputs": [
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/PREREG.md",
+      "size": 4310,
+      "sha256": "4454979ed1efe50d04837e21bff49454154e0b6dfd13a709667ab7fd4e305e25",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/a1_pair_only_D.ids.parquet",
+      "size": 201877,
+      "sha256": "c791dee7446920d89a710dc77b1c800bd508aff574a185618ba208532dc934ad",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/a1_pair_only_D.npy",
+      "size": 5649632,
+      "sha256": "3e7bb2f8f6055cf1ab10d0d73f78f367f15b1b862abe97ee5a03f1bd1f3d70f8",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/a1_pair_only_L.ids.parquet",
+      "size": 158432,
+      "sha256": "eb0d9bb9d1d402f5faf7f48616a0170fd287de4faaf4e3fc5f6cbe2ea9593698",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/a1_pair_only_L.npy",
+      "size": 5649632,
+      "sha256": "d4ae2f0c393ab860094113c334de80bb5f9da64d4d18311abb90fb407019d89d",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b1_default_D.ids.parquet",
+      "size": 195354,
+      "sha256": "435c529fee8f8c3e28ec84837cb7531b23ee16ad10c47fdb940cc50fe8707904",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b1_default_D.npy",
+      "size": 648668,
+      "sha256": "eff55a8f4dd0da75b5825ec7389a2ab391c1c179d87df8337f7a40f64282d4fc",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b1_default_L.ids.parquet",
+      "size": 151934,
+      "sha256": "d14c3a5c29f8a399b88559e31cc19c9336573892b52e935f39102ce6f9375812",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b1_default_L.npy",
+      "size": 648668,
+      "sha256": "2a6068e13a4e9b6aa5c6283758a1a24777b26d9aaecf15e0890a34c9f8740e2d",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b4_esm2_D.npy",
+      "size": 18447488,
+      "sha256": "d89d0ff65c7d8afc342a12ace0ec86a1ab7b0d7a57b81419523e262fc504785f",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b4_esm2_L.npy",
+      "size": 18447488,
+      "sha256": "002e7396c581207d81cfbc1512a0861b04559c487419575eb622768e9d62fcf7",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_af/b4_esm2_ids.parquet",
+      "size": 88316,
+      "sha256": "dae3995597f1b6e39ba69e8b8d8f92f232b6b42eed7fa7f601d4f949f4e3f681",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/a1_pair_only_D.ids.parquet",
+      "size": 208600,
+      "sha256": "63cf47afd542c77cb59dd4f5bff45689b5e56886ea82fecec3a90ed53d2abd14",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/a1_pair_only_D.npy",
+      "size": 5654336,
+      "sha256": "8ee1ccceb02567afe041610b34aa4ee051013084d45ce6326704ecf4bb9b5f0b",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/a1_pair_only_L.ids.parquet",
+      "size": 161723,
+      "sha256": "8599016283208e759cd29add912bbc5f665e67b54a84796bf87790e788237add",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/a1_pair_only_L.npy",
+      "size": 5654336,
+      "sha256": "608892271e2c863a370082f499da247b63a36c46b2abb833d3d836ebfa7a1e33",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b1_default_D.ids.parquet",
+      "size": 201429,
+      "sha256": "2a017c66b7b7f31fafbcefb555c396fc4b773d9f5f91a1a0a71358b63e5f4c18",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b1_default_D.npy",
+      "size": 649208,
+      "sha256": "ba26b5d16a61389211ea0e19b1e88251c4a8d90fe70ebfc2df87386f9836a6bc",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b1_default_L.ids.parquet",
+      "size": 154833,
+      "sha256": "d873ce9cdf26d943046f28dc6efdd803b04f07530b2004a7e01ce61a14d61318",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b1_default_L.npy",
+      "size": 649208,
+      "sha256": "19a599e021878c43ccb95eed9b4c6ff7d98347491c7830ea11503322855292ea",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b4_esm2_D.npy",
+      "size": 18462848,
+      "sha256": "87d03cd2610682f9570527c81b9d6ae0a1e1414805dba5465b9931c9fe805a83",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b4_esm2_L.npy",
+      "size": 18462848,
+      "sha256": "8cadb11d54fbfa7200cdeef7dce8307af84db0d2ccbc72ce12b2a43ab5f93953",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/blips_test_holo/b4_esm2_ids.parquet",
+      "size": 93063,
+      "sha256": "3e4f106133cde75f09a6359e70c52aff941b058f3dae8b307e0570de8a646151",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/ppips/a1_pair_only_D.ids.parquet",
+      "size": 773860,
+      "sha256": "d41fcd075e4658f632dcd1f121011fc9cb2c5beb259cf9f286c9c9fb979644bb",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/ppips/a1_pair_only_D.npy",
+      "size": 32139424,
+      "sha256": "774e2db4276d1729374b198529c1090f0c43672faec6eef86d320bc3a215a0cd",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/ppips/b1_default_D.ids.parquet",
+      "size": 752035,
+      "sha256": "476d751153e4a11abf5661079442563a89f0e724b30ebdac2209a267326abe91",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/ppips/b1_default_D.npy",
+      "size": 3689588,
+      "sha256": "66284006ec70b8e9ac2102381e6f09453b04c4a196e0016f745bafbcc3399a11",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/ppips/b4_esm2_D.npy",
+      "size": 104944768,
+      "sha256": "c941ed4306484cbe745da615e2035e1f0b174c3e33455338ca4b69e0fa5085ca",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/ppips/b4_esm2_ids.parquet",
+      "size": 235026,
+      "sha256": "a3aa45b303b78639ee3cda7321751f9baaa5d5f7958e6cf766a67351b24c0835",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/a1_pair_only_D.ids.parquet",
+      "size": 376938,
+      "sha256": "44884bd4ede199f3aa306361c3e4c7974a50be839e39bd12567d1aa0db162c4d",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/a1_pair_only_D.npy",
+      "size": 9553952,
+      "sha256": "d44689f85bca4cf8b2288877c6c47c63d94fef4b90008cb04556cc23d1b0aa14",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/a1_pair_only_L.ids.parquet",
+      "size": 297358,
+      "sha256": "707d175e6f0bfbfbbe801165668e9e6960dbf95486aa255663a2b5a51cbf2ef6",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/a1_pair_only_L.npy",
+      "size": 9553952,
+      "sha256": "d3010e732146d7410f93d200cc4500f205bddd8aed594e51364ee14830d595dd",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b1_default_D.ids.parquet",
+      "size": 362751,
+      "sha256": "fce8ff788cce75145c36ae637147136c079c6b20755d921e6b692c2fe2f574f3",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b1_default_D.npy",
+      "size": 1096868,
+      "sha256": "6dd3d87312688a1de7b90404fa210592aaaa9c66b8110740e1b36802fbe1d228",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b1_default_L.ids.parquet",
+      "size": 286187,
+      "sha256": "b3862a12c18b4a0a17525605a04ea9e6a87d00f0481efe719e847c0624c726a4",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b1_default_L.npy",
+      "size": 1096868,
+      "sha256": "66851348e6e99b470e4a69826f61b88c1cf8861b553a1b6a9c58a891e838a187",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b4_esm2_D.npy",
+      "size": 31196288,
+      "sha256": "82d0febc070250968981b92200744610d89a0b8b46ae633965f0245f1b580a82",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b4_esm2_L.npy",
+      "size": 31196288,
+      "sha256": "f3fb5acb897a91e9206a9a971d31b91f50f97a95144308ba4fac9c56ea73a0b1",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/prospeccts/b4_esm2_ids.parquet",
+      "size": 183794,
+      "sha256": "552ff44ae147fc5282275763d81b3c99f6b7dd01f46f38a8f1e57ec99acf2b97",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/a1_pair_only_D.ids.parquet",
+      "size": 434734,
+      "sha256": "39d307b0d374ee823d468041e54519cd247f45dde995089b5d7537387be48ea1",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/a1_pair_only_D.npy",
+      "size": 11797760,
+      "sha256": "832d6b3b2525396ff7d25eb06ef4ae77dd6250d57b521c48bc50f3dfa6f8ec82",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/a1_pair_only_L.ids.parquet",
+      "size": 326313,
+      "sha256": "0272a435a53383b8a77198e939264e8c28fedfb89b4d1297942dfc89019b46dd",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/a1_pair_only_L.npy",
+      "size": 11797760,
+      "sha256": "cafb2b9edf33fb1d5ceafc90243717d7df22f90ffe48d760ea6e0d6b201bf614",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b1_default_D.ids.parquet",
+      "size": 418762,
+      "sha256": "62d6742284aba59ab08ac74703927efea97b1ee8b02b3cb5068545fe98355aee",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b1_default_D.npy",
+      "size": 1354448,
+      "sha256": "2da0fd373cc4d278562db800c1e63a18450656792bfbe6eb38712cede307acd6",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b1_default_L.ids.parquet",
+      "size": 312222,
+      "sha256": "89720233d0305ddc6bbbb9b494b1e24d2f36eb082b065d9110b9e74b9565e0dc",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b1_default_L.npy",
+      "size": 1354448,
+      "sha256": "d0ae722784c5ded43790d2982f0aeda7710bbd19bb1942aa0253db7c6122997f",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b4_esm2_D.npy",
+      "size": 38523008,
+      "sha256": "f5c7e1a39353e47537db1017dadf032511feb6f5e3f4838adc6589d5de643940",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b4_esm2_L.npy",
+      "size": 38523008,
+      "sha256": "042f67940945bb4f54f62ddc60745999f0914965b6db73e161bfc6996e8d8c3d",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b4_esm2_ids.parquet",
+      "size": 194019,
+      "sha256": "060adb1e3d00268f98157245819f5b68cdf2ffcc6a1658f2838c65dd06342a9e",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b5_epocs.npy",
+      "size": 77045888,
+      "sha256": "e3451ee7600e3e3d065473fcb866ea07f6c725299ca5adc0e16f6f183951b8b2",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/tough_m1/b5_epocs_ids.parquet",
+      "size": 111328,
+      "sha256": "e94682c05abc322f955ab1b8f064f3e292609af65e88effc76336144aee022aa",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/vertex/a1_pair_only_L.ids.parquet",
+      "size": 261161,
+      "sha256": "d51584024d962cc9f7eabcd1dbdf7858eecaa44fab9aacf4b445a503114b926b",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/vertex/a1_pair_only_L.npy",
+      "size": 9641760,
+      "sha256": "f18ddb0c3fc33e64d077372d485a7edc3d6ba58658ba621a5e8f26e71a6b11d5",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/vertex/b1_default_L.ids.parquet",
+      "size": 252104,
+      "sha256": "74d4ba1a0a107fcc1ed7518eb479d34f45a9b34ca9a99ee31d86871d0a833064",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/vertex/b1_default_L.npy",
+      "size": 1106948,
+      "sha256": "ff2d98540aa5d9d178971eeb31f31e458ff674f05a8d4ec2be1d0e8a54bd3188",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/vertex/b4_esm2_L.npy",
+      "size": 31483008,
+      "sha256": "0c5fa0fc5ea5da3822a36f86ebe69f523916d4668112f36d77b4dda728b2db7b",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/data/processed/descriptors/vertex/b4_esm2_ids.parquet",
+      "size": 156930,
+      "sha256": "4a98ad90722198e0089c69ce92c051d37c0ede3ab9365235080be72bfd110f8c",
+      "method": "sha256"
+    },
+    {
+      "path": "/tmp/pocket_compare_final_e5a6f357e5/scripts/eval_dev.py",
+      "size": 118464,
+      "sha256": "61a117fc6697cf2051529f775b7470d9b21c475eb94249edddef8456e19c2c57",
+      "method": "sha256"
+    }
+  ],
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "seed": 0,
+  "device": "cpu",
+  "hostname": "eu-g6-048",
+  "python": "3.12.3",
+  "start_time": "2026-10-28T03:23:49+00:00",
+  "end_time": "2026-10-28T03:55:36+00:00",
+  "wall_seconds": 1906.941,
+  "extra": null
+}

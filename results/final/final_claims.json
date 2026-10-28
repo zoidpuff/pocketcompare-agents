@@ -1,0 +1,209 @@
+{
+  "C1-D": {
+    "auc_a": 0.6994853579439732,
+    "auc_b": 0.5458167542336838,
+    "ci_high": 0.28907130465909664,
+    "ci_low": 0.049564020764859655,
+    "ci_unit": "u",
+    "comparison": "FINAL[raw] \u2212 B1 default[raw]",
+    "delta": 0.15366860371028934,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.08972627359225384,
+    "mode": "D (both D-matched; common set)",
+    "n_degenerate": 0,
+    "n_pairs": 21410,
+    "n_pairs_dropped_not_common": 0,
+    "n_pos": 8702,
+    "n_units": 102,
+    "p_holm": 0.0239880059970015,
+    "p_one_sided": 0.005997001499250375,
+    "reject_h0_holm": true,
+    "se": 0.05068308406330059,
+    "sesoi": 0.03,
+    "set": "tough_m1_test"
+  },
+  "C1a": {
+    "auc_a": 0.6975901239336866,
+    "auc_b": 0.5683575037531678,
+    "ci_high": 0.20811569905044414,
+    "ci_low": 0.014698880134181242,
+    "ci_unit": "u",
+    "comparison": "FINAL[raw] \u2212 B1 default[raw]",
+    "delta": 0.12923262018051873,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.04074532527467853,
+    "mode": "L",
+    "n_degenerate": 0,
+    "n_pairs": 24337,
+    "n_pairs_dropped_not_common": 0,
+    "n_pos": 10160,
+    "n_units": 112,
+    "p_holm": 0.049475262368815595,
+    "p_one_sided": 0.01649175412293853,
+    "reject_h0_holm": true,
+    "se": 0.04176068157712037,
+    "sesoi": 0.03,
+    "set": "tough_m1_test"
+  },
+  "C1b": {
+    "auc_a": 0.6975901239336866,
+    "auc_b": 0.5680769638246267,
+    "ci_high": 0.2509764746042582,
+    "ci_low": 0.011542478647091473,
+    "ci_unit": "u",
+    "comparison": "FINAL[raw] \u2212 B4 esm2 (z)[raw]",
+    "delta": 0.1295131601090599,
+    "lower_bound_ge_sesoi": true,
+    "lower_one_sided_95": 0.03519485816492882,
+    "mode": "L",
+    "n_degenerate": 0,
+    "n_pairs": 24337,
+    "n_pairs_dropped_not_common": 0,
+    "n_pos": 10160,
+    "n_units": 112,
+    "p_holm": 0.049475262368815595,
+    "p_one_sided": 0.018490754622688656,
+    "reject_h0_holm": true,
+    "se": 0.05150495742706261,
+    "sesoi": 0.03,
+    "set": "tough_m1_test"
+  },
+  "C2": {
+    "auc_a": 0.7403442878484303,
+    "auc_b": 0.7180160856840384,
+    "ci_high": 0.11289608443624136,
+    "ci_low": -0.06438127316301319,
+    "comparison": "macro FINAL[raw] \u2212 B1 default[raw]",
+    "delta": 0.022328202164391908,
+    "lower_bound_ge_sesoi": false,
+    "lower_one_sided_95": -0.04629365109436949,
+    "mode": "L, self-pairs removed",
+    "n_degenerate": 3,
+    "n_units": 788,
+    "p_holm": 0.26676676676676675,
+    "p_one_sided": 0.26676676676676675,
+    "per_subset": {
+      "P5.2": {
+        "auc_b1": 0.6619917655057792,
+        "auc_final": 0.7087882450706353,
+        "ci": [
+          0.0008333102813969903,
+          0.09535514610920796
+        ],
+        "delta": 0.04679647956485611,
+        "missing": {
+          "n_common": 9900,
+          "n_dropped": 0,
+          "n_dropped_neg": 0,
+          "n_dropped_pos": 0,
+          "n_kept": 9900,
+          "n_total": 9900,
+          "per_method": {
+            "a": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 9900,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            },
+            "b": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 9900,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            }
+          },
+          "policy": "common"
+        },
+        "n_units": 91
+      },
+      "P6.2": {
+        "auc_b1": 0.6070991432068543,
+        "auc_final": 0.6217870257037943,
+        "ci": [
+          -0.23398672634665843,
+          0.26021584440227674
+        ],
+        "delta": 0.014687882496939975,
+        "missing": {
+          "n_common": 62,
+          "n_dropped": 0,
+          "n_dropped_neg": 0,
+          "n_dropped_pos": 0,
+          "n_kept": 62,
+          "n_total": 62,
+          "per_method": {
+            "a": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 62,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            },
+            "b": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 62,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            }
+          },
+          "policy": "common"
+        },
+        "n_units": 82
+      },
+      "P7": {
+        "auc_b1": 0.8849573483394818,
+        "auc_final": 0.8904575927708612,
+        "ci": [
+          -0.07146559450668948,
+          0.0889246963474696
+        ],
+        "delta": 0.00550024443137942,
+        "missing": {
+          "n_common": 56350,
+          "n_dropped": 0,
+          "n_dropped_neg": 0,
+          "n_dropped_pos": 0,
+          "n_kept": 56350,
+          "n_total": 56350,
+          "per_method": {
+            "a": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 56350,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            },
+            "b": {
+              "miss_rate": 0.0,
+              "miss_rate_neg": 0.0,
+              "miss_rate_pos": 0.0,
+              "n": 56350,
+              "n_missing": 0,
+              "n_missing_neg": 0,
+              "n_missing_pos": 0
+            }
+          },
+          "policy": "common"
+        },
+        "n_units": 615
+      }
+    },
+    "reject_h0_holm": false,
+    "se": 0.04355176360380686,
+    "sesoi": 0.03,
+    "set": "ProSPECCTs P5.2 + P6.2 + P7"
+  }
+}

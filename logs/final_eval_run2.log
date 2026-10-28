@@ -1,0 +1,61 @@
+[    0.1s] running in worktree /tmp/pocket_compare_final_e5a6f357e5 at e5a6f357e5284bf588d764cbee8050d92b31c94c
+[    0.6s] unsealed tough_m1_test_pairs.parquet (24337 rows) for C1a/C1b/C1-D + TOUGH-M1-test reported items; mode restored 0o0
+[    0.7s] [tough_m1_test] 1045 pockets, 24337 pairs (10160 pos), units 133, D-set 21410
+[    3.7s] [tough_m1_test] 43 vectors; bootstrap
+[   37.7s]     generic bootstrap 20/43 (34 s)
+[   69.8s]     generic bootstrap 40/43 (66 s)
+[   73.8s] unsealed prospeccts_pairs.parquet (450625 rows) for C2 + ProSPECCTs reported items; mode restored 0o0
+[   75.6s] [prospeccts_P1] 326 pockets, 106276 pairs, BURROW-clean pockets 169, D-set 27889
+[  210.4s]     generic bootstrap 20/34 (103 s)
+[  251.7s] [prospeccts_P1.2] 45 pockets, 2025 pairs, BURROW-clean pockets 17, D-set 256
+[  284.1s]     generic bootstrap 20/34 (4 s)
+[  285.4s] [prospeccts_P2] 329 pockets, 108241 pairs, BURROW-clean pockets 106, D-set 11236
+[  401.5s]     generic bootstrap 20/34 (87 s)
+[  426.4s] [prospeccts_P3] 1956 pockets, 80580 pairs, BURROW-clean pockets 1014, D-set 44850
+[  508.8s]     generic bootstrap 20/68 (52 s)
+[  542.2s]     generic bootstrap 40/68 (86 s)
+[  581.1s]     generic bootstrap 60/68 (125 s)
+[  626.8s] [prospeccts_P4] 1956 pockets, 80580 pairs, BURROW-clean pockets 1013, D-set 44717
+[  712.3s]     generic bootstrap 20/68 (53 s)
+[  747.7s]     generic bootstrap 40/68 (89 s)
+[  786.9s]     generic bootstrap 60/68 (128 s)
+[  833.0s] [prospeccts_P5] 80 pockets, 6400 pairs, BURROW-clean pockets 27, D-set 729
+[  874.6s]     generic bootstrap 20/34 (13 s)
+[  877.6s] [prospeccts_P5.2] 100 pockets, 10000 pairs, BURROW-clean pockets 35, D-set 1156
+[  920.8s]     generic bootstrap 20/34 (15 s)
+[  923.9s] [prospeccts_P6] 115 pockets, 62 pairs, BURROW-clean pockets 35, D-set 4
+[  952.6s] [prospeccts_P6.2] 115 pockets, 62 pairs, BURROW-clean pockets 35, D-set 4
+[  981.5s] [prospeccts_P7] 1151 pockets, 56399 pairs, BURROW-clean pockets 258, D-set 3514
+[ 1036.3s]     generic bootstrap 20/34 (25 s)
+[ 1047.4s] unsealed blips_test_pairs.parquet (41514 rows) for BLiPS-test reported items + C5; mode restored 0o0
+[ 1047.4s] unsealed blips_test_sites.parquet (3606 rows) for BLiPS-test site groups / label clusters; mode restored 0o0
+[ 1047.7s] [blips_test] 3603 sites, 41438 pairs (6905 pos); D-set 25318
+[ 1114.0s]     generic bootstrap 20/324 (58 s)
+[ 1143.2s]     generic bootstrap 40/324 (87 s)
+[ 1184.9s]     generic bootstrap 60/324 (129 s)
+[ 1211.0s]     generic bootstrap 80/324 (155 s)
+[ 1245.0s]     generic bootstrap 100/324 (189 s)
+[ 1279.4s]     generic bootstrap 120/324 (223 s)
+[ 1309.7s]     generic bootstrap 140/324 (254 s)
+[ 1344.0s]     generic bootstrap 160/324 (288 s)
+[ 1385.6s]     generic bootstrap 180/324 (330 s)
+[ 1413.7s]     generic bootstrap 200/324 (358 s)
+[ 1445.1s]     generic bootstrap 220/324 (389 s)
+[ 1482.6s]     generic bootstrap 240/324 (427 s)
+[ 1510.9s]     generic bootstrap 260/324 (455 s)
+[ 1550.7s]     generic bootstrap 280/324 (495 s)
+[ 1578.2s]     generic bootstrap 300/324 (522 s)
+[ 1627.0s]     generic bootstrap 320/324 (571 s)
+[ 1743.7s]     generic bootstrap 20/48 (58 s)
+[ 1781.3s]     generic bootstrap 40/48 (96 s)
+[ 1808.6s] unsealed vertex_pairs.parquet (1564604 rows) for Vertex reported items; mode restored 0o0
+[ 1811.4s] [vertex] 6218 pockets, 1564604 pocket pairs
+[ 1851.7s] unsealed tough_m1_pairs.parquet (1061926 rows) for TOUGH-M1 full-minus-dev (literature-comparable, D8); mode restored 0o0
+[ 1900.7s] unsealed ppips_test_queries.parquet (153 rows) for PPIPS-test P-ortho; mode restored 0o0
+[ 1900.8s] unsealed ppips_sym_test_pairs.parquet (272 rows) for PPIPS-test P-sym; mode restored 0o0
+[ 1904.2s] [ppips_test] 153 ortho queries, 544 sym queries, 13 rows
+[ 1904.3s] unsealed ppi_l_test_pairs.parquet (70313 rows) for PPI-L test (exploratory C3); mode restored 0o0
+[ 1904.4s] [ppi_l_test] 430 pockets, 70313 pairs (3 pos); D-set 55986
+[ 1907.9s] claims: C1a Δ +0.129 p 0.0165 Holm 0.0495; C1b Δ +0.130 p 0.0185 Holm 0.0495; C1-D Δ +0.154 p 0.0060 Holm 0.0240; C2 Δ +0.022 p 0.2668 Holm 0.2668
+[ 1907.9s] done -> /tmp/pocket_compare_final_e5a6f357e5/results/final
+[ 1909.2s] results copied to /cluster/project/beltrao/gmagnus/pocket_compare/results/final

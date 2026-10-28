@@ -1,0 +1,29 @@
+{
+  "result": "/tmp/pocket_compare_final_e5a6f357e5/results/final/final_report.md",
+  "result_sha256": "c5ce02f9975d1f3caad4f41643d9c60a0db282fc67deeeaf093935591c96baf4",
+  "git_commit": "e5a6f357e5284bf588d764cbee8050d92b31c94c",
+  "git_dirty": false,
+  "git_dirty_files": [],
+  "git_untracked": 14,
+  "script": "/tmp/pocket_compare_final_e5a6f357e5/scripts/final_eval.py",
+  "script_sha256": "ece829217d2202228606b7ba44aacdc3f8387b1b3e665d753a4d8e61b8143411",
+  "args": [
+    "--threads",
+    "24"
+  ],
+  "config": {
+    "mode": "FINAL",
+    "B": 2000,
+    "seed": 0,
+    "csls_k": 10,
+    "sesoi": 0.03,
+    "method": "pocketcompare-final:A4b:n1_linear|raw",
+    "method_config_sha256": "de21f35d0d92726197eaf1d9481dec9d714fff604e2b9e0cac587a141cf70e2b",
+    "prereg": "PREREG.md \u00a72\u2013\u00a74"
+  },
+  "evaluate_sha256": "f22d02967c08d706d8a6081865a8ba40f491340e87e205826e32f8206f65707b",
+  "derived_from": [
+    "/tmp/pocket_compare_final_e5a6f357e5/results/final/final_summary.parquet",
+    "/tmp/pocket_compare_final_e5a6f357e5/results/final/final_claims.json"
+  ]
+}
