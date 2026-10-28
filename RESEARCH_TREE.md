@@ -34,6 +34,12 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- DEV3 (04:25) First final-eval run aborted at the PPIPS step: recorded sealed hash for ppips_test_queries /
+  ppips_sym_test_pairs was the pre-rebuild one (the D18 rebuild rewrote them but did not update
+  data/sealed_SHA256SUMS.txt). The observed hash equals the creation log of the rebuild (logs/ppips_build_D15.log,
+  02:17: 85989dcc…, 153 queries; 1bbe8c7c…, 272 sym pairs) → list corrected, re-frozen with identical method and
+  evaluation code, identical evaluation re-run. No test number was viewed by the PI before the re-run (only the
+  progress log); nothing was changed in response to test data. PPIPS-test shrank with the rebuild (229 → 153 queries).
 - D21 (03:40) **FREEZE** at commit 90611c4 (tag freeze-v1; FREEZE.json committed on top): FREEZE.json names final method A4b:n1_linear raw, weights,
   evaluate.py f22d0296…, PREREG 4454979e…. Dry run reproduced dev numbers exactly. Final evaluation follows.
   Known caveat: method.describe (API) locates a given D site over all region pockets, the evaluation uses the best
