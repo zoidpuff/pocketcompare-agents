@@ -1,0 +1,28 @@
+burrow_all_default_s0.json is the BURROW pocket-detection model (preset "default", ranker "all", seed 0) of
+BURROW 1.0.0 (package burrow-pockets, https://github.com/zoidpuff/burrow [set the final URL]), copied unchanged
+from the BURROW release (models/, sha256 f33963e7e23f1d0b7fd352e89a2dc6b7be30f642cd09ba8644e1967af97c4315).
+pocketcompare pins it so that fingerprints do not depend on where BURROW's models are installed.
+
+It is distributed under the BURROW licence:
+
+MIT License
+
+Copyright (c) 2026 BURROW authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
