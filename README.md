@@ -16,6 +16,7 @@ method is frozen: the code here reproduces the evaluated fingerprints exactly (s
 - [Install](#install) · [Quickstart](#quickstart) · [What a fingerprint is](#what-a-fingerprint-is) ·
   [Runtime](#runtime) · [Validated performance](#validated-performance) · [Limitations](#limitations) ·
   [Retraining the head](#retraining-the-head) · [Citing](#citing) · [Acknowledgements and references](#acknowledgements-and-references)
+- **How this method was made** (a 24-hour autonomous AI-agent project, written for a broad audience, with figures): [docs/BRIEFING.md](docs/BRIEFING.md).
 - Technical description with every parameter: [docs/METHOD.md](docs/METHOD.md). Result tables:
   [docs/RESULTS.md](docs/RESULTS.md). Cost of running it on the whole AlphaFold DB: [docs/AFDB_COST.md](docs/AFDB_COST.md).
 
@@ -231,14 +232,14 @@ If you use pocketcompare, please cite: **[citation to be added: authors, title, 
 
 pocketcompare builds on ideas and tools from the following work. Identifiers are those of the project's literature
 review (pocket methods, benchmarks) and of the Crossref/arXiv-checked reference list of the project briefing
-(standard methods); the one entry marked † has no checked identifier yet.
+(standard methods).
 - **BURROW** pocket detection (MIT): https://github.com/zoidpuff/burrow **[set the final URL]**. The pinned BURROW model
   and the example files 1a28_A.pdb and AF-P00918-F1-model_v6.cif.gz come from the BURROW release.
 - **VolSite/Shaper** pharmacophoric cavity typing: Desaphy J et al. *J Chem Inf Model* (2012). doi:10.1021/ci300184x
 - Alignment-free pocket fingerprints and distance histograms: **FuzCav**, Weill N, Rognan D. *J Chem Inf Model*
   (2010). doi:10.1021/ci900349y · **PocketMatch**, Yeturu K, Chandra N. *BMC Bioinformatics* 9:543 (2008).
   doi:10.1186/1471-2105-9-543 · **RAPMAD**, Krotzky T et al. *J Chem Inf Model* (2015). doi:10.1021/ci5005898 ·
-  shape distributions, Osada R, Funkhouser T, Chazelle B, Dobkin D. *ACM Trans Graph* (2002) †
+  shape distributions, Osada R, Funkhouser T, Chazelle B, Dobkin D. *ACM Trans Graph* 21:807 (2002). doi:10.1145/571647.571648
 - **USR / USRCAT** moment descriptors: Ballester PJ, Richards WG. *J Comput Chem* 28:1711 (2007).
   doi:10.1002/jcc.20681 · Schreyer AM, Blundell T. *J Cheminform* 4:27 (2012). doi:10.1186/1758-2946-4-27
 - Contrastive learning with **InfoNCE**: van den Oord A, Li Y, Vinyals O. Representation learning with contrastive
