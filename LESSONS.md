@@ -17,3 +17,5 @@
     guard. (03:30: --help re-ran make_blips_resplit_v2.py and verify_splits.py; outputs byte-identical by luck of determinism.)
 14. Dry-run the full freeze → worktree → preflight path (not only the evaluation code) before the freeze moment;
     a read-only parent mount and a stale tracked FREEZE.json each forced a re-freeze (D21).
+15. Any script that rewrites a sealed file must update the sealed hash list in the same step; a stale list aborted
+    the first final-eval run (DEV3). The hash guard itself worked — keep it.
