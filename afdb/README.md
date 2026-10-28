@@ -51,6 +51,9 @@ It sends `--tiers` and `--retry-failed` on to the workers, and anything after `-
 **Run `index` / `build_index.py` / `status.py` with the same `OUT_ROOT` as the run** (source `config.sh`, or
 pass `--out-root`).
 
+**Analysing the results:** [POCKETOME.md](POCKETOME.md) is the data guide for analysis agents (formats, loading,
+what the scores mean, pitfalls). `submit.sh` copies it to `$OUT_ROOT/POCKETOME.md`.
+
 ## Check on the host before submitting
 
 1. **GCS downloads (tier 3). They were denied here.** On 2026-10-28, listing the bucket worked anonymously

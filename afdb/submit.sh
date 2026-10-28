@@ -72,5 +72,6 @@ cmd=(sbatch --array=0-$((NODES - 1)) --output="$OUT_ROOT/logs/%x_%A_%a.out" --ex
      "$AFDB_DIR/afdb.sbatch")
 echo "submit.sh: WORKER_ARGS='$WORKER_ARGS' OUT_ROOT=$OUT_ROOT ${cmd[*]}"
 [[ "${DRY:-0}" == 1 ]] && exit 0
+cp "$AFDB_DIR/POCKETOME.md" "$OUT_ROOT/POCKETOME.md" 2>/dev/null || true   # data guide next to the data
 "${cmd[@]}"
 echo "submit.sh: monitor with  python $AFDB_DIR/status.py   and   tail -f $OUT_ROOT/logs/pocketcompare-afdb_*.out"
