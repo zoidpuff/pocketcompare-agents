@@ -15,3 +15,5 @@
     score-based identity estimates leaked 16 TOUGH-M1-test pockets past a 30 % rule (D15, independent audit).
 13. Agents must not run `--help` on scripts that take no arguments (it executes them); give such scripts an argparse
     guard. (03:30: --help re-ran make_blips_resplit_v2.py and verify_splits.py; outputs byte-identical by luck of determinism.)
+14. Dry-run the full freeze → worktree → preflight path (not only the evaluation code) before the freeze moment;
+    a read-only parent mount and a stale tracked FREEZE.json each forced a re-freeze (D21).
