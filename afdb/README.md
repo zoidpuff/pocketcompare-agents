@@ -27,7 +27,9 @@ bash afdb/setup_env.sh                       # once (~2 min); re-run on a GPU no
 source afdb/config.sh                        # OUT_ROOT=/cluster/scratch/gmagnusson/pocketcompare_afdb by default
 # optional: reuse the tar indices and GCS listing built while testing (saves ~20 min)
 mkdir -p $OUT_ROOT && cp -r /cluster/project/beltrao/gmagnus/pocket_compare/release/afdb_smoke/worklist_full/{tar_index,gcs_listing.tsv.gz,gcs_listing.json} $OUT_ROOT/
-$ENV_DIR/bin/python afdb/make_worklist.py    # tiers 1-3: ~10 min tar indexing + ~11 min GCS listing (both cached)
+srun --cpus-per-task=8 --mem-per-cpu=4G --time=2:00:00 -A es_biol -p es_biol \
+     $ENV_DIR/bin/python afdb/make_worklist.py   # tiers 1-3: ~10 min tar indexing + ~11 min GCS listing (both
+                                                 # cached); run as a job, not on the login node
 #   --tiers 1,2 for local data only; --gcs-max-pages 20 for a quick partial tier 3
 srun --gpus=rtx_4090:2 --cpus-per-task=32 --mem-per-cpu=3G --time=1:00:00 -A es_biol -p es_biol \
      bash afdb/smoke_test.sh                 # optional, ~1-3 min; writes into release/afdb_smoke/smoke
