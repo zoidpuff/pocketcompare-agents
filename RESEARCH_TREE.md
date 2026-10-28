@@ -34,7 +34,7 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
-- D21 (03:55) **FREEZE** at commit 90611c4 (tag freeze-v1; FREEZE.json committed on top): FREEZE.json names final method A4b:n1_linear raw, weights,
+- D21 (03:40) **FREEZE** at commit 90611c4 (tag freeze-v1; FREEZE.json committed on top): FREEZE.json names final method A4b:n1_linear raw, weights,
   evaluate.py f22d0296…, PREREG 4454979e…. Dry run reproduced dev numbers exactly. Final evaluation follows.
   Known caveat: method.describe (API) locates a given D site over all region pockets, the evaluation uses the best
   member of the matched merged pocket (API-only difference; documented, fixed post-test if needed).
