@@ -9,7 +9,7 @@ The final method is **A4b:n1_linear**: a linear, 3-seed contrastive projection o
 configured in `configs/final_method.yaml`, and the config, weights and statistics are sha256-verified on load.
 Cost is ≈ 3.5 ms per pocket after BURROW and ≈ 0.1 µs per pair in batched search.
 
-See `REPORT.md` for the method, results and limitations. Test-set results are pending the final evaluation.
+See `REPORT.md` for the method, results and limitations. Test-set results: see REPORT.md.
 
 ## Install
 

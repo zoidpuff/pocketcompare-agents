@@ -24,7 +24,7 @@ Arms: **FINAL** = A4b:n1_linear, raw cosine (the frozen method). **N1** = its no
 - **C1a/C1b (borderline).** In L-mode, Δ is +0.129 <!-- src: results/final/final_claims.json#C1a.delta --> against B1 and +0.130 <!-- src: results/final/final_claims.json#C1b.delta --> against ESM-2, Holm p 0.0495 <!-- src: results/final/final_claims.json#C1a.p_holm -->. Both are Monte-Carlo-fragile: 30–50 % of independent B = 2,000 bootstraps would not reject. <!-- src: reports/verification_final.md -->
 - **C2 (not supported).** On ProSPECCTs P5.2/P6.2/P7, the macro Δ is +0.022 <!-- src: results/final/final_claims.json#C2.delta --> [−0.064 <!-- src: results/final/final_claims.json#C2.ci_low -->, +0.113 <!-- src: results/final/final_claims.json#C2.ci_high -->], p 0.27 <!-- src: results/final/final_claims.json#C2.p_holm -->.
 - **Size-stratified.** FINAL scores 0.719 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=FINAL,variant=raw,mode=L] --> (L) and 0.717 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=FINAL,variant=raw,mode=D] --> (D). B1 scores 0.567 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=B1,variant=raw,mode=L] -->, ESM-2 0.573 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=B4,config=esm2,variant=raw,mode=L] --> and size alone 0.504 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=B0,variant=raw,mode=L] -->. FINAL's ROC is the same in L and D.
-- **AlphaFold.** On BLiPS-test, AF-model pockets score about the same as holo pockets: D 0.723 <!-- src: results/final/final_summary.parquet#auc[set=blips_test_af,subset=all,arm=FINAL,variant=raw,mode=D] --> vs 0.728 <!-- src: results/final/final_summary.parquet#auc[set=blips_test,subset=all,arm=FINAL,variant=raw,mode=D] -->. This is unpaired, because the paired Δ for FINAL is missing (§4.6).
+- **AlphaFold.** On BLiPS-test, AF-model pockets score about the same as holo pockets: D 0.723 <!-- src: results/final/final_summary.parquet#auc[set=blips_test_af,subset=all,arm=FINAL,variant=raw,mode=D] --> vs 0.728 <!-- src: results/final/final_summary.parquet#auc[set=blips_test,subset=all,arm=FINAL,variant=raw,mode=D] -->. The paired holo − AF Δ (computed post hoc after a final_eval bug, DEV6) is −0.004 [−0.020, +0.010] (L) and +0.004 [−0.016, +0.028] (D): no AF penalty. <!-- src: reports/final_post_reported.md -->
 - **Ligand imprint.** 4 Å ligand-shell pockets encode ligand size. Ligand heavy-atom count alone gives ROC 0.95 on TOUGH-M1-test, against 0.48–0.53 for TOUGH-M1's own fpocket pockets. <!-- src: reports/verification_final.md --> L-mode benchmark numbers, ours and published, therefore partly measure ligand size. Detected-pocket or size-stratified evaluation should be used instead.
 - **Against published methods.** We scored their shipped scores on our TOUGH-M1-test partition. G-LoSA / SiteEngine / APoc reach raw ROC 0.712 <!-- src: results/final/final_summary.parquet#auc[set=tough_m1_test,subset=all,arm=B5T,config=glosa_ga,mode=native] --> / 0.692 / 0.60–0.63 and stratified 0.658 <!-- src: results/final/final_summary.parquet#auc_strat[set=tough_m1_test,subset=all,arm=B5T,config=glosa_ga,mode=native] --> / 0.613 / 0.55–0.60. FINAL reaches 0.698 / 0.719: level on raw ROC and ahead after stratification, with no paired CI. FINAL scores a pair with one dot product.
 - **Runtime.** After BURROW a pocket takes ≈ 3.5 <!-- src: results/dev/final_method_runtime.json#D_ms_per_pocket_median --> ms, and a structure 0.13–0.42 s end to end. A pair costs 0.1–0.7 µs, and storage is 1,536 B per pocket (94 B as PQ). The 116 k-pocket human AFDB set took ≈ 3 min on one node, and the exact all-vs-all top-50 search takes 0.41 <!-- src: results/release/human_afdb_v6.json#exact.all_vs_all_top50_gpu_s --> s on one GPU. Extrapolated to 200 M AFDB structures: ≈ 7,150 CPU-core-h + 223 <!-- src: results/proteome/summary.json#extrapolation_200M.gpu_hours --> GPU-h.
@@ -266,9 +266,13 @@ how much an L-mode size signal carries.
 **AlphaFold models (C5).**
 - FINAL scores the same on AF-model pockets as on holo pockets: L 0.730 vs 0.726, D 0.723 vs 0.728. These are
   unpaired comparisons: the pair sets differ slightly, and the D sets differ by detection.
-- **The pre-registered paired holo − AF Δ was not computed for FINAL.** In `final_eval.py` the arm filter compares
-  `key.split("|")[1]` with the method name, which itself contains a `|`. FINAL was therefore silently skipped, and
-  only B1 and B4 have paired C5 values.
+- **Paired holo − AF Δ for FINAL (pre-registered reported item, computed post hoc — DEV6).** `final_eval.py` selected
+  C5 arms with `key.split("|")[1]`, and the method name contains `|`, so FINAL was silently skipped.
+  `scripts/post_final_reported.py` imports the frozen functions (hash-checked) and fixes the selection; it reproduces
+  final_eval's B1/B4 values exactly (max |dev| 0). FINAL: L −0.004 [−0.020, +0.010], D +0.004 [−0.016, +0.028]; both
+  CIs inside the ±0.03 SESOI. Strata: holo released ≥ 2018-05-01 L −0.002 [−0.034, +0.027]; site pLDDT ≥ 90 L −0.009
+  [−0.024, +0.008]; pLDDT 70–90 D +0.007 [−0.030, +0.059]; pLDDT < 70 uninformative (43 / 2 positives).
+  <!-- src: reports/final_post_reported.md, results/final_post/c5_holo_minus_af.parquet -->
   - B1 D Δ = −0.013 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B1|default|raw|D#all.delta --> [−0.043 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B1|default|raw|D#all.ci_low -->, +0.016 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B1|default|raw|D#all.ci_high -->].
   - B1 L Δ = +0.010 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B1|default|raw|L#all.delta --> [−0.007 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B1|default|raw|L#all.ci_low -->, +0.024 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B1|default|raw|L#all.ci_high -->].
   - B4 L Δ = +0.013 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B4|esm2|raw|L#all.delta --> [+0.005 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B4|esm2|raw|L#all.ci_low -->, +0.020 <!-- src: results/final/final_details.json#blips_test.c5_holo_minus_af.B4|esm2|raw|L#all.ci_high -->]. This one is a small, CI-excluding loss on AF models.
@@ -334,20 +338,28 @@ homologous, so it measures homology recovery, not fold-independent similarity. T
 - L4 (0.747) is better, and the sequence baseline B4 (0.954) dominates.
 - P-ortho rewards sequence homology, so it does **not** test fold independence.
 - P-sym (the symmetric copy in a homodimer) is a sanity check, and every structure-based arm passes it.
-- The pre-registered split by BURROW-homology flag was not produced by final_eval. Most PPIPS-test complexes have a
-  BURROW-train homologue.
+- By BURROW-homology flag (post hoc, DEV6; 136/251 test complexes have a BURROW-train/dev edge): FINAL P-ortho MRR
+  0.683 with an edge and 0.683 without; B4 0.936 / 0.970 — BURROW homology does not drive the PPIPS result.
+  <!-- src: reports/final_post_reported.md, results/final_post/ppips_burrow_strata.parquet -->
 
 **PPI-L (exploratory).** The test split has 3 <!-- src: results/final/final_details.json#ppi_l.n_pos --> positive
 pairs among 70,313. No score was computed ("too few positives"), and the set is uninformative. PPI-modulator
 chemistry stays within target families: 4,312 within-UniProt positive pairs against 175 cross-group pairs across the
 whole set. <!-- src: reports/ppi_datasets.md -->
 
-### 4.10 Pre-registered items not delivered
-- The paired C5 Δ for FINAL (bug above).
-- The blind deployment test on BLiPS-test AF models. Only the val dry run exists: detection recall 0.615, partner
-  hit@10 0.155 vs B1 0.107, N1 descriptor. <!-- src: reports/blind_and_ppil.md -->
-- PPIPS-test strata by BURROW-homology flag.
-- ProSPECCTs results with self-pairs exist in `results/final/` but are not shown here.
+### 4.10 Pre-registered reported items completed post hoc (DEV6) and the blind deployment test
+Three reported items were missing from the final run (one bug, two omissions) and were computed afterwards with
+`scripts/post_final_reported.py` (frozen method, no tuning, logged unseals): the paired C5 Δ (§4.6), the PPIPS strata
+(§4.9) and the **blind deployment test** on BLiPS-test AF models:
+- 3,600 sites on 2,295 AF models; the pool is all 13,876 merged BURROW pockets (median 13,859 candidates per query).
+- BURROW detection recall 0.700 [0.676, 0.723].
+- With both partners detected (8,048 directed positive pairs): FINAL AUC 0.719 [0.684, 0.761] vs B1 0.688 and size
+  0.583; Δ FINAL − B1 +0.031 [−0.001, +0.057]. Early retrieval is low: hit@100 0.078 (chance ≈ 0.007), MRR 0.009.
+- Counting missed detections as misses: FINAL 0.628, B1 0.610.
+- Reading: in a fully ligand-free, proteome-like setting FINAL ranks true partners above random pockets but rarely in
+  the top 10 of ~14k; detection (30 % of sites missed) and early precision are the bottlenecks.
+<!-- src: reports/final_post_reported.md -->
+ProSPECCTs results with self-pairs exist in `results/final/` but are not shown here.
 
 ---
 
@@ -458,6 +470,17 @@ identical. <!-- src: reports/proteome_demo.md, reports/tooling.md -->
 - *Decision.* FINAL is unchanged. Fusion can be offered as an optional "accuracy" mode, and any claim for it needs a
   fresh held-out set.
 
+**PPI-R: ligand-grounded PPI retrieval (train+val only; `reports/exploratory_ppi.md`).** 1,806 PPI-modulator
+pockets (67 homology groups) vs 1,272 non-PPI ligand pockets matched on volume and buriedness; queries rank pockets of
+other homology groups. FINAL AUC 0.552 [0.495, 0.590], P@10 0.52 vs chance 0.55; B1 0.493; ESM-2 P@10 0.74 (cause
+unclear: no shared Pfam or ligand cluster). **Negative:** the fingerprint does not recognise "PPI-modulator
+pocket-ness" across families. <!-- src: reports/exploratory_ppi.md -->
+
+**AFDB dimer interface-pocket atlas (demo).** All 15,161 AFDB dimers in 347 s (43.7 dimers/s; ~60 CPU cores + 2 GPUs),
+127,824 pockets of which 32,473 are interface pockets (f_min ≥ 0.25), 0 errors. Interface pockets are no closer to
+known PPI-modulator pockets than to ordinary ligand pockets (16 above a strict threshold, below the 1 % null); 150
+clusters of ≥ 10 under a stricter post-hoc rule, 45 cross-family. <!-- src: reports/exploratory_ppi.md -->
+
 **API and tooling changes after the test** (D23; `reports/tooling.md`). None of them changes an evaluated number,
 because the frozen tag holds the evaluated code.
 - `describe(..., locate="burrow")` now locates D sites exactly as the evaluation did. The old rule differed on
@@ -548,16 +571,18 @@ because the frozen tag holds the evaluated code.
      pairs.
    - Always report a size-only baseline and size-stratified AUC.
    - Release our TOUGH-M1 D-mode pairs as a benchmark variant.
-2. **Fix and run the missing pre-registered items** with one logged unseal each: the paired C5 Δ for FINAL (fix the
-   key filter), PPIPS strata by BURROW homology, and the blind BLiPS-test run.
+2. **Improve detection and early precision for blind search** (§4.10: 30 % of sites undetected; hit@100 0.078):
+   site-level merging of BURROW sub-pockets, multi-pocket (set-to-set) scoring, re-ranking the FAISS top-k with L4 or
+   an alignment step.
 3. **Larger cross-family training data.**
    - Train A4b/L4 on PDB-wide BioLiP sites under the same leakage rules, auditing every training source (DEV4).
    - Use graded ligand-similarity targets to help unseen chemotypes.
    - Pre-register a fresh held-out set before any claim.
 4. **Offer L4 / fusion as an optional accuracy mode.** It needs a GPU and 2× the storage. Validate it on new
    held-out data.
-5. **Build the PPI-R task.** Modulator pockets would retrieve other families' modulator pockets against size- and
-   buriedness-matched decoys. It is the only ligand-grounded PPI test the data support.
+5. **PPI pockets need PPI-specific training signal.** The exploratory PPI-R test (§8) is negative; train with
+   interface-pocket positives grounded in modulator data (across families where they exist) and evaluate PPI-R on a
+   held-out split.
 6. **Cofactor-aware pockets.**
    - Keep cofactors and metals as typed points (BURROW currently strips them).
    - Re-test the D6.2 condition.
