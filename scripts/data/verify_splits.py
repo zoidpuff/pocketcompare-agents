@@ -68,7 +68,10 @@ def main():
           & (raw["query"] != raw["target"]))
     seq_e = {tuple(sorted(p)) for p in zip(raw["query"][ok], raw["target"][ok])}
     fs = pd.read_parquet(PROC / "foldseek_allvsall_tm04.parquet")
-    fok = (fs.qtm_exact >= 0.5) & (fs.ttm_exact >= 0.5)  # exact TM-scores (exhaustive search, D15)
+    # D15 rule: exact TM where computed (approx band 0.45-0.60 + validation sample), else approximate min-TM >= 0.60
+    ex_ok = fs.qtm_exact.notna()
+    fok = (ex_ok & (fs.qtm_exact >= 0.5) & (fs.ttm_exact >= 0.5)) | \
+        (~ex_ok & (fs.qtmscore >= 0.6) & (fs.ttmscore >= 0.6))
     fs_e = {tuple(sorted(p)) for p in zip(fs["query"][fok], fs["target"][fok])}
     built = {(a, b): (s, f) for a, b, s, f in zip(edges.sid_a, edges.sid_b, edges.seq_edge, edges.fs_edge)}
     check({k for k, v in built.items() if v[0]} == seq_e, f"seq edges reproduced from raw MMseqs2 m8 ({len(seq_e)})")
@@ -244,9 +247,13 @@ def main():
         bc2 = json.loads((SPL / "blips_split_counts_v2.json").read_text())
         check(set(S2.site_id) == set(tv.site_id) and S2.site_id.is_unique,
               "BLiPS v2: site set == v1 train+val sites (no test rows)")
-        check(((S2.partition == "excluded_lt10") == (S2.n_lmode_points.fillna(0) < 10)).all()
-              and ((S2.partition == "excluded_no_pocket") == S2.n_lmode_points.isna()).all(),
-              "BLiPS v2: exclusions == sites with < 10 L-mode BURROW points / no pocket")
+        cidx = pd.read_parquet(ROOT / "data/processed/cache/points/blips/index.parquet", columns=["pocket_id"])
+        incache = S2.site_id.isin(set(cidx.pocket_id))
+        check(((S2.partition == "excluded_not_cached") == ~incache).all()
+              and ((S2.partition == "excluded_lt10") == (incache & S2.n_lmode_points.notna()
+                                                         & (S2.n_lmode_points < 10))).all()
+              and ((S2.partition == "excluded_no_pocket") == (incache & S2.n_lmode_points.isna())).all(),
+              "BLiPS v2: exclusions == not in point cache / < 10 L-mode BURROW points / no pocket")
         tv2 = S2[S2.partition.isin(["train", "val"])]
         for name_, tg in (("TOUGH-M1-test", tough_test), ("ProSPECCTs", ds_sids["prospeccts"]),
                           ("Vertex", ds_sids["vertex"]), ("af_set/BLiPS-test", ds_sids["af_set"]),
@@ -260,9 +267,8 @@ def main():
         check(tv2.groupby("group_id").partition.nunique().max() == 1, "BLiPS v2: groups do not span partitions")
         comp2 = {s_: i for i, c in enumerate(nx.connected_components(H2)) for s_ in c}
         a2 = tv2.sid.map(comp2)
-        check(pd.crosstab(a2, tv2.group_id).astype(bool).sum(axis=1).max() == 1
-              and pd.crosstab(tv2.group_id, a2).astype(bool).sum(axis=1).max() == 1,
-              "BLiPS v2: group_id == networkx components of the pooled proteins")
+        check(pd.crosstab(a2, tv2.group_id).astype(bool).sum(axis=1).max() == 1,
+              "BLiPS v2: every networkx component of the pooled proteins lies inside one group_id")
         fr = float((tv2.partition == "val").mean())
         check(0.15 <= fr <= 0.25, f"BLiPS v2: val holds 15-25 % of sites ({fr:.3f})")
         ng = tv2.group_id.nunique()
@@ -272,8 +278,46 @@ def main():
         for p in ("train", "val"):
             check_pairs(pd.read_parquet(SPL / f"blips_{p}_pairs_v2.parquet"), site2, tv2, bc2, p, tag="v2 ")
     te = S[S.partition == "test"]
+    fz = SPL / "blips_site_selection_frozen.txt"
+    if fz.exists():
+        frozen = {ln.strip() for ln in open(fz) if ln.strip() and not ln.startswith("#")}
+        check(set(te.site_id) <= frozen and len(te) == 3606,
+              "BLiPS test sites == frozen first-build selection (caches/descriptors stay valid)")
     check(te.label_ccd.isna().all() if "label_ccd" in te else True, "BLiPS test sites in data/splits carry no ligand labels")
     check(bc["test"]["n_sites"] == len(te) and bc["test"]["n_proteins"] == te.protein.nunique(), "BLiPS test: site/protein counts reproduced")
+
+    # ---------------- PPIPS (D15): no accession-level homology edge across complex splits (21_ppips_homology outputs,
+    # rule re-implemented here); BURROW-homology flag table covers every complex
+    pp = ROOT / "data/processed/ppi/ppips"
+    if (pp / "mmseqs_aln.tsv").exists() and (SPL / "ppips_complex_splits.parquet").exists():
+        cx = pd.read_parquet(SPL / "ppips_complex_splits.parquet")
+        dm = pd.read_csv(ROOT / "data/processed/dimers/manifest.tsv", sep="\t",
+                         usecols=["modelEntityId", "uniprotAccession_1", "uniprotAccession_2"]).set_index("modelEntityId")
+        acc_split = {}
+        for r in cx.itertuples():
+            for acc in dm.loc[r.complex, ["uniprotAccession_1", "uniprotAccession_2"]]:
+                acc_split.setdefault(acc, set()).add(r.split)
+        check(max(len(v) for v in acc_split.values()) == 1, "PPIPS: every UniProt in exactly one split")
+        mm = pd.read_csv(pp / "mmseqs_aln.tsv", sep="\t", header=None, usecols=range(10),
+                         names=["q", "t", "fident", "alnlen", "qlen", "tlen", "qcov", "tcov", "evalue", "bits"])
+        mm = mm[(mm.evalue < 1e-3) & (mm.fident >= 0.3) & ((mm.qcov >= 0.5) | (mm.tcov >= 0.5) | (mm.alnlen >= 80))]
+        fsx = pd.read_csv(pp / "foldseek.tsv", sep="\t", header=None, names=["q", "t", "e", "alntm", "qtm", "ttm", "fid"])
+        fsx = fsx[(fsx.qtm >= 0.5) & (fsx.ttm >= 0.5)]
+        m2a = {}
+        for r in pd.read_parquet(ROOT / "data/processed/cache/points/ppips/complexes.parquet").itertuples():
+            m2a[f"{r.modelEntityId}_A"], m2a[f"{r.modelEntityId}_B"] = r.uniprotAccession_1, r.uniprotAccession_2
+        fsx = fsx.assign(q=fsx.q.str.replace(r"\.pdb$", "", regex=True).map(m2a),
+                         t=fsx.t.str.replace(r"\.pdb$", "", regex=True).map(m2a))
+        cross = 0
+        for q, t in list(zip(mm.q, mm.t)) + list(zip(fsx.q, fsx.t)):
+            if q in acc_split and t in acc_split and acc_split[q] != acc_split[t]:
+                cross += 1
+        check(cross == 0, f"PPIPS: no MMseqs2-rule / exact-TM edge between complexes of different splits ({cross})")
+        fl = SPL / "ppips_burrow_homology.parquet"
+        if fl.exists():
+            f = pd.read_parquet(fl)
+            check(set(f.complex) == set(cx.complex) and (f.set_index("complex").split == cx.set_index("complex").split).all(),
+                  "PPIPS BURROW-homology flags cover every complex with its current split")
 
     # ---------------- checksums
     sums = SPL / "SHA256SUMS.txt"

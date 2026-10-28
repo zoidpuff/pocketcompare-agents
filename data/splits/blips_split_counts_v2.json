@@ -1,225 +1,228 @@
 {
  "rule": "see script header",
- "n_pool_v1_sites": 2862,
+ "n_pool_v1_sites": 2970,
  "excluded_by_v1_partition": {
   "train": {
    "excluded_lt10": 1,
-   "pool": 2698
+   "excluded_not_cached": 119,
+   "pool": 2681
   },
   "val": {
    "excluded_lt10": 0,
-   "pool": 163
+   "excluded_not_cached": 9,
+   "pool": 160
   }
  },
+ "v1_groups_split_into_several_pooled_components": 0,
  "candidates": [
   {
    "k": 0,
    "seed": 2968811710,
-   "val_site_frac": 0.2017,
-   "n_val_sites": 577,
+   "val_site_frac": 0.2052,
+   "n_val_sites": 583,
    "feasible": true,
-   "n_val_pos_clusters": 38
+   "n_val_pos_clusters": 44
   },
   {
    "k": 1,
    "seed": 3677149159,
-   "val_site_frac": 0.2027,
-   "n_val_sites": 580,
+   "val_site_frac": 0.2013,
+   "n_val_sites": 572,
    "feasible": true,
-   "n_val_pos_clusters": 37
+   "n_val_pos_clusters": 49
   },
   {
    "k": 2,
    "seed": 745650761,
-   "val_site_frac": 0.1999,
-   "n_val_sites": 572,
-   "feasible": true,
-   "n_val_pos_clusters": 40
-  },
-  {
-   "k": 3,
-   "seed": 2884920346,
-   "val_site_frac": 0.2062,
-   "n_val_sites": 590,
-   "feasible": true,
-   "n_val_pos_clusters": 40
-  },
-  {
-   "k": 4,
-   "seed": 2642120001,
-   "val_site_frac": 0.2338,
-   "n_val_sites": 669,
+   "val_site_frac": 0.1915,
+   "n_val_sites": 544,
    "feasible": true,
    "n_val_pos_clusters": 46
   },
   {
+   "k": 3,
+   "seed": 2884920346,
+   "val_site_frac": 0.2101,
+   "n_val_sites": 597,
+   "feasible": true,
+   "n_val_pos_clusters": 46
+  },
+  {
+   "k": 4,
+   "seed": 2642120001,
+   "val_site_frac": 0.2172,
+   "n_val_sites": 617,
+   "feasible": true,
+   "n_val_pos_clusters": 47
+  },
+  {
    "k": 5,
    "seed": 549907821,
-   "val_site_frac": 0.1846,
-   "n_val_sites": 528,
+   "val_site_frac": 0.1841,
+   "n_val_sites": 523,
    "feasible": true,
-   "n_val_pos_clusters": 40
+   "n_val_pos_clusters": 52
   },
   {
    "k": 6,
    "seed": 574372308,
-   "val_site_frac": 0.1786,
-   "n_val_sites": 511,
+   "val_site_frac": 0.1746,
+   "n_val_sites": 496,
    "feasible": true,
-   "n_val_pos_clusters": 48
+   "n_val_pos_clusters": 44
   },
   {
    "k": 7,
    "seed": 742431198,
-   "val_site_frac": 0.2087,
-   "n_val_sites": 597,
-   "feasible": true,
-   "n_val_pos_clusters": 47
-  },
-  {
-   "k": 8,
-   "seed": 2597619198,
-   "val_site_frac": 0.1915,
-   "n_val_sites": 548,
-   "feasible": true,
-   "n_val_pos_clusters": 44
-  },
-  {
-   "k": 9,
-   "seed": 150917237,
-   "val_site_frac": 0.2027,
-   "n_val_sites": 580,
-   "feasible": true,
-   "n_val_pos_clusters": 47
-  },
-  {
-   "k": 10,
-   "seed": 4253401181,
-   "val_site_frac": 0.1954,
-   "n_val_sites": 559,
-   "feasible": true,
-   "n_val_pos_clusters": 44
-  },
-  {
-   "k": 11,
-   "seed": 1546742079,
-   "val_site_frac": 0.2195,
-   "n_val_sites": 628,
-   "feasible": true,
-   "n_val_pos_clusters": 47
-  },
-  {
-   "k": 12,
-   "seed": 2296626681,
-   "val_site_frac": 0.1922,
-   "n_val_sites": 550,
-   "feasible": true,
-   "n_val_pos_clusters": 45
-  },
-  {
-   "k": 13,
-   "seed": 634801725,
-   "val_site_frac": 0.2167,
-   "n_val_sites": 620,
-   "feasible": true,
-   "n_val_pos_clusters": 47
-  },
-  {
-   "k": 14,
-   "seed": 533521220,
-   "val_site_frac": 0.202,
-   "n_val_sites": 578,
-   "feasible": true,
-   "n_val_pos_clusters": 42
-  },
-  {
-   "k": 15,
-   "seed": 1647092370,
-   "val_site_frac": 0.1842,
-   "n_val_sites": 527,
+   "val_site_frac": 0.1897,
+   "n_val_sites": 539,
    "feasible": true,
    "n_val_pos_clusters": 43
   },
   {
+   "k": 8,
+   "seed": 2597619198,
+   "val_site_frac": 0.1778,
+   "n_val_sites": 505,
+   "feasible": true,
+   "n_val_pos_clusters": 43
+  },
+  {
+   "k": 9,
+   "seed": 150917237,
+   "val_site_frac": 0.1999,
+   "n_val_sites": 568,
+   "feasible": true,
+   "n_val_pos_clusters": 49
+  },
+  {
+   "k": 10,
+   "seed": 4253401181,
+   "val_site_frac": 0.2013,
+   "n_val_sites": 572,
+   "feasible": true,
+   "n_val_pos_clusters": 41
+  },
+  {
+   "k": 11,
+   "seed": 1546742079,
+   "val_site_frac": 0.2115,
+   "n_val_sites": 601,
+   "feasible": true,
+   "n_val_pos_clusters": 51
+  },
+  {
+   "k": 12,
+   "seed": 2296626681,
+   "val_site_frac": 0.1897,
+   "n_val_sites": 539,
+   "feasible": true,
+   "n_val_pos_clusters": 48
+  },
+  {
+   "k": 13,
+   "seed": 634801725,
+   "val_site_frac": 0.2006,
+   "n_val_sites": 570,
+   "feasible": true,
+   "n_val_pos_clusters": 41
+  },
+  {
+   "k": 14,
+   "seed": 533521220,
+   "val_site_frac": 0.1915,
+   "n_val_sites": 544,
+   "feasible": true,
+   "n_val_pos_clusters": 44
+  },
+  {
+   "k": 15,
+   "seed": 1647092370,
+   "val_site_frac": 0.1929,
+   "n_val_sites": 548,
+   "feasible": true,
+   "n_val_pos_clusters": 36
+  },
+  {
    "k": 16,
    "seed": 1142507027,
-   "val_site_frac": 0.2132,
-   "n_val_sites": 610,
+   "val_site_frac": 0.2126,
+   "n_val_sites": 604,
    "feasible": true,
-   "n_val_pos_clusters": 39
+   "n_val_pos_clusters": 48
   },
   {
    "k": 17,
    "seed": 661176739,
-   "val_site_frac": 0.1842,
-   "n_val_sites": 527,
+   "val_site_frac": 0.1932,
+   "n_val_sites": 549,
    "feasible": true,
-   "n_val_pos_clusters": 40
+   "n_val_pos_clusters": 42
   },
   {
    "k": 18,
    "seed": 3884194044,
-   "val_site_frac": 0.1922,
-   "n_val_sites": 550,
+   "val_site_frac": 0.1771,
+   "n_val_sites": 503,
    "feasible": true,
-   "n_val_pos_clusters": 44
+   "n_val_pos_clusters": 40
   },
   {
    "k": 19,
    "seed": 308368335,
-   "val_site_frac": 0.2055,
+   "val_site_frac": 0.207,
    "n_val_sites": 588,
    "feasible": true,
-   "n_val_pos_clusters": 44
+   "n_val_pos_clusters": 38
   }
  ],
- "chosen_candidate": 6,
+ "chosen_candidate": 5,
  "train": {
-  "n_sites": 2350,
-  "n_proteins": 1526,
-  "n_groups": 1024,
-  "n_from_v1_train": 2215,
-  "n_from_v1_val": 135,
-  "largest_group_proteins": 28,
-  "n_site_ligand_clusters": 510,
-  "n_pos": 7186,
-  "n_neg": 35930,
-  "n_pos_shared_1": 7015,
-  "n_pos_shared_ge2": 171,
-  "n_pos_ligand_clusters": 144,
-  "max_pos_cluster_share": 0.0417,
-  "n_pos_promiscuous": 3147,
-  "n_pos_uncapped": 97996,
+  "n_sites": 2318,
+  "n_proteins": 1501,
+  "n_groups": 1009,
+  "n_from_v1_train": 2185,
+  "n_from_v1_val": 133,
+  "largest_group_proteins": 21,
+  "n_site_ligand_clusters": 514,
+  "n_pos": 6992,
+  "n_neg": 34960,
+  "n_pos_shared_1": 6836,
+  "n_pos_shared_ge2": 156,
+  "n_pos_ligand_clusters": 139,
+  "max_pos_cluster_share": 0.0429,
+  "n_pos_promiscuous": 2987,
+  "n_pos_uncapped": 91667,
   "cluster_cap": 300,
   "cap_meets_10pct": true,
-  "n_neg_eligible": 2439933,
-  "n_ambiguous_dropped": 216817
+  "n_neg_eligible": 2375425,
+  "n_ambiguous_dropped": 213237
  },
  "val": {
-  "n_sites": 511,
-  "n_proteins": 344,
-  "n_groups": 256,
-  "n_from_v1_train": 483,
-  "n_from_v1_val": 28,
+  "n_sites": 523,
+  "n_proteins": 350,
+  "n_groups": 252,
+  "n_from_v1_train": 496,
+  "n_from_v1_val": 27,
   "largest_group_proteins": 9,
-  "n_site_ligand_clusters": 187,
-  "n_pos": 563,
-  "n_neg": 2815,
-  "n_pos_shared_1": 553,
-  "n_pos_shared_ge2": 10,
-  "n_pos_ligand_clusters": 48,
-  "max_pos_cluster_share": 0.0995,
-  "n_pos_promiscuous": 252,
-  "n_pos_uncapped": 3193,
-  "cluster_cap": 56,
+  "n_site_ligand_clusters": 193,
+  "n_pos": 462,
+  "n_neg": 2310,
+  "n_pos_shared_1": 453,
+  "n_pos_shared_ge2": 9,
+  "n_pos_ligand_clusters": 52,
+  "max_pos_cluster_share": 0.0996,
+  "n_pos_promiscuous": 254,
+  "n_pos_uncapped": 3679,
+  "cluster_cap": 46,
   "cap_meets_10pct": true,
-  "n_neg_eligible": 116032,
-  "n_ambiguous_dropped": 10483,
-  "n_pos_chemotype_seen": 550,
-  "n_pos_chemotype_unseen": 13,
-  "n_site_clusters_unseen": 99
+  "n_neg_eligible": 121802,
+  "n_ambiguous_dropped": 10233,
+  "n_pos_chemotype_seen": 441,
+  "n_pos_chemotype_unseen": 21,
+  "n_site_clusters_unseen": 92
  },
- "val_site_frac": 0.1786,
- "val_component_frac": 0.2,
- "n_components": 1280
+ "val_site_frac": 0.1841,
+ "val_component_frac": 0.1998,
+ "n_components": 1261
 }

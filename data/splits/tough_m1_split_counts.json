@@ -1,6 +1,6 @@
 {
  "n_pockets_total": 7524,
- "n_groups_total": 1477,
+ "n_groups_total": 1522,
  "n_pairs_total": 1061926,
  "sealed_test_sets_used": [
   "prospeccts",
@@ -20,46 +20,46 @@
   "siteengine_c3"
  ],
  "dev": {
-  "n_pockets": 731,
-  "n_groups": 483,
+  "n_pockets": 765,
+  "n_groups": 505,
   "largest_group": 11,
-  "n_ligand_clusters": 276,
-  "n_pos": 3366,
-  "n_neg": 6463,
-  "n_pairs_with_all_scores": 9829,
+  "n_ligand_clusters": 291,
+  "n_pos": 3450,
+  "n_neg": 7124,
+  "n_pairs_with_all_scores": 10574,
   "n_pockets_touch_burrow_rep_only_via_partner": 2,
-  "largest_ligand_cluster_frac_of_pockets": 0.1231
+  "largest_ligand_cluster_frac_of_pockets": 0.1268
  },
  "test": {
-  "n_pockets": 1014,
-  "n_groups": 530,
+  "n_pockets": 1045,
+  "n_groups": 536,
   "largest_group": 26,
-  "n_ligand_clusters": 302,
-  "n_pos": 10064,
-  "n_neg": 13221,
-  "n_pairs_with_all_scores": 23285,
+  "n_ligand_clusters": 315,
+  "n_pos": 10160,
+  "n_neg": 14177,
+  "n_pairs_with_all_scores": 24337,
   "n_pockets_touch_burrow_rep_only_via_partner": 0,
-  "largest_ligand_cluster_frac_of_pockets": 0.2249
+  "largest_ligand_cluster_frac_of_pockets": 0.2115
  },
  "excluded": {
-  "n_pockets": 5779,
-  "n_groups": 464,
-  "largest_group": 385,
-  "n_ligand_clusters": 1088,
-  "n_pos": 317384,
-  "n_neg": 299818,
+  "n_pockets": 5714,
+  "n_groups": 481,
+  "largest_group": 280,
+  "n_ligand_clusters": 1065,
+  "n_pos": 316427,
+  "n_neg": 291107,
   "n_pairs_with_all_scores": null,
-  "n_pockets_touch_burrow_rep_only_via_partner": 253,
-  "largest_ligand_cluster_frac_of_pockets": 0.2687
+  "n_pockets_touch_burrow_rep_only_via_partner": 255,
+  "largest_ligand_cluster_frac_of_pockets": 0.2718
  },
- "n_pairs_cross_partition_dropped": 411610,
- "n_pairs_involving_excluded": 1000237,
+ "n_pairs_cross_partition_dropped": 419481,
+ "n_pairs_involving_excluded": 996139,
  "excluded_reason": {
-  "prospeccts": 4595,
-  "vertex": 1589,
-  "af_set": 3947,
-  "ppi_l_test": 212
+  "prospeccts": 4520,
+  "vertex": 1542,
+  "af_set": 3890,
+  "ppi_l_test": 209
  },
- "n_test_pockets_touching_sealed": 699,
- "sealed_test_pairs_sha256": "5ded60b0fd18c29eea6a5916c522b4f9f75936883958eda2a5fa5bdfe180ebd9"
+ "n_test_pockets_touching_sealed": 728,
+ "sealed_test_pairs_sha256": "17973ec019b5e7a511d47e4c0327c777768d102d39753773c6d1f9ebe7a0cda2"
 }

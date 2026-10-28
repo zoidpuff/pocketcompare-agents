@@ -10,7 +10,8 @@ objective is looked at):
             excluded too).  The 53 v1 val proteins dropped for sharing a component with v1 train are NOT restored.
   Units     homology components = the split agent's BLiPS group ids (group_id).  v1 train and val share no
             component, so the pooled components are the union of both; this is re-checked with the homology graph
-            (components of the pooled proteins' subgraph must equal the group ids, else abort).
+            (D15: every component of the pooled proteins' subgraph must lie inside one group id, else abort; a group
+            may contain several pooled components when its connecting proteins were excluded).
   Candidates 20 assignments k = 0..19; seed_k = numpy SeedSequence(SEEDS[0]).generate_state(20)[k];
             components sorted by group id, permuted with default_rng(seed_k); val = the first round(0.2 * n_comp)
             components of the permutation, train = the rest (80/20 of components).
@@ -27,7 +28,7 @@ objective is looked at):
             (blips_split_counts.json) so the flag stays identical to the sealed test pairs.  chemotype_seen and
             cluster_in_train are recomputed against v2 train.
 Outputs  data/splits/blips_sites_v2.parquet (pooled non-test rows incl. excluded ones: partition = train | val |
-         excluded_lt10 | excluded_no_pocket; partition_v1 kept), data/splits/blips_{train,val}_pairs_v2.parquet,
+         excluded_lt10 | excluded_no_pocket | excluded_not_cached (D15: not in the point cache); partition_v1 kept), data/splits/blips_{train,val}_pairs_v2.parquet,
          data/splits/blips_split_counts_v2.json.
 Usage: python scripts/data/make_blips_resplit_v2.py
 """
@@ -87,11 +88,15 @@ def main():
 
     # ---- DESIGN exclusion: < 10 BURROW points (L-mode, point cache)
     idx = pd.read_parquet(CACHE_INDEX, columns=["pocket_id", "status", "n_points", "failure_reason"])
+    cached = S0.site_id.isin(set(idx.pocket_id)).to_numpy()
     idx = idx.set_index("pocket_id").reindex(S0.site_id)
     S0["n_lmode_points"] = idx.n_points.to_numpy()
-    no_pocket = (idx.status != "ok").to_numpy()
-    lt10 = ~no_pocket & (S0.n_lmode_points.fillna(0).to_numpy() < MIN_POINTS)
-    S0["partition"] = np.where(no_pocket, "excluded_no_pocket", np.where(lt10, "excluded_lt10", "pool"))
+    no_pocket = cached & (idx.status != "ok").to_numpy()
+    lt10 = cached & ~no_pocket & (S0.n_lmode_points.fillna(0).to_numpy() < MIN_POINTS)
+    # D15: sites re-admitted by the rebuilt graph that the point cache never saw are NOT "no pocket": separate label
+    # (the cache is not extended here; extend it and rerun this script to include them)
+    S0["partition"] = np.where(~cached, "excluded_not_cached", np.where(no_pocket, "excluded_no_pocket",
+                                                                        np.where(lt10, "excluded_lt10", "pool")))
     counts["excluded_by_v1_partition"] = S0.groupby(["partition_v1", "partition"]).size().unstack(fill_value=0) \
         .to_dict(orient="index")
     S = S0[S0.partition == "pool"].copy()
@@ -102,7 +107,11 @@ def main():
     cm = g.components(S.sid)
     comp = S.sid.map(cm)
     ct = pd.crosstab(comp, S.group_id).astype(bool)
-    assert ct.sum(axis=1).max() == 1 and ct.sum(axis=0).max() == 1, "pooled components != v1 group ids"
+    # D15: every pooled component lies inside ONE v1 group (the leakage-relevant direction). A v1 group may fall
+    # apart into several pooled components when its connecting proteins are excluded; units stay the whole v1 group
+    # (coarser, conservative). Report how often.
+    assert ct.sum(axis=1).max() == 1, "a pooled homology component spans two v1 groups"
+    counts["v1_groups_split_into_several_pooled_components"] = int((ct.sum(axis=0) > 1).sum())
     comps = np.array(sorted(S.group_id.unique()))
     n_val_comp = int(round(VAL_FRAC_COMP * len(comps)))
 

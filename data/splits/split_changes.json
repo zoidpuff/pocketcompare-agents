@@ -1,0 +1,63 @@
+{
+ "ref": "55f0c6287d91387817d86a6d69f25a03ba03e969",
+ "tough_m1_pockets": {
+  "n_units_old": 7524,
+  "n_units_new": 7524,
+  "n_moved": 254,
+  "transitions": {
+   "dev->excluded": 20,
+   "dev->test": 16,
+   "excluded->dev": 53,
+   "excluded->test": 90,
+   "test->dev": 17,
+   "test->excluded": 58
+  }
+ },
+ "blips_v1_sites": {
+  "n_units_old": 6468,
+  "n_units_new": 6576,
+  "n_moved": 148,
+  "transitions": {
+   "removed->train": 119,
+   "removed->val": 9,
+   "train->removed": 17,
+   "val->removed": 3
+  }
+ },
+ "blips_v1_proteins": {
+  "n_units_old": 4175,
+  "n_units_new": 4247,
+  "n_moved": 110,
+  "transitions": {
+   "removed->train": 84,
+   "removed->val": 7,
+   "train->removed": 17,
+   "val->removed": 2
+  }
+ },
+ "blips_v2_sites": {
+  "n_units_old": 2862,
+  "n_units_new": 2970,
+  "n_moved": 972,
+  "transitions": {
+   "not_in_pool->excluded_not_cached": 128,
+   "train->not_in_pool": 14,
+   "train->val": 421,
+   "val->not_in_pool": 6,
+   "val->train": 403
+  }
+ },
+ "ppips_complexes": {
+  "n_units_old": 1991,
+  "n_units_new": 1991,
+  "n_moved": 681,
+  "transitions": {
+   "test->train": 160,
+   "test->val": 62,
+   "train->test": 144,
+   "train->val": 121,
+   "val->test": 78,
+   "val->train": 116
+  }
+ }
+}

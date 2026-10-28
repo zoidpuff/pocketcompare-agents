@@ -28,8 +28,11 @@ Edges (between unique sequences, "sid"; nodes with identical sequences share a s
        (length >= MIN_FS_LEN) of every non-dimer chain plus the PPIPS dimer chains (UniProt in
        data/processed/ppi/ppips/proteins.fasta); the other AFDB-dimer chains (used by no split) get sequence edges only.
        TM-scores: approximate for every hit; EXACT (`--exact-tmscore 1`, pairs re-aligned with structurealign) for
-       every hit with approximate min(qTM, tTM) >= FS_CAND (exact is ~0.01 below approximate; calibration on 12k
-       pairs: max upward difference +0.023). Edge iff exact qTM >= 0.5 AND exact tTM >= 0.5 in either direction.
+       every hit with approximate min(qTM, tTM) in [FS_CAND=0.45, FS_SURE=0.60) and a 20k validation sample above
+       (calibration on 12k pairs: exact is ~0.01 below approximate, max upward difference +0.023; all 2,202 pairs with
+       approximate >= 0.6 had exact >= 0.5). Edge iff min(qTM, tTM) >= 0.5 using exact TM where computed (approximate
+       only above 0.60), in either direction. Exact TM on all ~5 M candidates >= 0.45 was too slow (> 30 min, long
+       af_set chains).
 
 Groups (design round 2): connected components are computed WITHIN each split dataset only
   (tough_m1, prospeccts, vertex, blips = burrow_train + burrow_dev + af_set, dimers); exclusion across datasets uses
@@ -70,7 +73,9 @@ OUT = ROOT / "data/splits"
 PROC = ROOT / "data/processed/homology"
 MIN_FS_LEN = 20
 TM_MIN = 0.5
-FS_CAND = 0.45
+FS_CAND = 0.45   # exact TM for approx min-TM in [FS_CAND, FS_SURE)
+FS_SURE = 0.60   # approx min-TM >= 0.60 -> edge (calibration 2,202/2,202 exact >= 0.5; re-validated on FS_VALID pairs)
+FS_VALID = 20000
 FS_COLS = ["query", "target", "fident", "alnlen", "qlen", "tlen", "evalue", "bits", "prob", "alntmscore",
            "qtmscore", "ttmscore"]
 GROUP_DATASETS = {"tough_m1": ["tough_m1"], "prospeccts": ["prospeccts"], "vertex": ["vertex"],
@@ -368,7 +373,7 @@ def main():
     # ---------------- MMseqs2 all-vs-all
     import hashlib
     seq_hash = hashlib.sha256((PROC / "sequences.fasta").read_bytes() + b"|mmseqs-a|foldseek-exhaustive-exact|"
-                              + str(FS_CAND).encode()).hexdigest()
+                              + f"{FS_CAND}|{FS_SURE}|{FS_VALID}".encode()).hexdigest()
     stamp = PROC / "sequences.sha256"
     if not stamp.exists() or stamp.read_text().strip() != seq_hash:  # sequence set changed -> redo both searches
         for f in ("mmseqs_allvsall.m8", "foldseek_allvsall_tm04.parquet"):
@@ -401,19 +406,23 @@ def main():
     info["dimer_sids_without_foldseek"] = int(len(set(nodes[nodes.dataset == "dimers"].sid) - set(nodes.loc[fs_set, "sid"])))
     if not fs_out.exists():
         import shutil
-        shutil.rmtree(work / "fsrep", ignore_errors=True)
-        rep = nodes[fs_set].sort_values(["sid", "node_id"]).drop_duplicates("sid")
         fw = work / "fsrep"
-        fw.mkdir(exist_ok=True)
-        (fw / "ids.txt").write_text("\n".join(str(int(k)) for k in rep.fs_key) + "\n")
-        src = work / "fsdb" / "all"
-        for suf in ("", "_ss", "_ca"):
-            run([FOLDSEEK, "createsubdb", fw / "ids.txt", str(src) + suf, str(fw / "rep") + suf, "-v", "1"])
-        write_headers(fw / "rep", dict(zip(rep.fs_key.astype(int), rep.sid)), Path(str(src) + "_h.dbtype"))
-        run([FOLDSEEK, "search", fw / "rep", fw / "rep", fw / "aln", fw / "tmp", "--threads", args.threads,
-             "--exhaustive-search", "1", "-e", "10", "-a", "-v", "1"])
-        run([FOLDSEEK, "convertalis", fw / "rep", fw / "rep", fw / "aln", fw / "aln.m8", "--format-output",
-             ",".join(FS_COLS), "--threads", args.threads, "-v", "1"])
+        rep = nodes[fs_set].sort_values(["sid", "node_id"]).drop_duplicates("sid")
+        ids_txt = "\n".join(str(int(k)) for k in rep.fs_key) + "\n"
+        done = fw / "aln.m8.done"
+        if not (done.exists() and (fw / "ids.txt").read_text() == ids_txt):  # resumable: exhaustive search is ~30 min
+            shutil.rmtree(fw, ignore_errors=True)
+            fw.mkdir()
+            (fw / "ids.txt").write_text(ids_txt)
+            src = work / "fsdb" / "all"
+            for suf in ("", "_ss", "_ca"):
+                run([FOLDSEEK, "createsubdb", fw / "ids.txt", str(src) + suf, str(fw / "rep") + suf, "-v", "1"])
+            write_headers(fw / "rep", dict(zip(rep.fs_key.astype(int), rep.sid)), Path(str(src) + "_h.dbtype"))
+            run([FOLDSEEK, "search", fw / "rep", fw / "rep", fw / "aln", fw / "tmp", "--threads", args.threads,
+                 "--exhaustive-search", "1", "-e", "10", "-a", "-v", "1"])
+            run([FOLDSEEK, "convertalis", fw / "rep", fw / "rep", fw / "aln", fw / "aln.m8", "--format-output",
+                 ",".join(FS_COLS), "--threads", args.threads, "-v", "1"])
+            done.write_text("ok\n")
         chunks = []
         n_hits = 0
         for ch in pd.read_csv(fw / "aln.m8", sep="\t", header=None, names=FS_COLS, chunksize=5_000_000):
@@ -421,13 +430,22 @@ def main():
             ch = ch[(ch["query"] != ch["target"]) & (np.minimum(ch.qtmscore, ch.ttmscore) >= 0.4)]
             chunks.append(ch)
         fs = pd.concat(chunks, ignore_index=True)
-        # exact TM-scores for the candidates: tsv2db (prefilter format) -> structurealign -> convertalis exact
+        # exact TM-scores (tsv2db prefilter format -> structurealign -> convertalis --exact-tmscore 1) for
+        # (a) every hit in the uncertain band FS_CAND <= approx min-TM < FS_SURE and (b) a seeded validation sample of
+        # FS_VALID hits with approx min-TM >= FS_SURE (checks that those are exact >= 0.5 too)
         s2k = dict(zip(rep.sid, rep.fs_key.astype(int)))
-        cand = fs[np.minimum(fs.qtmscore, fs.ttmscore) >= FS_CAND][["query", "target"]].drop_duplicates()
+        amin = np.minimum(fs.qtmscore, fs.ttmscore)
+        band = fs[(amin >= FS_CAND) & (amin < FS_SURE)][["query", "target"]]
+        sure = fs[amin >= FS_SURE][["query", "target"]]
+        valid = sure.sample(min(FS_VALID, len(sure)), random_state=0)
+        cand = pd.concat([band, valid]).drop_duplicates()
         cand = cand.assign(qk=cand["query"].map(s2k), tk=cand["target"].map(s2k)).sort_values(["qk", "tk"])
         with open(fw / "cand.tsv", "w") as fh:
             for q, t in zip(cand.qk, cand.tk):
                 fh.write(f"{q}\t{t}\t0\t0\n")
+        for d in ("cand_pref", "cand_aln", "cand_exact.m8"):
+            for f in fw.glob(d + "*"):
+                f.unlink()
         run([FOLDSEEK, "tsv2db", fw / "cand.tsv", fw / "cand_pref", "--output-dbtype", "7", "-v", "1"])
         run([FOLDSEEK, "structurealign", fw / "rep", fw / "rep", fw / "cand_pref", fw / "cand_aln", "-a", "-e", "10",
              "--threads", args.threads, "-v", "1"])
@@ -437,17 +455,26 @@ def main():
                          names=["query", "target", "qtm_exact", "ttm_exact", "alntm_exact"])
         ex = ex.drop_duplicates(["query", "target"])
         fs = fs.merge(ex, on=["query", "target"], how="left")
+        vv = valid.merge(ex, on=["query", "target"])
         fs.to_parquet(fs_out, index=False)
-        (PROC / "foldseek_run.json").write_text(json.dumps(dict(n_reps=int(len(rep)), n_hits=int(n_hits),
-                                                                n_candidates=int(len(cand)),
-                                                                n_exact=int(len(ex)))))
+        (PROC / "foldseek_run.json").write_text(json.dumps(dict(
+            n_reps=int(len(rep)), n_hits=int(n_hits), n_hits_approx_min_ge_0_4=int(len(fs)), n_band=int(len(band)),
+            n_sure=int(len(sure)), n_exact=int(len(ex)), validation_n=int(len(vv)),
+            validation_exact_min_lt_0_5=int((np.minimum(vv.qtm_exact, vv.ttm_exact) < 0.5).sum()),
+            validation_exact_min_quantiles=[float(x) for x in np.quantile(np.minimum(vv.qtm_exact, vv.ttm_exact),
+                                                                          [0, 0.001, 0.01, 0.5])] if len(vv) else None)))
     fs = pd.read_parquet(fs_out)
     if (PROC / "foldseek_run.json").exists():
         info["foldseek_run"] = json.loads((PROC / "foldseek_run.json").read_text())
-    # edge decision on EXACT TM; keep approximate columns for reference
+    # TM used for the edge: exact where computed (band + validation sample), else approximate (only >= FS_SURE)
+    has_ex = fs.qtm_exact.notna()
+    fs["tm_source"] = np.where(has_ex, "exact", "approx")
     fs = fs.rename(columns={"qtmscore": "qtm_approx", "ttmscore": "ttm_approx", "alntmscore": "alntm_approx"})
-    fs = fs.rename(columns={"qtm_exact": "qtmscore", "ttm_exact": "ttmscore", "alntm_exact": "alntmscore"})
-    fs = fs[np.minimum(fs.qtmscore, fs.ttmscore) >= TM_MIN]
+    fs["qtmscore"] = np.where(has_ex, fs.qtm_exact, fs.qtm_approx)
+    fs["ttmscore"] = np.where(has_ex, fs.ttm_exact, fs.ttm_approx)
+    fs["alntmscore"] = np.where(has_ex, fs.alntm_exact, fs.alntm_approx)
+    amin = np.minimum(fs.qtm_approx, fs.ttm_approx)
+    fs = fs[(np.minimum(fs.qtmscore, fs.ttmscore) >= TM_MIN) & (has_ex | (amin >= FS_SURE))]
     log("foldseek TM>=0.5 (both) hits", len(fs))
 
     # ---------------- sid-level edges (unordered, best statistics per pair)

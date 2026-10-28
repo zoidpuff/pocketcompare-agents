@@ -1,5 +1,7 @@
 # Homology graph and splits (data agent, 2026-10-27 21:40)
 
+> **Superseded counts (2026-10-28, D15):** the graph and all splits were rebuilt after the audit (MMseqs2 `-a`, exhaustive Foldseek with exact TM). Current numbers, moved units and the PPIPS BURROW-homology flag are in `data/splits/SPLITS.md`; the numbers below are the pre-audit version.
+
 Full tables are in `data/splits/SPLITS.md`. Rebuild with `scripts/data/run_splits.sh` (~25 min on 24 threads).
 `verify_splits.py` runs 66 independent checks and all pass.
 

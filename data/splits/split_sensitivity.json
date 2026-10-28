@@ -1,57 +1,57 @@
 {
  "seq_or_tm>=0.5": {
   "tough_m1": {
-   "excluded": 5779,
-   "test": 1014,
-   "dev": 731
+   "excluded": 5714,
+   "test": 1045,
+   "dev": 765
   },
-  "tough_m1_largest_component": 385,
+  "tough_m1_largest_component": 280,
   "burrow_trainval_proteins": 7054,
-  "burrow_trainval_removed": 2637,
-  "af_set_largest_component_frac": 0.2808
+  "burrow_trainval_removed": 2511,
+  "af_set_largest_component_frac": 0.2947
  },
  "seq_or_tm>=0.6": {
   "tough_m1": {
-   "excluded": 4811,
-   "test": 1608,
-   "dev": 1105
+   "excluded": 4913,
+   "test": 1519,
+   "dev": 1092
   },
-  "tough_m1_largest_component": 324,
+  "tough_m1_largest_component": 271,
   "burrow_trainval_proteins": 7054,
-  "burrow_trainval_removed": 1869,
-  "af_set_largest_component_frac": 0.2791
+  "burrow_trainval_removed": 1884,
+  "af_set_largest_component_frac": 0.2938
  },
  "seq_or_tm>=0.7": {
   "tough_m1": {
-   "excluded": 3864,
-   "test": 2370,
-   "dev": 1290
+   "excluded": 4036,
+   "test": 2228,
+   "dev": 1260
   },
-  "tough_m1_largest_component": 269,
+  "tough_m1_largest_component": 267,
   "burrow_trainval_proteins": 7054,
-  "burrow_trainval_removed": 1222,
-  "af_set_largest_component_frac": 0.2791
+  "burrow_trainval_removed": 1238,
+  "af_set_largest_component_frac": 0.2932
  },
  "seq_or_tm>=0.8": {
   "tough_m1": {
-   "test": 3146,
-   "excluded": 2939,
-   "dev": 1439
+   "excluded": 3330,
+   "test": 2823,
+   "dev": 1371
   },
-  "tough_m1_largest_component": 264,
+  "tough_m1_largest_component": 262,
   "burrow_trainval_proteins": 7054,
-  "burrow_trainval_removed": 734,
-  "af_set_largest_component_frac": 0.2788
+  "burrow_trainval_removed": 758,
+  "af_set_largest_component_frac": 0.2929
  },
  "seq_only": {
   "tough_m1": {
-   "test": 3589,
-   "excluded": 2392,
-   "dev": 1543
+   "test": 3115,
+   "excluded": 2980,
+   "dev": 1429
   },
-  "tough_m1_largest_component": 263,
+  "tough_m1_largest_component": 259,
   "burrow_trainval_proteins": 7054,
-  "burrow_trainval_removed": 536,
-  "af_set_largest_component_frac": 0.2788
+  "burrow_trainval_removed": 568,
+  "af_set_largest_component_frac": 0.2929
  }
 }

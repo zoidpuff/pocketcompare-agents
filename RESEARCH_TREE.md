@@ -34,6 +34,11 @@ public benchmark acquisition, fragment-docking feasibility (ADock), PPI/dimer po
 Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.md → ≤3 review rounds.
 
 ## Decisions
+- D18 (00:50) Accept rebuilt splits as drawn (rules unchanged, deterministic; no model fit yet). DEV2: BLiPS
+  largest within-dataset component 10.6 % > 10 % gate (narrow); not re-split with DataSAIL (would redraw again, ~1 h);
+  mitigated by cluster-balanced metrics and homology-group bootstrap. All dev numbers before 00:50 are provisional
+  (old splits) and are re-run on the new splits. Fits (A4b, L4) proceed in parallel with the re-audit; freezing
+  requires a re-audit PASS.
 - D17 (23:50) Vertex site k = k-th qualifying HETATM residue (DeeplyTough public rule; matches listed ligand 85 % for
   k > 1 vs 36 % for the old guess); 510 fall back to first copy (flagged), 43 unresolved → missing policy. B0' =
   global Foldseek TM (Spearman 0.31 with TOUGH-M1's shipped TM list) — descriptive only. PPI-L (exploratory) needs
@@ -199,7 +204,11 @@ Nothing modelled yet. No held-out data touched. Next: LITERATURE.md → DESIGN.m
   - [!] holo/holo vs holo/AF ligand-sharing ΔAUC (N1): val L −0.005 [−0.054, +0.041], train L −0.008 [−0.019, +0.003]
   - [x] same-site holo→AF retrieval: L top-1 0.78 (B1 0.88), D top-1 0.55 (B1 0.41); pLDDT 70–90 −0.17 top-1
 - [~] P4 L4 point-cloud network candidate (cuda:2,3; training gated on re-audit)
-- [~] P3 Split rebuild with mmseqs -a + exhaustive Foldseek (split agent) → re-audit
+- [x] P3 Split rebuild (mmseqs -a, exhaustive Foldseek) — verify_splits 101/101; seq edges 1.02 M → 1.21 M
+  - [x] TOUGH-M1 dev 765 / test 1,045 / excluded 5,714 (254 pockets moved); BLiPS-test unchanged (0 moved)
+  - [x] BLiPS v2 train/val redrawn (972 sites moved); PPIPS redrawn (681 complexes moved); 128 readmitted
+        train/val sites not cached → excluded_not_cached
+  - [~] re-audit (auditor) in parallel with A4b/L4 fits; freeze requires PASS
 - [x] P4 Blind deployment test script + val dry run — reports/blind_and_ppil.md
   - [x] detection recall 0.615 on val AF models; partner retrieval (84 pairs) final hit@10 0.155 vs B1 0.107, AUC
         0.634 vs 0.647 — not distinguishable (low power); B0 0.44

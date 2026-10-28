@@ -1,0 +1,28 @@
+{
+ "train": {
+  "n_complexes": 1483,
+  "burrow_rep_edge": 1076,
+  "burrow_rep_seq_edge": 351,
+  "burrow_rep_fs_edge": 1046,
+  "burrow_partner_edge": 410,
+  "burrow_any_edge": 1121
+ },
+ "val": {
+  "n_complexes": 257,
+  "burrow_rep_edge": 125,
+  "burrow_rep_seq_edge": 37,
+  "burrow_rep_fs_edge": 115,
+  "burrow_partner_edge": 6,
+  "burrow_any_edge": 129
+ },
+ "test": {
+  "n_complexes": 251,
+  "burrow_rep_edge": 136,
+  "burrow_rep_seq_edge": 24,
+  "burrow_rep_fs_edge": 135,
+  "burrow_partner_edge": 75,
+  "burrow_any_edge": 159
+ },
+ "n_query_models": 3982,
+ "n_burrow_target_structures": 9383
+}

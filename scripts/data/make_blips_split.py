@@ -15,7 +15,9 @@ Homology (graph of build_homology_graph.py; edges = BURROW's MMseqs2 rule OR Fol
   2. groups = connected components of the remaining train+val graph; a component containing both train and val
      proteins loses its val proteins (BURROW's convention: dev yields to train);
   3. groups within each partition = components of that partition's own subgraph (test: af proteins with sites).
-Caps: <= 3 sites per protein (sites with distinct label-ligand clusters first, then seeded order).
+Caps: <= 3 sites per protein: sites of the frozen first-build selection (data/splits/blips_site_selection_frozen.txt)
+  first, then distinct label-ligand clusters, then a per-site stable key (D15; no coupling across proteins/partitions).
+  Pair sampling uses one generator per partition, default_rng([SEEDS[0], k]) for train/val/test (D15).
 Ligand clusters: Butina on ECFP4 (Morgan r=2, 2048 bits, no chirality) of all qualifying CCDs of all partitions,
   neighbours at Tanimoto >= 0.6.
 Pairs (within a partition, sites of different groups):
@@ -37,6 +39,7 @@ Outputs
 from __future__ import annotations
 
 import gzip
+import hashlib
 import json
 import os
 import stat
@@ -285,14 +288,21 @@ def main():
         cm = g.components(S.loc[m, "sid"])
         S.loc[m, "group_id"] = name_components(S.loc[m, "sid"].map(cm), f"blips_{p}").values
 
-    # per-protein site cap (distinct label clusters first, then seeded order)
+    # per-protein site cap. D15: the choice must not depend on other proteins/partitions (it used one permutation
+    # over all sites, so train/val changes re-drew test sites). Sites frozen in blips_site_selection_frozen.txt (the
+    # committed first-build choice) are kept first; remaining slots: distinct label clusters first, then a per-site
+    # stable key sha256("<SEED>|<site_id>").
+    fz = SPLITS / "blips_site_selection_frozen.txt"
+    frozen = {ln.strip() for ln in open(fz) if ln.strip() and not ln.startswith("#")} if fz.exists() else set()
     S = S.sort_values("site_id").reset_index(drop=True)
-    S["_r"] = rng.permutation(len(S))
+    S["_r"] = [hashlib.sha256(f"{SEED}|{x}".encode()).hexdigest() for x in S.site_id]
+    S["_new"] = ~S.site_id.isin(frozen)
     keep = []
-    for _, gp in S.sort_values(["protein", "_r"]).groupby("protein", sort=True):
-        chosen, seen_cl = [], set()
+    for _, gp in S.sort_values(["protein", "_new", "_r"]).groupby("protein", sort=True):
+        chosen = [i for i in gp.index if not gp.at[i, "_new"]][:MAX_SITES_PER_PROTEIN]
+        seen_cl = {gp.at[i, "label_cluster"] for i in chosen}
         for i, r in gp.iterrows():
-            if r.label_cluster not in seen_cl and len(chosen) < MAX_SITES_PER_PROTEIN:
+            if i not in chosen and r.label_cluster not in seen_cl and len(chosen) < MAX_SITES_PER_PROTEIN:
                 chosen.append(i)
                 seen_cl.add(r.label_cluster)
         for i in gp.index:
@@ -301,8 +311,10 @@ def main():
             if i not in chosen:
                 chosen.append(i)
         keep += chosen
+    counts["sites_kept_from_frozen_selection"] = S.loc[keep].groupby("partition")._new.apply(lambda x: int((~x).sum())).to_dict()
+    counts["sites_newly_selected"] = S.loc[keep].groupby("partition")._new.apply(lambda x: int(x.sum())).to_dict()
     counts["sites_before_protein_cap"] = S.partition.value_counts().to_dict()
-    S = S.loc[sorted(keep)].drop(columns=["_r"]).reset_index(drop=True)
+    S = S.loc[sorted(keep)].drop(columns=["_r", "_new"]).reset_index(drop=True)
 
     # promiscuous CCDs (train sites, qualifying sets)
     tr_ccd = pd.Series([c for s in S[S.partition == "train"].q_ccds for c in s.split(";")]).value_counts()
@@ -310,8 +322,9 @@ def main():
     counts["top20_promiscuous_ccds"] = {c: int(tr_ccd[c]) for c in tr_ccd.head(TOP_PROMISCUOUS).index}
 
     pairs, stats = {}, {}
-    for p in ("train", "val", "test"):
-        pairs[p], stats[p] = make_pairs(S[S.partition == p], ccd_idx, T, ccd_cluster, top, rng)
+    for k, p in enumerate(("train", "val", "test")):  # D15: one generator per partition (no cross-partition coupling)
+        pairs[p], stats[p] = make_pairs(S[S.partition == p], ccd_idx, T, ccd_cluster, top,
+                                        np.random.default_rng([SEED, k]))
     train_pos_cl = set(pairs["train"].loc[pairs["train"].label == 1, "pair_cluster"])
     train_site_cl = set(S[S.partition == "train"].label_cluster)
     S["cluster_in_train"] = S.label_cluster.isin(train_site_cl)
