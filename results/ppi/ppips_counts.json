@@ -1,56 +1,56 @@
 {
  "complexes": {
-  "train": 1472,
-  "val": 268,
+  "train": 1483,
+  "val": 257,
   "test": 251
  },
  "complex_groups": {
-  "test": 34,
-  "train": 119,
+  "test": 29,
+  "train": 129,
   "val": 34
  },
  "giant_group_complexes": 113,
- "n_groups": 187,
+ "n_groups": 192,
  "burrow_train_complexes": 79,
  "pockets": {
-  "train": 15593,
-  "val": 2472,
-  "test": 2432
+  "train": 15555,
+  "val": 2488,
+  "test": 2454
  },
  "interface_pockets": {
-  "train": 3756,
-  "test": 667,
-  "val": 580
+  "train": 3677,
+  "val": 796,
+  "test": 530
  },
  "sym_pairs": {
-  "train": 2088,
-  "test": 440,
-  "val": 366
+  "train": 2284,
+  "val": 338,
+  "test": 272
  },
  "sym_pairs_interface": {
-  "train": 425,
-  "test": 83,
-  "val": 72
+  "train": 436,
+  "val": 89,
+  "test": 55
  },
  "sym_on_axis_pockets": 694,
  "ortho_interface_queries_considered": 20693,
  "ortho_queries": {
-  "train": 1088,
-  "test": 229,
-  "val": 95
+  "train": 1042,
+  "val": 217,
+  "test": 153
  },
  "ortho_complex_pairs": {
-  "test": 195,
-  "train": 878,
-  "val": 79
+  "test": 136,
+  "train": 829,
+  "val": 187
  },
  "ortho_queries_by_type": {
-  "test/hetero": 148,
-  "test/homo": 81,
-  "train/hetero": 432,
-  "train/homo": 656,
-  "val/hetero": 62,
-  "val/homo": 33
+  "test/hetero": 64,
+  "test/homo": 89,
+  "train/hetero": 402,
+  "train/homo": 640,
+  "val/hetero": 176,
+  "val/homo": 41
  },
  "ortho_queries_if_overlap_coef_rule": 8905,
  "ortho_candidates_p50": 10.0,

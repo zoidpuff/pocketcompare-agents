@@ -188,10 +188,10 @@ class StandinA1PairOnly:
 
 
 class MethodAdapter:
-    """Adapter for ``pocketcompare.method.Method`` (A4b agent's API: ``raw_parts`` / ``embed(mats)`` with fixed,
-    shipped part statistics).  Part matrices come from the label-free precomputed blocks: the A4b inputs
-    data/processed/descriptors/<ds>/a1r (pocketcompare.a4b.raw_parts) where present, else the identical
-    n_inputs_{L,D}.npz blocks of scripts/compute_n_inputs.py (same locators: L shell, D = best sub-pocket U)."""
+    """Adapter for ``pocketcompare.method.Method`` (A4b API: ``embed(mats)`` with fixed, shipped part statistics).
+    Part matrices = the label-free precomputed A4b inputs data/processed/descriptors/<ds>/a1r via
+    ``pocketcompare.a4b.raw_parts`` (L shell / D = best sub-pocket U; SPH_FALLBACK: empty sph8 -> located set);
+    a dataset without an a1r directory raises (compute_descriptors.py --arm a1r [--label-free-structures])."""
     BLOCK = {("a1", "sph8"): "a1_sph8", ("env", "sph8"): "env_sph8", ("a1", "base"): "a1_base"}
 
     def __init__(self, m, cfg):
@@ -207,18 +207,19 @@ class MethodAdapter:
         return sorted(set(fs))
 
     def raw_parts(self, store, dataset, mode, pocket_ids):
+        """N1/N2 part matrices via pocketcompare.a4b.raw_parts (incl. its SPH_FALLBACK); NaN rows if missing."""
         from pocketcompare import a4b as A4
-        if A4.a1r_dir(dataset).exists():
-            ids = set(A4.ids_table(dataset).pocket_id)
-            pid = list(pocket_ids)
-            have = np.array([p in ids for p in pid])
-            out = [np.full((len(pid), 514 if src == "a1" else 113), np.nan) for src, _ in self.m.parts]
-            if have.any():
-                got = A4.raw_parts(dataset, mode, [p for p, h in zip(pid, have) if h], self.m.inp)
-                for k in range(len(out)):
-                    out[k][have] = got[k]
-            return out
-        return [store.matrix(dataset, f"n_inputs_{mode}:{self.BLOCK[part]}", pocket_ids) for part in self.m.parts]
+        if not A4.a1r_dir(dataset).exists():
+            raise FileNotFoundError(f"{A4.a1r_dir(dataset)} (compute_descriptors.py --arm a1r)")
+        ids = set(A4.ids_table(dataset).pocket_id)
+        pid = list(pocket_ids)
+        have = np.array([p in ids for p in pid])
+        out = [np.full((len(pid), 514 if src == "a1" else 113), np.nan) for src, _ in self.m.parts]
+        if have.any():
+            got = A4.raw_parts(dataset, mode, [p for p, h in zip(pid, have) if h], self.m.inp)
+            for k in range(len(out)):
+                out[k][have] = got[k]
+        return out
 
     def embed(self, store, dataset, mode, pocket_ids):
         mats = self.raw_parts(store, dataset, mode, pocket_ids)
@@ -514,7 +515,45 @@ def _embed_scores(E_rows, rows, n, ia, ib, csls):
     return raw, raw - 0.5 * (r[ia] + r[ib])
 
 
-def final_vectors(ps: PairSet, method, store, modes=("L", "D"), dataset=None):
+class ExtraArm:
+    """Descriptive (non-claim) arm of PREREG Addendum A2, with the method interface (embed -> NaN rows if missing)."""
+
+    def __init__(self, arm, name, is_learned, designated, embed_fn):
+        self.arm, self.name, self.is_learned, self.designated, self._embed = arm, name, is_learned, designated, embed_fn
+
+    def embed(self, store, dataset, mode, pocket_ids):
+        E, av = self._embed(dataset, mode, list(pocket_ids))
+        E = np.asarray(E, np.float32).copy()
+        E[~np.asarray(av, bool)] = np.nan
+        return E
+
+
+def _n1_embed(dataset, mode, ids):
+    """N1 raw exactly as the PREREG §1 selection (eval_dev.fs_embed, BLiPS-train part statistics)."""
+    return ED.fs_embed(ED.Cand("N1", "nonlearned", "N1", 627, 0), dataset, mode, ids, np.ones(len(ids), bool))
+
+
+L4_MODEL = "egnn_small"
+
+
+def _l4_embed(dataset, mode, ids):
+    """L4:egnn_small ensemble embeddings (scripts/l4_embed.py; rows = pocketcompare.a4b.ids_table order)."""
+    from pocketcompare import a4b as A4
+    loc = "L" if mode == "L" else ("D" if dataset == "ppips" else "U")
+    f = ROOT / "data/processed/l4_emb" / L4_MODEL / f"emb_{dataset}_{loc}.npy"
+    M = np.load(f)
+    pos = pd.Series(np.arange(len(M)), index=A4.ids_table(dataset).pocket_id.to_numpy()).reindex(ids).to_numpy()
+    ok = ~pd.isna(pos)
+    E = np.zeros((len(ids), M.shape[1]), np.float32)
+    E[ok] = M[pos[ok].astype(np.int64)]
+    return E, ok & (np.linalg.norm(E, axis=1) > 0)
+
+
+EXTRA_ARMS = [ExtraArm("N1", "N1", False, "raw", _n1_embed),
+              ExtraArm("L4", f"L4:{L4_MODEL}", True, "csls", _l4_embed)]
+
+
+def _method_vectors(ps: PairSet, method, store, modes, dataset, arm, note):
     ds = dataset or ps.dataset
     P = ps.pockets
     out = []
@@ -528,9 +567,28 @@ def final_vectors(ps: PairSet, method, store, modes=("L", "D"), dataset=None):
         E = np.asarray(method.embed(store, ds, mode, P.pocket_id.to_numpy()[idx]), np.float32)
         okr = np.isfinite(E).all(1)
         rows = idx[okr]
+        if len(rows) <= CSLS_K + 1:
+            continue
         raw, cs = _embed_scores(E[okr], rows, len(P), ps.ia, ps.ib, True)
-        out.append(Vec("FINAL", method.name, "raw", mode, raw, E.shape[1], "final method"))
-        out.append(Vec("FINAL", method.name, "csls", mode, cs, E.shape[1], "final method + CSLS (pool)"))
+        out.append(Vec(arm, method.name, "raw", mode, raw, E.shape[1], note))
+        out.append(Vec(arm, method.name, "csls", mode, cs, E.shape[1], note + " + CSLS (pool)"))
+    return out
+
+
+def final_vectors(ps: PairSet, method, store, modes=("L", "D"), dataset=None, extras=True, learned_ok=True):
+    """FINAL (+ the Addendum-A2 descriptive arms N1 and L4, each skipped where its inputs do not exist)."""
+    out = []
+    if learned_ok or not method.is_learned:
+        out += _method_vectors(ps, method, store, modes, dataset, "FINAL", "final method")
+    if extras:
+        for xa in EXTRA_ARMS:
+            if xa.is_learned and not learned_ok:
+                continue
+            try:
+                out += _method_vectors(ps, xa, store, modes, dataset, xa.arm,
+                                       f"descriptive arm (PREREG Addendum A2; designated variant {xa.designated})")
+            except (FileNotFoundError, KeyError) as e:
+                log(f"  {xa.name} skipped on {dataset or ps.dataset}: {type(e).__name__}: {e}")
     return out
 
 
@@ -979,6 +1037,15 @@ def stage_ppips(split: str, ortho: pd.DataFrame, sym: pd.DataFrame, method, stor
         E = np.zeros((len(P), Ef.shape[1]), np.float32)
         E[ref] = Ef
         sources.append(("FINAL", method.name, E, Ef.shape[1]))
+    for xa in EXTRA_ARMS:                     # Addendum-A2 descriptive arms
+        try:
+            Ex = np.asarray(xa.embed(store, "ppips", "D", P.pocket_id.to_numpy()[ref]), np.float32)
+        except (FileNotFoundError, KeyError) as e:
+            log(f"  {xa.name} skipped on ppips: {e}")
+            continue
+        E = np.zeros((len(P), Ex.shape[1]), np.float32)
+        E[ref] = np.nan_to_num(Ex)
+        sources.append((xa.arm, xa.name, E, Ex.shape[1]))
     lv = P.logv.to_numpy()
     rows = []
 
@@ -1132,6 +1199,47 @@ def enter_worktree(fr: dict, argv) -> int:
     return rc
 
 
+def static_preflight() -> int:
+    """``--check-only`` without FINAL_EVAL: the checks that need neither FREEZE.json nor a worktree, in the current
+    checkout (no sealed file is opened; only their recorded hashes are looked up).  Prints what the full preflight
+    (FINAL_EVAL=1) checks in addition."""
+    res = {}
+    ev_sha = sha256_file(ROOT / "src/pocketcompare/evaluate.py")
+    res["evaluate.py == PREREG §4 constant"] = ev_sha == PREREG_EVALUATE_SHA256
+    res["PREREG.md sha256"] = sha256_file(ROOT / "PREREG.md")
+    try:
+        method, cfg_sha = load_method(False)
+        res["method"] = method.name
+        res["method config sha256"] = cfg_sha
+        wf = method.weight_files()
+        res["weight files present"] = {str(Path(f).relative_to(ROOT)): Path(f).exists() for f in wf}
+        res["method config files_sha256 verified (Method(verify=True))"] = True
+    except Exception as e:  # noqa: BLE001
+        res["method"] = f"FAILED: {type(e).__name__}: {e}"
+    exp = Sealed(Path("/dev/null"), False).expected
+    res["sealed hashes recorded"] = {n: n in exp for n in (*SEALED_NEEDED, PPIL_PAIR_FILE)}
+    res["sealed files present (not opened)"] = {n: (SEALED_DIR / n).exists() for n in (*SEALED_NEEDED, PPIL_PAIR_FILE)}
+    from pocketcompare import a4b as A4
+    res["a1r inputs per evaluated dataset"] = {d: A4.a1r_dir(d).exists() for d in
+                                               ("tough_m1", "prospeccts", "vertex", "blips", "blips_test_holo",
+                                                "blips_test_af", "ppips", "ppi_l")}
+    res["L4 embeddings"] = {f.name: True for f in sorted((ROOT / "data/processed/l4_emb" / L4_MODEL).glob("emb_*.npy"))}
+    res["b0prime tables"] = sorted(f.name for f in (ROOT / "data/processed/b0prime").glob("*_tm.parquet"))
+    res["tracked tree clean"] = tracked_clean()
+    res["FREEZE.json present"] = (ROOT / "FREEZE.json").exists()
+    res["not checked here (needs FINAL_EVAL=1 + committed FREEZE.json)"] = [
+        "FREEZE.json committed and unmodified; main tree clean", "FREEZE.commit exists; worktree created at it",
+        "worktree HEAD == FREEZE.commit and clean", "evaluate.py == FREEZE.evaluate_sha256 == PREREG constant",
+        "PREREG.md == FREEZE.prereg_sha256", "configs/final_method.yaml == FREEZE.method_config_sha256",
+        "every weight file sha256 == FREEZE.weights and set equality with method.weight_files()",
+        "scripts/final_eval.py == FREEZE.final_eval_sha256", "every needed sealed file has a recorded sha256"]
+    print(json.dumps(res, indent=1, default=str))
+    bad = (not res["evaluate.py == PREREG §4 constant"] or str(res["method"]).startswith("FAILED")
+           or not all(res["sealed hashes recorded"].values()) or not all(res.get("weight files present", {0: 0}).values()))
+    log("static preflight " + ("FAILED" if bad else "OK") + " (no sealed file opened, no FREEZE.json written)")
+    return 1 if bad else 0
+
+
 # ============================================================================================ main
 def run(args, real: bool, method, cfg_sha, sealed: Sealed, out: Path):
     store = DescriptorStore(ROOT)
@@ -1219,7 +1327,7 @@ def run(args, real: bool, method, cfg_sha, sealed: Sealed, out: Path):
     full = full[~full.pocket_a.isin(devset) & ~full.pocket_b.isin(devset)].reset_index(drop=True)
     fm = tough_set("tough_m1_full_minus_dev", full, lambda s: s.partition != "dev")
     fm.synthetic = not real
-    fvecs = (final_vectors(fm, method, store, modes=("L",)) if not method.is_learned else []) \
+    fvecs = final_vectors(fm, method, store, modes=("L",), learned_ok=False) \
         + b0_vectors(fm)[:1] + descriptor_vectors(fm, store, BASE_SPECS, modes=("L",))
     if store.available("tough_m1", "b5_epocs"):
         M = store.matrix("tough_m1", "b5_epocs", fm.pockets.pocket_id)
@@ -1309,8 +1417,12 @@ REPRO_METRICS = ["auc", "auc_lo", "auc_hi", "ap", "ap_lo", "ap_hi", "pauc_mcclis
 def reproduction_check(summary, ppips, method) -> dict:
     """Dry run: B1 / A1 (and the stand-in FINAL) rows vs results/dev/*_summary.parquet."""
     out = {"compared": [], "max_abs_deviation": 0.0}
-    sets = [("tough_m1_dev", ROOT / "results/dev/tough_m1_dev_summary.parquet", None),
-            ("blips_val", ROOT / "results/dev/blips_val_summary.parquet", "subset")]
+    def cur(stem):    # dev tables on the rebuilt splits (D18) carry a _v2splits suffix
+        f = ROOT / f"results/dev/{stem}_v2splits_summary.parquet"
+        return f if f.exists() else ROOT / f"results/dev/{stem}_summary.parquet"
+
+    sets = [("tough_m1_dev", cur("tough_m1_dev"), None), ("blips_val", cur("blips_val"), "subset")]
+    out["dev_tables"] = [str(f) for _, f, _ in sets] + [str(cur("ppips_val"))]
     for sname, f, subcol in sets:
         dev = pd.read_parquet(f)
         mine = summary[summary.set == sname]
@@ -1338,7 +1450,7 @@ def reproduction_check(summary, ppips, method) -> dict:
                         out["compared"].append({"set": sname, "arm": arm, "variant": var, "mode": mode, "subset": k,
                                                 "max_abs_dev": dmax, "n_metrics": len(me)})
                         out["max_abs_deviation"] = max(out["max_abs_deviation"], dmax)
-    devp = pd.read_parquet(ROOT / "results/dev/ppips_val_summary.parquet")
+    devp = pd.read_parquet(cur("ppips_val"))
     for arm, dcfg in (("B1", "default"), ("A1", "pair_only (chosen)")):
         for var in ("raw", "csls"):
             a = ppips[(ppips.arm == arm) & (ppips.variant == var)]
@@ -1350,23 +1462,33 @@ def reproduction_check(summary, ppips, method) -> dict:
                 out["compared"].append({"set": "ppips_val", "arm": arm, "variant": var, "mode": "D", "subset": "all",
                                         "max_abs_dev": dmax, "n_metrics": len(cols)})
                 out["max_abs_deviation"] = max(out["max_abs_deviation"], dmax)
-    # FINAL vs the A4b agent's own dev numbers of the configured candidate (point metrics; different code path)
-    fsel = ROOT / "results/dev/final_select_nonlearned_summary.parquet"
+    # FINAL and the Addendum-A2 arms vs the PREREG §1 selection table (eval_dev / eval_l4 code path)
+    fsel = ROOT / "results/dev/l4/final_select_all_l4_summary.parquet"
     cand = getattr(method, "cfg", {}).get("candidate")
-    out["final_vs_a4b_selection"] = []
-    if fsel.exists() and cand:
+    out["vs_selection_table"] = {"file": str(fsel), "rows": []}
+    if fsel.exists():
         ref = pd.read_parquet(fsel)
-        for sname, dsn in (("tough_m1_dev", "tough_m1"), ("blips_val", "blips")):
-            for var in ("raw", "csls"):
-                for mode in ("L", "D"):
-                    a = summary[(summary.set == sname) & (summary.arm == "FINAL") & (summary.variant == var)
-                                & (summary["mode"] == mode) & (summary.subset == "all")]
-                    b = ref[(ref.cand == cand) & (ref.variant == var) & (ref.dataset == dsn) & (ref["mode"] == mode)]
-                    if len(a) and len(b):
-                        d = {m: abs(float(a.iloc[0][m]) - float(b.iloc[0][m])) for m in ("auc", "ap", "auc_cb", "auc_strat")}
-                        out["final_vs_a4b_selection"].append({"set": sname, "variant": var, "mode": mode,
-                                                              "n_pairs": int(a.iloc[0].n_pairs),
-                                                              "n_pairs_a4b": int(b.iloc[0].n_pairs), **d})
+        pairs_ = [("FINAL", cand)] + [(xa.arm, xa.name) for xa in EXTRA_ARMS]
+        for arm, cname in pairs_:
+            if not cname:
+                continue
+            for sname, dsn in (("tough_m1_dev", "tough_m1"), ("blips_val", "blips")):
+                for var in ("raw", "csls"):
+                    for mode in ("L", "D"):
+                        a = summary[(summary.set == sname) & (summary.arm == arm) & (summary.variant == var)
+                                    & (summary["mode"] == mode) & (summary.subset == "all")]
+                        b = ref[(ref.cand == cname) & (ref.variant == var) & (ref.dataset == dsn) & (ref["mode"] == mode)]
+                        if len(a) and len(b):
+                            d = {m: abs(float(a.iloc[0][m]) - float(b.iloc[0][m])) for m in ("auc", "ap", "auc_cb",
+                                                                                               "auc_strat")}
+                            out["vs_selection_table"]["rows"].append(
+                                {"arm": arm, "cand": cname, "set": sname, "variant": var, "mode": mode,
+                                 "auc_cb": float(a.iloc[0].auc_cb), "auc_cb_ref": float(b.iloc[0].auc_cb),
+                                 "n_pairs": int(a.iloc[0].n_pairs), "n_pairs_ref": int(b.iloc[0].n_pairs),
+                                 "max_abs_dev": max(d.values())})
+        r = out["vs_selection_table"]["rows"]
+        out["vs_selection_table"]["max_abs_deviation"] = max((x["max_abs_dev"] for x in r), default=None)
+        out["vs_selection_table"]["n_pairs_mismatch"] = sum(x["n_pairs"] != x["n_pairs_ref"] for x in r)
     out["n_rows_compared"] = len(out["compared"])
     return out
 
@@ -1387,6 +1509,8 @@ def main():
     if args.write_freeze:
         return write_freeze()
     real = not args.dryrun_dev
+    if args.check_only and os.environ.get("FINAL_EVAL") != "1":
+        return static_preflight()
     if real:
         if os.environ.get("FINAL_EVAL") != "1":
             raise SystemExit("FINAL_EVAL=1 is required for the real final evaluation (use --dryrun-dev otherwise)")
@@ -1434,7 +1558,9 @@ def main():
     if not real:
         rep = reproduction_check(summary, ppips, method)
         write_result(out / "reproduction_check.json", rep, **common)
-        log(f"reproduction check: {rep['n_rows_compared']} rows, max |deviation| = {rep['max_abs_deviation']:.3g}")
+        log(f"reproduction check: {rep['n_rows_compared']} rows, max |deviation| = {rep['max_abs_deviation']:.3g}; "
+            f"vs selection table: {len(rep['vs_selection_table']['rows'])} rows, max |deviation| = "
+            f"{rep['vs_selection_table'].get('max_abs_deviation')}")
     log("claims: " + "; ".join(f"{c} Δ {r['delta']:+.3f} p {r['p_one_sided']:.4f} Holm {r['p_holm']:.4f}"
                                for c, r in claims.items()))
     log(f"done -> {out}")
