@@ -387,6 +387,9 @@ were excluded before scoring (D25). Frozen artefacts only; no retraining. <!-- s
 - Size-stratified D-mode AUC: FINAL 0.752; cluster-balanced 0.699. 83 % of positives involve a ligand chemotype seen
   in BLiPS-train: the proteins are new, most chemotypes are not.
 - Two aborted starts are disclosed (DEV7: pairs referencing the excluded sites; no score had been computed).
+- **Independently verified** (reports/verification_final.md, "PDB-T verification"): own code reproduces all three
+  point estimates (R2 AUC within 1.8e-7), Holm decisions unchanged; the 9 exclusions match D25; no PDB-T site, chain
+  or sequence appears in any training table.
 
 ## 5. Development: how the method was chosen (dev/val only, rebuilt splits)
 

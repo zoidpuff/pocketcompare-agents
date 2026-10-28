@@ -8,3 +8,4 @@ time	file	sha256	mode_before	mode_after	rows	purpose	user	host	pid
 2026-10-28T05:08:22+0100	data/sealed/blips_test_sites.parquet	4059e7c80e6172fc473ccde065345d6edcbf6cde39bf155a30eb216423794d32	0o0	0o0	3606	verify spot check BLiPS-test AUC (verifier)	gmagnusson	eu-g6-048	1634764
 2026-10-28T05:08:22+0100	data/sealed/ppips_test_queries.parquet	85989dcc06b0bce9fe51d720e05b02ddc42f71aa2be7e477b73944f6e8070e41	0o0	0o0	153	verify spot check PPIPS-test MRR (verifier)	gmagnusson	eu-g6-048	1634764
 2026-10-28T05:08:23+0100	data/sealed/tough_m1_pairs.parquet	740fe939cec3c67bc9fbe6e412123ef452f4054b23a0a0586fd44086adc1b875	0o0	0o0	1061926	verify B0 on TOUGH-M1 full-minus-dev (verifier)	gmagnusson	eu-g6-048	1634764
+2026-10-28T08:04:00+0100	data/sealed/pdbt_pairs.parquet	b4bf2909f44a819f4a1fd5160a23e30b2fbbc7695082aaeb460b7899d1f70c60	0o0	0o0	8118	verify PREREG2 R1/R2/R3 (independent verifier)	gmagnusson	eu-g6-048	1850386

@@ -54,3 +54,26 @@ Sealed files: 9 reads, each logged in `results/verify/unseal_log.tsv`. Every sha
 - C1-D is therefore the cleanest confirmatory claim.
 
 **Verdict:** every headline number reproduces to ≤ 1e-8, or exactly at the float32 precision final_eval used. I found no computational error and no test leakage. The open caveats are the borderline Holm margin for C1a/C1b, P6.2 ≡ P6, and the L-mode ligand-size imprint.
+
+## PDB-T verification (PREREG2: R1 / R2 / R3, D-mode common set)
+
+How I checked: `results/verify/v_pdbt.py` → `v_pdbt.json`, my own code with sklearn AUC and my own vertex bootstrap (B = 2000, seed 31337). Units = `hom_component` of `pdbt_sites.parquet`. The sealed pairs were read once, the sha256 equals the `data/sealed_SHA256SUMS.txt` line (b4bf2909…), and the file is back at mode 000 (logged).
+
+- **Pool:** 996 sites, minus 9 excluded = 987.
+- **Pairs:** 141 of the 8,118 pairs (33 positive) involve excluded sites and were dropped.
+- **D common set:** 874 sites are D-matched, giving 6,171 pairs / 1,060 positives / 289 units. This matches the report.
+- **FINAL:** recomputed with my own numpy head on `descriptors/pdbt/a1r` U parts.
+- **L4:** taken from the stored `emb_pdbt_U.npy` (unit-norm), with CSLS k = 10 over the D-matched pool. The EGNN forward pass was not re-run.
+- **FUSION:** I refit the z-scales on the BLiPS-train v2 pairs (L plus D-matched D, n = 65,858). They agree with `fusion_scales.json` to 6e-10.
+
+| claim | reported AUC a / b; Δ [CI]; p → Holm | verifier | verdict |
+|---|---|---|---|
+| R1 FINAL − B1 | 0.751917 / 0.671371; +0.0805 [+0.028, +0.132]; 0.0010 → 0.003 | identical (diff 0); +0.0805 [+0.025, +0.130]; 0.0030 → 0.009 | **PASS** (rejects) |
+| R2 FUSION − FINAL | 0.762324 / 0.751917; +0.0104 [−0.010, +0.032]; 0.171 → 0.343 | 0.762324 (diff 1.8e-7, float32 vs float64); +0.0104 [−0.010, +0.031]; 0.154 → 0.309 | **PASS** (not rejected) |
+| R3 L4 CSLS − FINAL | 0.729540 / 0.751917; −0.0224 [−0.061, +0.018]; 0.858 → 0.858 | identical (diff 1e-16); −0.0224 [−0.062, +0.017]; 0.869 → 0.869 | **PASS** (not rejected) |
+
+**Excluded sites match D25.** The 9 `excluded` sites are exactly the boundary sites that `audit_splits.md` "PDB-T audit" names under D25: 32qr_A, 9kmd_H, 9l3u_A, 9lo8_O, 9lqe_B, 9qmf_C, 9s30_A (×2) and 9woj_C. The `excluded` flag equals `excluded_audit_tm_boundary`. One small text slip: the audit table says "7 chains" but names 8, and RESEARCH_TREE says 8.
+
+**No PDB-T site in any training table.** There are 0 PDB-T site ids in `blips_sites_v2`, the BLiPS train/val v2 pairs, the PPIPS pockets (the A4b/L4 PPIPS input), or the TOUGH-M1 split/dev pairs. There are also 0 shared PDB+chain, PDB ids or sequence ids with BLiPS v2 or BURROW train/dev/partner nodes. The earliest release is 2025-11-19, after the 2025-11-12 cut-off.
+
+**Verdict: PASS.** R1 replicates; R2 and R3 are not supported. Holm decisions are the same under both the reported and the verifier p-values, with wide margins.
