@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use pocketcompare, please cite it as below. [Placeholder: authors, title and DOI to be set before release.]"
+title: "pocketcompare: fast, ligand-free fingerprints for protein binding pockets"
+type: software
+version: 1.0.0
+date-released: 2026-10-28
+license: MIT
+repository-code: "https://github.com/[set the final URL]/pocketcompare"
+authors:
+  - name: "pocketcompare authors [set author names]"
+keywords:
+  - protein binding sites
+  - pocket similarity
+  - AlphaFold
+  - FAISS
+references:
+  - type: software
+    title: "BURROW: fast protein ligand-binding pocket detection and ranking"
+    version: 1.0.0
+    license: MIT
+    repository-code: "https://github.com/zoidpuff/burrow [set the final URL]"
+    authors:
+      - name: "BURROW authors [set author names]"

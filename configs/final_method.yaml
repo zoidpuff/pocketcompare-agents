@@ -1,0 +1,71 @@
+# pocketcompare frozen method (do not edit; every file it loads is sha256-verified by pocketcompare.method.Method).
+# Adapted from the research repository's configs/final_method.yaml (frozen at commit e5a6f35, tag freeze-v1):
+# identical parameters and model files; only file paths changed. Relative paths are resolved against `root`
+# (relative to this file's directory).
+name: pocketcompare-final:A4b:n1_linear|raw
+root: ..
+kind: learned
+candidate: A4b:n1_linear
+variant: raw                 # score = raw inner product (CSLS is available as a search option only)
+input: N1
+dims: 384
+csls_k: 10
+parts:
+- src: a1
+  shaper: sph8
+- src: env
+  shaper: sph8
+site:
+  L_cutoff_A: 4.0
+  residue_cutoff_A: 4.0
+  residue_bur_min: 0.5
+  D_pockets: BURROW region-rule output (pk_in_region), each sub-pocket separately
+  D_locator_with_site: best-covering region pocket (pockets.best_member, cover 1.5 Å)
+  describe_all: merged region-rule pockets (touch <= 1.5 Å or residue Jaccard >= 0.3), >= 10 points
+  shaper_sph8:
+    radius_A: 8.0
+    centroid: vol * bur16^4-weighted
+    bur_feature: bur10
+    bur_min: 0.5
+    empty_fallback: located (base) set
+a1:
+  version: a1-v1
+  overrides: {}
+  config_hash: 8f4f566dbad665ba
+env:
+  version: a1r-v1
+  dims: 113
+scaling: per part z-score, BLiPS-train v2 sites (L + D rows), constant dims -> 0; head input clipped to +-5
+input_stats: models/n1_linear/input_stats.json
+model_files:
+- models/n1_linear/seed0.npz
+- models/n1_linear/seed1.npz
+- models/n1_linear/seed2.npz
+files_sha256:
+  models/n1_linear/input_stats.json: 845d5671dc3ef8184330ebcd788c70b9a078280cf7ea57a623facbba8a86a95d
+  models/n1_linear/seed0.npz: d455b1fca0f49bf39a57efc768cc12e70792ff5e9b2c6fb5f814ce166e6c3d99
+  models/n1_linear/seed1.npz: b5f60af927724e43e5bf5ced0e0a0527409b9718dd90cd350944669f0985f254
+  models/n1_linear/seed2.npz: c221fcc0f10e61555ca3fc201d4c83d3ccc48f9fe708cfa5281e679974ac0c5b
+  models/n1_linear/config.json: 32428248f6169fdca6e32e41cd154530a0ca4c011d5660b563b08f9700b5e8b6
+burrow:
+  version: 1.0.0             # burrow-pockets (import name pocketdetect)
+  preset: default
+  ranker: all
+  region_rule: c16_0.005
+  model: models/burrow/burrow_all_default_s0.json     # pinned copy (MIT); loaded via pockets.model_path()
+  model_sha256: f33963e7e23f1d0b7fd352e89a2dc6b7be30f642cd09ba8644e1967af97c4315
+a4b:
+  name: n1_linear
+  hidden: null
+  out_dim: 128
+  dropout: 0.2
+  seeds:
+  - 0
+  - 1
+  - 2
+  d_in: 627
+  best_epochs:
+  - 3
+  - 4
+  - 5
+  config_json: models/n1_linear/config.json
