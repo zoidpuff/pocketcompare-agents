@@ -15,3 +15,4 @@ logs/
 data/splits/homology_edges.parquet
 results/audit/*/
 results/models/l4/**/emb_*.npy
+results/a2/*.npz
