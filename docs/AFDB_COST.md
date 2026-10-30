@@ -105,3 +105,32 @@ store the score, and use a cutoff (e.g. 0.03) only as a search-time filter or in
 | full AFDB | ≈ 200–214 M | ≈ 6–6.5 days | ≈ 0.95–1.0 B | ≈ 0.85 TB |
 Cluster-representative counts are from the AFDB/Foldseek publications (approximate); only the first three tiers
 are on local disk.
+
+## 10. Production tier-3 run on Euler (2026-10-29/30)
+**Stall, and its cause.**
+- **First tier-3 array** (job 18905048, 4 GPU nodes, started 2026-10-29 20:53–22:35). It ran at ≈ 400/s per node
+  (task 1: 1.68 M structures in 67 min). Then all four nodes stopped between 22:10 and 01:23, with
+  `batches queued 0, slots busy 0`.
+- **Cause.** `foldcomp.decompress` (foldcomp 1.0.0) leaks its output, measured at ≈ 200 kB per call (20,000
+  calls on one entry: 90 MB → 3.8 GB RSS).
+  - The 4 Foldcomp pool processes per node grew to 17–50 GB.
+  - Each job cgroup recorded 4–5 `oom_kill`s at the 192 GB limit.
+  - `multiprocessing.Pool.map` never returns once a process dies mid-task, so each kill blocked one extraction
+    thread for good.
+- **Fix:** zoidpuff/pocketcompare commit d82357e (`pocketcompare/afdb/` here). Pool processes are recycled
+  after 200 chunks, and each batch has a 900 s timeout.
+
+**Relaunch** (2026-10-30 ≈ 08:20): 4 GPU nodes (job 18975172) and 4 CPU-only nodes of 64 cores (job 18974858,
+new `afdb_cpu.sbatch`, Numba backend through `--runner cli`), sharing one work list.
+| node | hardware | structures/s (15-min window, 5–18 min after start) |
+|---|---|---|
+| GPU ×2 | AMD EPYC 9554 (64 cores allocated) + 4 × RTX 4090 | 643, 713 |
+| CPU ×2 | AMD EPYC 9654 (64 cores allocated) | 381, 385 |
+| CPU ×1 | AMD EPYC 7742 (64 cores allocated), node load ≈ 124 | 187 |
+- **Memory:** the Foldcomp pool processes stayed at 0.4–1.2 GB.
+- **Faster than §1.** Both node types beat the 42-s benchmarks in §1: GPU nodes by ≈ 1.7–1.9×, CPU nodes by up
+  to 1.6×. A plausible but unverified reason: on Foldcomp input the workers skip the mmCIF gunzip/parse
+  (≈ 20–33 core-ms, §2), because decompression runs in the pool, and the CPUs are newer.
+- **CPU/GPU parity spot check.** 12 GPU-processed tier-3 structures (unit 272) were re-run with
+  `--device cpu --backend fast`. They gave the same 44 kept pockets, with identical points, scores, volumes,
+  centres and residues. Fingerprints differed by at most 6.1e-5 (fp16 rounding).
