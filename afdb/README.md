@@ -20,6 +20,7 @@ were denied on 2026-10-28.
 | `worker.py` | one per node: claims units, extracts / decompresses / downloads them, describes them on 4 GPUs, filters, writes outputs |
 | `describe_server.py` | the persistent per-GPU `pocketcompare describe` used by the worker (same code path) |
 | `afdb.sbatch`, `submit.sh` | the array job (`--array=0-3`, one node per task) and a checked submission wrapper |
+| `afdb_cpu.sbatch` | the same job on CPU-only nodes (64 cores, no GPU), submitted with `submit.sh --cpu-nodes N` |
 | `status.py` | progress per tier, throughput, ETA, failures |
 | `build_index.py` | FAISS OPQ + IVF-PQ index (chunked; up to ~10⁹ pockets) or an exact flat index |
 | `smoke_test.sh`, `make_tiny_foldcomp.py`, `mock_gcs_server.py` | end-to-end test on a tiny work list: a real 300-entry Foldcomp DB for tier 3, plus a mock GCS bucket (~2 min) |
@@ -51,6 +52,7 @@ srun --gpus=rtx_4090:2 --cpus-per-task=32 --mem-per-cpu=3G --time=1:00:00 -A es_
 bash afdb/submit.sh --tiers 1                # tier 1 first (~10 min on 4 nodes), then:
 bash afdb/submit.sh --tiers 2                # Swiss-Prot (~5 min), then:
 bash afdb/submit.sh                          # everything that is left (tier 3, ~1.7 days)
+bash afdb/submit.sh --nodes 0 --cpu-nodes 4  # optional: 4 CPU-only nodes on the same work list, alongside the GPUs
 $ENV_DIR/bin/python afdb/status.py           # monitor; logs: $OUT_ROOT/logs/pocketcompare-afdb_<job>_<task>.out
 $ENV_DIR/bin/python afdb/build_index.py --tiers 1 --kind flat -o $OUT_ROOT/index/tier1_flat
 $ENV_DIR/bin/python afdb/build_index.py --tiers 1,2,3 --kind ivfpq -o $OUT_ROOT/index/all_ivfpq --threads 32
@@ -344,10 +346,27 @@ Each node runs three kinds of threads, plus a small process pool for Foldcomp.
   them in chunks of 64 to `FC_PROCS` processes. These `os.pread` each entry from `$FOLDCOMP_DIR/<db>`, run
   `foldcomp.decompress`, write `<AF-…-model_v4>.pdb` and compute the B-factor pLDDT stats. Processes are needed
   because decompression holds the GIL.
+  - **The leak.** `foldcomp.decompress` (foldcomp 1.0.0) never frees its output, about 200 kB per entry. Without
+    a limit the processes reached 20–50 GB each and were OOM-killed within ~3 h on 192 GB nodes.
+    Each process is therefore replaced after `FC_MAX_TASKS` = 200 chunks (≈ 12,800 entries, ≈ 2.5 GB).
+  - **The timeout.** `Pool.map` never returns if a process dies mid-task, which silently stalls the extraction
+    thread. Each batch therefore waits at most `FC_TIMEOUT` = 900 s. After that the unit fails (re-run with
+    `--retry-failed`) and the thread moves on.
 - **GCS tars.** Streamed or fetched in parallel; `.pdb.gz` members and earlier-tier accessions are skipped.
 
 **GPU slots (one per GPU).** A slot takes the next batch. Up to 4 more batches wait in the queue, so extraction
 overlaps describing.
+
+**CPU-only nodes (`afdb_cpu.sbatch`).**
+- **Same work list.** Nodes share work only through `state/claims`, so CPU and GPU arrays can run at the same time
+  and be submitted or cancelled independently.
+- **Same output.** `CPU_SHARDS_PER_NODE` = 4 slots each run `pocketcompare describe --device cpu --backend fast`
+  (the Numba backend) through `--runner cli`. It gives the same pockets and fingerprints as the GPU path, so the
+  database does not depend on the node type.
+- **Not the persistent runner.** `describe_server.py` always featurises with torch, which is not the benchmarked
+  CPU path.
+- **Speed.** Measured at 190–385 structures/s per 64-core node on Foldcomp input, depending on the CPU
+  generation and node load. A 4-GPU node does ≈ 650/s.
 
 **Finaliser.** Filters, adds metadata (incl. `source`) and writes the two parquet files and the done marker.
 Every write goes to a temporary file and is renamed into place.

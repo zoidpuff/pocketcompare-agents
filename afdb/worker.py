@@ -34,6 +34,7 @@ for _k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMBA_
 import argparse  # noqa: E402
 import io  # noqa: E402
 import json  # noqa: E402
+import multiprocessing as mp  # noqa: E402
 import queue  # noqa: E402
 import select  # noqa: E402
 import shutil  # noqa: E402
@@ -432,7 +433,13 @@ class Extractor:
             sub = e.iloc[s0:s0 + bs]
             rows = list(zip(sub.off.tolist(), sub.len.tolist(), sub.stem.tolist(), strict=True))
             tasks = [(db_path, str(b.dir), rows[i:i + ck]) for i in range(0, len(rows), ck)]
-            res = self.fc_pool.map(fc_extract_chunk, tasks, chunksize=1)
+            # Pool.map waits forever for a task whose process died (OOM kill): time out and fail the unit instead
+            try:
+                res = self.fc_pool.map_async(fc_extract_chunk, tasks, chunksize=1).get(self.a.fc_timeout)
+            except mp.TimeoutError:
+                shutil.rmtree(b.dir, ignore_errors=True)
+                raise RuntimeError(f"Foldcomp pool returned nothing for batch {k} in {self.a.fc_timeout:.0f} s "
+                                   f"(a pool process killed?)") from None
             info = {r.stem: r for r in sub.itertuples(index=False)}
             for chunk in res:
                 for stem, st, nb, err in chunk:
@@ -798,6 +805,10 @@ def main():
     ap.add_argument("--extract-threads", type=int, default=env("EXTRACT_THREADS", 4))
     ap.add_argument("--fc-procs", type=int, default=env("FC_PROCS", 4),
                     help="processes reading + decompressing Foldcomp entries (~2.4 ms each)")
+    ap.add_argument("--fc-max-tasks", type=int, default=env("FC_MAX_TASKS", 200),
+                    help="64-entry chunks per Foldcomp process before it is replaced (bounds the decompress leak)")
+    ap.add_argument("--fc-timeout", type=float, default=env("FC_TIMEOUT", 900.0),
+                    help="seconds to wait for one batch from the Foldcomp pool before the unit fails")
     ap.add_argument("--gcs-fetch-threads", type=int, default=env("GCS_FETCH_THREADS", 32))
     ap.add_argument("--gcs-small-bytes", type=int, default=env("GCS_SMALL_BYTES", 16 * 1024 * 1024))
     ap.add_argument("--http-retries", type=int, default=env("HTTP_RETRIES", 8))
@@ -863,8 +874,8 @@ def main():
     src = UnitSource(wl, claims, a.retry_failed, a.max_units)
     fc_pool = None
     if (wl.source_type == "foldcomp").any():         # pread + decompress need processes (decompress holds the GIL)
-        import multiprocessing as mp
-        fc_pool = mp.get_context("spawn").Pool(a.fc_procs)
+        # foldcomp 1.0.0 decompress() leaks its output (~200 kB per entry): recycle each process after N tasks
+        fc_pool = mp.get_context("spawn").Pool(a.fc_procs, maxtasksperchild=a.fc_max_tasks)
     ex = Extractor(a, root, work, skip, bq, fin, fc_pool)
     busy = [0]
 

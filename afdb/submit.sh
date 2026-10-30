@@ -4,15 +4,17 @@
 #   bash afdb/submit.sh --tiers 1             # tier 1 only (then e.g. --tiers 2, --tiers 3, or all)
 #   bash afdb/submit.sh --tiers 1,2 --nodes 2 -- --time=1-00:00:00     # args after -- go to sbatch
 #   bash afdb/submit.sh --retry-failed        # also re-run units that have a failed marker
+#   bash afdb/submit.sh --cpu-nodes 4         # also 4 CPU-only nodes (afdb_cpu.sbatch); --nodes 0: CPU nodes only
 #   DRY=1 bash afdb/submit.sh ...             # print the sbatch command only
 # Resubmitting is safe at any time: finished units are skipped, claims of jobs that are gone are reclaimed.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
-TIERS="" NODES="$SLURM_NODES" EXTRA=() RETRY=0
+TIERS="" NODES="$SLURM_NODES" CPU_NODES="$SLURM_CPU_NODES" EXTRA=() RETRY=0
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --tiers) TIERS="$2"; shift 2 ;;
         --nodes) NODES="$2"; shift 2 ;;
+        --cpu-nodes) CPU_NODES="$2"; shift 2 ;;
         --retry-failed) RETRY=1; shift ;;
         --) shift; EXTRA=("$@"); break ;;
         *) echo "unknown option $1" >&2; exit 2 ;;
@@ -81,11 +83,18 @@ EOF
 WARGS=""
 [[ -n "$TIERS" ]] && WARGS="--tiers $TIERS"
 [[ "$RETRY" == 1 ]] && WARGS="$WARGS --retry-failed"
-export AFDB_DIR WORKER_ARGS="$WARGS"     # passed through the environment (sbatch --export splits values at commas)
-cmd=(sbatch --array=0-$((NODES - 1)) --output="$OUT_ROOT/logs/%x_%A_%a.out" --export=ALL "${EXTRA[@]}"
-     "$AFDB_DIR/afdb.sbatch")
-echo "submit.sh: WORKER_ARGS='$WORKER_ARGS' OUT_ROOT=$OUT_ROOT ${cmd[*]}"
-[[ "${DRY:-0}" == 1 ]] && exit 0
-cp "$AFDB_DIR/POCKETOME.md" "$OUT_ROOT/POCKETOME.md" 2>/dev/null || true   # data guide next to the data
-"${cmd[@]}"
-echo "submit.sh: monitor with  python $AFDB_DIR/status.py   and   tail -f $OUT_ROOT/logs/pocketcompare-afdb_*.out"
+CPU_DEVICES=$(printf 'cpu,%.0s' $(seq "$CPU_SHARDS_PER_NODE")); CPU_DEVICES="${CPU_DEVICES%,}"
+export AFDB_DIR                          # WORKER_ARGS goes through the environment (sbatch --export splits at commas)
+submit() {  # <sbatch script> <array tasks> <worker args>
+    local cmd=(sbatch --array=0-$(($2 - 1)) --output="$OUT_ROOT/logs/%x_%A_%a.out" --export=ALL "${EXTRA[@]}" "$1")
+    echo "submit.sh: WORKER_ARGS='$3' OUT_ROOT=$OUT_ROOT ${cmd[*]}"
+    if [[ "${DRY:-0}" != 1 ]]; then WORKER_ARGS="$3" "${cmd[@]}"; fi
+}
+(( NODES + CPU_NODES > 0 )) || die "nothing to submit (--nodes 0 and --cpu-nodes 0)"
+if [[ "${DRY:-0}" != 1 ]]; then cp "$AFDB_DIR/POCKETOME.md" "$OUT_ROOT/POCKETOME.md" 2>/dev/null || true; fi  # data guide
+if (( NODES > 0 )); then submit "$AFDB_DIR/afdb.sbatch" "$NODES" "$WARGS"; fi
+# CPU nodes: the cli runner (`pocketcompare describe --device cpu` = the Numba backend; the persistent
+# describe_server.py always featurises with torch, which is not what was benchmarked on CPU)
+if (( CPU_NODES > 0 )); then submit "$AFDB_DIR/afdb_cpu.sbatch" "$CPU_NODES" "$WARGS --runner cli --devices $CPU_DEVICES"; fi
+if [[ "${DRY:-0}" == 1 ]]; then exit 0; fi
+echo "submit.sh: monitor with  python $AFDB_DIR/status.py   and   tail -f $OUT_ROOT/logs/pocketcompare-afdb*_*.out"

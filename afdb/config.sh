@@ -27,6 +27,8 @@ export FOLDCOMP_DIR="${FOLDCOMP_DIR:-$OUT_ROOT/foldcomp}"    # databases + unipr
 export FOLDCOMP_DB="${FOLDCOMP_DB:-afdb_uniprot_v4}"         # tier-3 database in $FOLDCOMP_DIR
 export TIER_REPS="${TIER_REPS:-0}"                     # 1: afdb_rep_v4 cluster representatives first in tier 3
 export FC_PROCS="${FC_PROCS:-4}"                       # processes reading + decompressing Foldcomp entries per node
+export FC_MAX_TASKS="${FC_MAX_TASKS:-200}"             # 64-entry chunks per process before it is replaced (decompress leaks)
+export FC_TIMEOUT="${FC_TIMEOUT:-900}"                 # seconds per batch from the Foldcomp pool before the unit fails
 export FC_DUCKDB_MEM="${FC_DUCKDB_MEM:-48GB}"          # make_worklist.py DuckDB memory limit (spills to $TMPDIR)
 export FETCH_STREAMS="${FETCH_STREAMS:-16}"            # parallel ranged downloads in fetch_foldcomp.py
 
@@ -70,3 +72,5 @@ export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMBA_NUM_THRE
 
 # ---- SLURM (afdb.sbatch reads the account/partition from its #SBATCH lines; these are for submit.sh)
 export SLURM_NODES="${SLURM_NODES:-4}"                 # array tasks = nodes
+export SLURM_CPU_NODES="${SLURM_CPU_NODES:-0}"         # CPU-only array tasks (afdb_cpu.sbatch) next to the GPU ones
+export CPU_SHARDS_PER_NODE="${CPU_SHARDS_PER_NODE:-4}" # `pocketcompare describe --device cpu` runs per CPU node
